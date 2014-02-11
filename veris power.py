@@ -1,5 +1,5 @@
-import httplib
-from settings import veris_host, veris_port
+import httplib, base64
+from settings import veris_host, veris_port, veris_uname, veris_password
 
 error_dict = {
 	1 : "Operation not permitted",
@@ -42,3 +42,15 @@ error_dict = {
 	193 : "Modbus device's serial number changed. (could be two devices with the same Modbus address)"
 }
 
+def get_data(channel, connection=None):
+	if not connection:
+		connection = httplib.HTTPConnection(veris_host, veris_port)
+	header = {
+		"Authorization" : "Basic %s" % base64.encodestring("%s:%s" % (veris_uname, veris_password))
+	}
+	req = connection.request("GET", "/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % channel, headers=header)
+	return connection.getresponse().read()
+
+if __name__ == '__main__':
+	print get_data(3)
+	print get_data(4)

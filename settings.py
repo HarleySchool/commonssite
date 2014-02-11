@@ -22,6 +22,7 @@ sma_log_interval = 1*60 # 10 minutes
 
 veris_host = "10.1.6.202"
 veris_port = 80
+veris_uname = "user"
 
 ##############################
 ## WEATHER STATION SETTINGS ##
