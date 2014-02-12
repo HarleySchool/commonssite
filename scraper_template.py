@@ -1,4 +1,4 @@
-class DataScraper(object):
+class ScraperTemplate(object):
 	"""
 	Each of the subsystems of commons data collection (i.e. hvac, solar, veris...) is an extension of this class
 	"""
@@ -23,14 +23,9 @@ class DataScraper(object):
 			},
 			... etc
 		}
-		data = {
-			time0 : {
-				field1 : value1,
-				field2 : value2
-			}
-		}
 		"""
 		return {} # default. should be overriden
 
 	def write_sql(self):
+		# TODO write data to the table named <self.table_name> using values in get_data
 		pass

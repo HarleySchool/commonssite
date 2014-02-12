@@ -1,5 +1,5 @@
 import httplib, json
-from settings import sma_host, sma_port
+from settings import sma_host, sma_port, sma_password
 
 # NOTE: THE FORMAT OF THE DATA IN THIS FILE COMES FROM
 # A TECHNICAL DOCUMENT RELEASED BY SMA CALLED
@@ -57,7 +57,7 @@ def emptyRpcObject():
 		'proc' : '', # set by procedure functions
 		'id' : '0',  # should probably set something smart
 		'format' : 'JSON',
-		'passwd' : MD5Hash('sma'),
+		'passwd' : MD5Hash(sma_password),
 		'params' : {}
 	}
 
