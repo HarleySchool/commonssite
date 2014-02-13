@@ -1,16 +1,10 @@
-#####################
-## GLOBAL SETTINGS ##
-#####################
-
-global_max_log_interval = 30*60; # all logs may only be *more frequent* than this limit. This is to prevent accidentally not logging data for long periods of time
-global_min_log_interval = 10; # all logs may only be less frequent than this. prevents overly taxing the server and queries
-
 ################
 ## SQL SERVER ##
 ################
 
 sql_server = "commonscontrol.harleyschool.org/mysql"
-sql_user = ""
+# credentials (username and password) are stored on the server in a protected file
+sql_credentials = "/home/dataupload/sql_creds.txt"
 
 ###################
 ## HVAC SETTINGS ##

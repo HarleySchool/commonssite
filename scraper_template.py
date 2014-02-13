@@ -1,6 +1,7 @@
 class ScraperTemplate(object):
 	"""
-	Each of the subsystems of commons data collection (i.e. hvac, solar, veris...) is an extension of this class
+	Each of the subsystems of commons data collection (i.e. hvac, solar, veris...) is an extension of this class.
+	Subclasses must define a name in __init__ and must override get_data. Writing to SQL is handled by this parent class.
 	"""
 	def __init__(self, name):
 		self.table_name = name
