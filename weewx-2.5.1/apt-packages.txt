@@ -1,0 +1,6 @@
+sudo apt-get install python-configobj
+sudo apt-get install python-cheetah
+sudo apt-get install python-imaging
+sudo apt-get install mysql-client
+sudo apt-get install python-mysqldb
+
