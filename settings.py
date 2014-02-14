@@ -32,6 +32,13 @@ veris_host = "10.1.6.202"
 veris_port = 80
 veris_uname = "user"
 
+##################
+# VPMXP settings #
+##################
+
+url3 = 'http://commonscontrol.harleyschool.org/electric/setup/devicexml.cgi?ADDRESS=3&TYPE=DATA' #TODO use harley intranet ip's here
+url4 = 'http://commonscontrol.harleyschool.org/electric/setup/devicexml.cgi?ADDRESS=4&TYPE=DATA'
+
 ##############################
 ## WEATHER STATION SETTINGS ##
 ##############################
