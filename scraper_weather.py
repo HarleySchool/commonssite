@@ -7,4 +7,4 @@ class ScraperWeather(ScraperTemplate):
 		ScraperTemplate.__init__("Weather Station")
 
 	def get_data():
-		return {}
+		return []
