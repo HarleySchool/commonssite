@@ -1,4 +1,3 @@
-import httplib, base64
 from settings import veris_host, veris_port, veris_uname, veris_password
 
 # import xml parsing in a version-independent way
@@ -28,14 +27,10 @@ except ImportError:
 				except ImportError:
 					print("Failed to import ElementTree from any known place")
 
-def get_data(channel, connection=None):
-	if not connection:
-		connection = httplib.HTTPConnection(veris_host, veris_port)
-	header = {
-		"Authorization" : "Basic %s" % base64.encodestring("%s:%s" % (veris_uname, veris_password))
-	}
-	req = connection.request("GET", "/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % channel, headers=header)
-	return connection.getresponse().read()
+def get_data(channel):
+	full_url = "http://%s:%d/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % (veris_host, veri_port, channel)
+	req = requests.get(full_url, auth=(veris_uname, veris_password))
+	return req.text
 
 if __name__ == '__main__':
 	xml_obj_1 = etree.fromstring(get_data(3))
