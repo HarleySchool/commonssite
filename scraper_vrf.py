@@ -1,33 +1,7 @@
-import time, string, httplib
+import time, string, requests
 from settings import hvac_host, hvac_port
 from pprint import pprint
-
-# import xml parsing in a version-independent way
-try:
-  from lxml import etree
-  print("running with lxml.etree")
-except ImportError:
-  try:
-    # Python 2.5
-    import xml.etree.cElementTree as etree
-    print("running with cElementTree on Python 2.5+")
-  except ImportError:
-    try:
-      # Python 2.5
-      import xml.etree.ElementTree as etree
-      print("running with ElementTree on Python 2.5+")
-    except ImportError:
-      try:
-        # normal cElementTree install
-        import cElementTree as etree
-        print("running with cElementTree")
-      except ImportError:
-        try:
-          # normal ElementTree install
-          import elementtree.ElementTree as etree
-          print("running with ElementTree")
-        except ImportError:
-          print("Failed to import ElementTree from any known place")
+from xml_import import etree
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -346,17 +320,21 @@ def parse_bulk(bulk, selection=[], units={}):
 			data[name] = value
 	return data
 
-def status(groups=[], values=[], units={}, sub='/servlet/MIMEReceiveServlet'):
+def get_xml_string(groups=[]):
+	mnet_strings = '\n'.join(['<Mnet Group="%d" Bulk="*" EnergyControl="*" SetbackControl="*" ScheduleAvail="*" />' % g for g in groups])
+	body = '<?xml version="1.0" encoding="UTF-8"?><Packet><Command>getRequest</Command><DatabaseManager>%s</DatabaseManager></Packet>' % mnet_strings
+	full_url = 'http://%s:%d/servlet/MIMEReceiveServlet' % (hvac_host, hvac_port)
 	headers = {
 		'Content-type': 'text/xml',
-		'Accept': 'text/html, image/gif, image/jpeg, *;'}
-	mnet_strings = ['<Mnet Group="%d" Bulk="*" EnergyControl="*" SetbackControl="*" ScheduleAvail="*" />' % g for g in groups]
-	body = '<?xml version="1.0" encoding="UTF-8"?><Packet><Command>getRequest</Command><DatabaseManager>%s</DatabaseManager></Packet>' % mnet_strings
-	con = httplib.HTTPConnection(hvac_host, hvac_port)
-	req = con.request("POST", sub, body, headers)
-	resp = con.getresponse()
+		'Accept': 'text/html, image/gif, image/jpeg, *;'
+	}
+	req = requests.post(full_url, data=body, headers=headers)
+	return str(req.text)
+
+def status(groups=[], values=[], units={}):
 	# parse as xml 'element tree'
-	xml_response = etree.fromstring(resp.read())
+	r = get_xml_string(groups)
+	xml_response = etree.fromstring(r)
 	# get all relevant (Mnet) tags
 	xml_group_objs = xml_response.findall(".//Mnet")
 	# build result dict
@@ -365,3 +343,22 @@ def status(groups=[], values=[], units={}, sub='/servlet/MIMEReceiveServlet'):
 		group_id = int(grp.get("Group"))
 		group_status[group_id] = parse_bulk(grp.get("Bulk"), selection=values, units=units)
 	return group_status
+
+if __name__ == '__main__':
+	COLUMNS = [
+		"SetTemp",
+		"InletTemp",
+		"CoolMin",
+		"CoolMax",
+		"HeatMin",
+		"HeatMax",
+		"AutoMin",
+		"AutoMax",
+		"Mode",
+		"FanSpeed"
+	]
+	UNITS = {
+		'temp': 'degF', 
+		'text': 'upper'
+	}
+	print status([i+1 for i in range(15)], COLUMNS, UNITS)
