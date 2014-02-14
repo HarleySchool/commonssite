@@ -24,15 +24,15 @@ devices = {
 class ScraperSolar(ScraperTemplate):
 
 	def __init__(self):
-		ScraperTemplate.__init__("Solar")
+		ScraperTemplate.__init__(self, "Solar")
 
-	def _MD5Hash(s):
+	def _MD5Hash(self, s):
 		import md5
 		m = md5.new()
 		m.update(s)
 		return m.hexdigest()
 
-	def _emptyDevObject():
+	def _emptyDevObject(self):
 		"""Creates a template JSON object (a python dict actually) according to
 		the schema for a Device Object defined in section 6.1 of the RPC manual
 		"""
@@ -43,7 +43,7 @@ class ScraperSolar(ScraperTemplate):
 			"children" : None
 		}
 
-	def _emptyChannelObject():
+	def _emptyChannelObject(self):
 		return {
 			"meta" : None, # must be set
 			"name" : None,
@@ -54,7 +54,7 @@ class ScraperSolar(ScraperTemplate):
 			"options" : None
 		}
 
-	def _emptyRpcObject():
+	def _emptyRpcObject(self):
 		"""Creates a template JSON object (a python dict actually) according to
 		the schema for an RPC request defined in section 4.1 of the RPC manual
 		"""
@@ -63,42 +63,42 @@ class ScraperSolar(ScraperTemplate):
 			'proc' : '', # set by procedure functions
 			'id' : '0',  # should probably set something smart
 			'format' : 'JSON',
-			'passwd' : ScraperSolar._MD5Hash(sma_password),
+			'passwd' : self._MD5Hash(sma_password),
 			'params' : {}
 		}
 
-	def _doGetPlantOverview():
-		rpc = ScraperSolar._emptyRpcObject()
+	def _doGetPlantOverview(self):
+		rpc = self._emptyRpcObject()
 		rpc["proc"] = "GetPlantOverview"
 		rpc["id"] = "1"
-		return ScraperSolar._postRequest(rpc)
+		return self._postRequest(rpc)
 
-	def _doGetDevices():
-		rpc = ScraperSolar._emptyRpcObject()
+	def _doGetDevices(self):
+		rpc = self._emptyRpcObject()
 		rpc["proc"] = "GetDevices"
 		rpc["id"] = "2"
-		return ScraperSolar._postRequest(rpc)
+		return self._postRequest(rpc)
 
-	def _doGetChannels(dev_obj):
-		rpc = ScraperSolar._emptyRpcObject()
+	def _doGetChannels(self, dev_obj):
+		rpc = self._emptyRpcObject()
 		rpc["proc"] = "GetProcessDataChannels"
 		rpc["id"] = "3"
 		rpc["params"] = {
 			"device" : dev_obj['key']
 		}
-		return ScraperSolar._postRequest(rpc)
+		return self._postRequest(rpc)
 
-	def _doGetData(dev_objects):
-		rpc = ScraperSolar._emptyRpcObject()
+	def _doGetData(self, dev_objects):
+		rpc = self._emptyRpcObject()
 		rpc["proc"] = "GetProcessData"
 		rpc["id"] = "4"
 		rpc["params"] = {
 			# dev_objects must be an array containing dicts with "key" and "channels"
 			"devices" : dev_objects
 		}
-		return ScraperSolar._postRequest(rpc)
+		return self._postRequest(rpc)
 
-	def _postRequest(body={}):
+	def _postRequest(self, body={}):
 		req = requests.post('http://%s:%d/rpc' % (sma_host, sma_port), data="RPC=%s" % json.dumps(body))
 		return req.text
 
@@ -108,4 +108,4 @@ class ScraperSolar(ScraperTemplate):
 if __name__ == '__main__':
 	obj = ScraperSolar()
 	from pprint import pprint
-	pprint(obj.get_data())
+	pprint(json.loads(obj._doGetData([devices['power']])))
