@@ -11,22 +11,20 @@ class ScraperTemplate(object):
 
 	def get_data(self):
 		"""
-		this is implemented by each sub class separately and should return a dict with the following format:
+		this is implemented by each sub class separately and should return a list of data objects with the following format.
+		If multiple timestamps are available, that is simply more elements in the list!
 
-		data = {
-			"field1" : {
-				time0 : value0,
-				time1 : value1,
-			},
-			"field2" : {
-				time0 : value0,
-				time1 : value1
-			},
-			... etc
-		}
+		data = [{
+					"timestamp" : UTC-time,
+					"field1" : value1,
+					"field2" : value2,
+					... etc
+				}]
 		"""
-		return {} # default. should be overriden
+		return [] # default. should be overriden
 
 	def write_sql(self):
-		# TODO write data to the table named <self.table_name> using values in get_data
-		pass
+		name = self.get_name()
+		for datarow in self.get_data():
+			# insert the row
+			pass
