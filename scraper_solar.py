@@ -1,4 +1,4 @@
-import httplib, json
+import requests, json
 from settings import sma_host, sma_port, sma_password
 
 # NOTE: THE FORMAT OF THE DATA IN THIS FILE COMES FROM
@@ -92,14 +92,9 @@ def doGetData(dev_objects):
 	}
 	return postRequest(rpc)
 
-def postRequest(body={}, connection=None):
-	if not connection:
-		connection = httplib.HTTPConnection(sma_host, sma_port)
-	headers = {
-		'Content-Type' : 'application/json',
-	}
-	req = connection.request("POST", "/rpc", "RPC=%s" % json.dumps(body), headers)
-	return connection.getresponse().read()
+def postRequest(body={}):
+	req = requests.post('http://%s:%d/rpc' % (sma_host, sma_port), data="RPC=%s" % json.dumps(body))
+	return req.text
 
 if __name__ == '__main__':
 	from pprint import pprint
