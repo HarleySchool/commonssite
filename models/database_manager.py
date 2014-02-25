@@ -1,7 +1,8 @@
 from peewee import *
+from commonssite.settings import sql_credentials
 
 # load database configuration
-with open('/home/dataupload/sql_creds.txt', 'r') as creds:
+with open(sql_credentials, 'r') as creds:
 	db_host = creds.readline().strip()
 	uname = creds.readline().strip()
 	pw = creds.readline().strip()

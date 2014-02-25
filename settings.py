@@ -1,8 +1,9 @@
+# at time of writing, commonscontrol.harleyschool.org has the IP address '208.99.242.111'
+
 ################
 ## SQL SERVER ##
 ################
 
-sql_server = "commonscontrol.harleyschool.org/mysql"
 # credentials (username and password) are stored on the server in a protected file
 sql_credentials = "/home/dataupload/sql_creds.txt"
 
