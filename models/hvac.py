@@ -56,6 +56,11 @@ class VrfEntry(Model):
 	SetTemp = FloatField(db_column='set temp')
 	InletTemp = FloatField(db_column='measured temp')
 
+	@classmethod
+	def fields(cls):
+		"""return list of names of non-primary-key fields"""
+		return ['AirDirection','FanSpeed','Mode','ErrorSign','HeatMax','HeatMin','CoolMax','CoolMin','AutoMax','AutoMin','SetTemp','InletTemptemp']
+
 	class Meta:
 		database = db
 		primary_key = CompositeKey('Time', 'Name')
@@ -69,6 +74,11 @@ class ErvEntry(Model):
 	Mode = CharField(db_column='mode', choices=mode_field)
 	ErrorSign = BooleanField(db_column='error')
 	InletTemp = FloatField(db_column='measured temp')
+	
+	@classmethod
+	def fields(cls):
+		"""return list of names of non-primary-key fields"""
+		return ['AirDirection','FanSpeed','Mode','ErrorSign','InletTemptemp']
 
 	class Meta:
 		database = db

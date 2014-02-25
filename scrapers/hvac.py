@@ -1,7 +1,8 @@
-import time, string, requests
+import datetime, string, requests
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
 from commonssite.scrapers.template import ScraperTemplate
+from commonssite.models.hvac import ErvEntry, VrfEntry
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -212,6 +213,26 @@ conversions = {
 	}
 }
 
+def group_id_to_name(id):
+	mapping = {
+		1 : 'CCE',
+		2 : 'Classroom 202',
+		3 : 'Workshop',
+		4 : '3rd Floor Office',
+		5 : 'CMEE',
+		6 : '2nd Floor Hall',
+		7 : 'Classroom 201',
+		8 : 'Mezzanine',
+		9 : 'Project Space',
+		10 : 'Control Room',
+		11 : 'Mechanical Room',
+		12 : 'Workshop ERV',
+		13 : 'Classroom 202 ERV',
+		14 : 'Project Space ERV',
+		15 : 'Classroom 201 ERV'
+	}
+	return mapping.get(id, str(id))
+
 class ScraperHvac(ScraperTemplate):
 
 	def __init__(self):
@@ -336,7 +357,7 @@ class ScraperHvac(ScraperTemplate):
 		req = requests.post(full_url, data=body, headers=headers)
 		return str(req.text)
 
-	def status(self, groups=[], values=[], units={}):
+	def status_dict(self, groups=[], values=[], units={}):
 		# parse as xml 'element tree'
 		r = self.get_xml_string(groups)
 		xml_response = etree.fromstring(r)
@@ -346,11 +367,24 @@ class ScraperHvac(ScraperTemplate):
 		group_status = {}
 		for grp in xml_group_objs:
 			group_id = int(grp.get("Group"))
-			group_status[group_id] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
+			group_status[group_id_to_name(group_id)] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
 		return group_status
 
-	def get_data(self):
-		pass
+	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
+		now = datetime.datetime.now()
+		models = []
+		dict_data = self.status_dict(groups=groups, units=units)
+		for (name, data) in dict_data.iteritems():
+			# check if VRF or ERV
+			if name.find('ERV') == -1:
+				cls = VrfEntry
+			else:
+				cls = ErvEntry
+			model = cls(Time=now, Name=name)
+			for field in cls.fields():
+				model[field] = data[field]
+			models.append(model)
+		return models
 
 if __name__ == '__main__':
 	UNITS = {
@@ -361,4 +395,4 @@ if __name__ == '__main__':
 	scraper = ScraperHvac()
 
 	from pprint import pprint
-	pprint(scraper.status([i+1 for i in range(15)], COLUMNS, UNITS))
+	pprint(scraper.status_dict([i+1 for i in range(15)], COLUMNS, UNITS))
