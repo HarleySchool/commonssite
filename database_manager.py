@@ -123,6 +123,6 @@ if __name__ == '__main__':
 		InletTemp=72.0
 	)
 	print "created instances. saving."
-	vrf_inst.save()
-	erv_inst.save()
-	erv_inst2.save()
+	vrf_inst.save(force_insert=True)
+	erv_inst.save(force_insert=True)
+	erv_inst2.save(force_insert=True)
