@@ -113,6 +113,16 @@ if __name__ == '__main__':
 		ErrorSign=False,
 		InletTemp=72.0
 	)
+	erv_inst2 = ErvEntry(
+		Time=now,
+		Name='Test2-ERV',
+		AirDirection=direction_field[1],
+		FanSpeed=speed_field[1],
+		Mode=mode_field[1],
+		ErrorSign=False,
+		InletTemp=72.0
+	)
 	print "created instances. saving."
-	vrf_inst.save(force_insert=True)
-	erv_inst.save(force_insert=True)
+	vrf_inst.save()
+	erv_inst.save()
+	erv_inst2.save()
