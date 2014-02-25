@@ -1,5 +1,5 @@
 # top-level logging script
-import time
+import time, datetime
 from threading import Thread
 from commonssite.settings import hvac_log_interval
 from commonssite.scrapers import *
@@ -25,6 +25,8 @@ class HvacLogger(Thread):
 		tend = tstart + self.span
 
 		def do_log():
+			now = datetime.datetime.now()
+			print "getting log at", now
 			for entry in self.scraper.get_data():
 				entry.save(force_insert=True)
 
