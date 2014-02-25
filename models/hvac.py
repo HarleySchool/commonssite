@@ -59,7 +59,7 @@ class VrfEntry(Model):
 	@classmethod
 	def fields(cls):
 		"""return list of names of non-primary-key fields"""
-		return ['AirDirection','FanSpeed','Mode','ErrorSign','HeatMax','HeatMin','CoolMax','CoolMin','AutoMax','AutoMin','SetTemp','InletTemptemp']
+		return ['AirDirection','FanSpeed','Mode','ErrorSign','HeatMax','HeatMin','CoolMax','CoolMin','AutoMax','AutoMin','SetTemp','InletTemp']
 
 	class Meta:
 		database = db
@@ -78,7 +78,7 @@ class ErvEntry(Model):
 	@classmethod
 	def fields(cls):
 		"""return list of names of non-primary-key fields"""
-		return ['AirDirection','FanSpeed','Mode','ErrorSign','InletTemptemp']
+		return ['AirDirection','FanSpeed','Mode','ErrorSign','InletTemp']
 
 	class Meta:
 		database = db

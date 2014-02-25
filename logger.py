@@ -12,6 +12,7 @@ WEEK = 7*DAY
 class HvacLogger(Thread):
 
 	def __init__(self, loginterval, logspan=-1):
+		Thread.__init__(self)
 		self.scraper = ScraperHvac()
 		self.interval = loginterval
 		self.span = logspan
