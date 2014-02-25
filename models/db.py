@@ -1,5 +1,6 @@
 from peewee import *
 from commonssite.settings import sql_credentials
+from commonssite.models import *
 
 # load database configuration
 with open(sql_credentials, 'r') as creds:
@@ -11,7 +12,6 @@ with open(sql_credentials, 'r') as creds:
 db = MySQLDatabase("commons", host=db_host, user=uname, passwd=pw)
 
 def create_tables():
-	from commonssite.models import *
 	all_tables = [VrfEntry, ErvEntry]
 	for table in all_tables:
 		table.create(True)

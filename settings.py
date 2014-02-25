@@ -5,7 +5,7 @@
 ################
 
 # credentials (username and password) are stored on the server in a protected file
-sql_credentials = "/home/dataupload/sql_creds.txt"
+sql_credentials = "/home/dataupload/code/commonssite/sql_creds.txt"
 
 ###################
 ## HVAC SETTINGS ##
