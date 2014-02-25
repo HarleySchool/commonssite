@@ -383,6 +383,7 @@ class ScraperHvac(ScraperTemplate):
 			model = cls(Time=now, Name=name)
 			for field in cls.fields():
 				model.__dict__[field] = data[field]
+				print "%s is" % field, data[field]
 			models.append(model)
 		return models
 
