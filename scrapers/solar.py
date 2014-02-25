@@ -1,6 +1,6 @@
 import requests, json
 from settings import sma_host, sma_port, sma_password
-from scraper_template import ScraperTemplate
+from commonssite.scrapers.template import ScraperTemplate
 
 # NOTE: THE FORMAT OF THE DATA IN THIS FILE COMES FROM
 # A TECHNICAL DOCUMENT RELEASED BY SMA CALLED

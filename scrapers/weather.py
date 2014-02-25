@@ -1,4 +1,4 @@
-from scraper_template import ScraperTemplate
+from commonssite.scrapers.template import ScraperTemplate
 
 
 class ScraperWeather(ScraperTemplate):
