@@ -4,6 +4,8 @@ class ScraperTemplate(object):
 	Subclasses must define a name in __init__ and must override get_data. Writing to SQL is handled by this parent class.
 	"""
 	def __init__(self, name):
+		"""Initialize this scraper class to use the SQL table <name>
+		"""
 		self.table_name = name
 
 	def get_name(self):

@@ -24,7 +24,7 @@ devices = {
 class ScraperSolar(ScraperTemplate):
 
 	def __init__(self):
-		ScraperTemplate.__init__(self, "Solar")
+		ScraperTemplate.__init__(self, "solar")
 
 	def _MD5Hash(self, s):
 		import md5
