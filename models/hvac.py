@@ -1,6 +1,7 @@
 # the ORM objects for HVAC
 from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv
 from commonssite.models.db import db
+from peewee import *
 
 direction_field = [
 	('Swing', 'Swing'),
