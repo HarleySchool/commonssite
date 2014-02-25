@@ -1,6 +1,6 @@
-from peewee import *
 from commonssite.settings import sql_credentials
 from commonssite.models import *
+from peewee import MySQLDatabase
 
 # load database configuration
 with open(sql_credentials, 'r') as creds:
@@ -18,7 +18,7 @@ def create_tables():
 
 if __name__ == '__main__':
 	import datetime
-
+	from commonssite.models.hvac import direction_field, speed_field, mode_field
 	now = datetime.datetime.now()
 	# add test rows to each table
 	vrf_inst = VrfEntry(
