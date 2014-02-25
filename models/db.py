@@ -6,8 +6,15 @@ with open(sql_credentials, 'r') as creds:
 	db_host = creds.readline().strip()
 	uname = creds.readline().strip()
 	pw = creds.readline().strip()
+
 # 'db' should be imported by other models for use as Meta.database
 db = MySQLDatabase("commons", host=db_host, user=uname, passwd=pw)
+
+def create_tables():
+	from commonssite.models import *
+	all_tables = [VrfEntry, ErvEntry]
+	for table in all_tables:
+		table.create(True)
 
 if __name__ == '__main__':
 	import datetime
