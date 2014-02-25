@@ -2,6 +2,7 @@ import time, string, requests
 from settings import hvac_host, hvac_port
 from pprint import pprint
 from xml_import import etree
+from scraper_template import ScraperTemplate
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -212,153 +213,153 @@ conversions = {
 	}
 }
 
-def parse_bulk(bulk, selection=[], units={}):
-	"""given bulk hex data describing a VRF group, this function returns a dict
-	of readable and sensible values"""
-	data = {}
+class ScraperHvac(ScraperTemplate):
 
-	# helper functions for block_parsers
+	def __init__(self):
+		ScraperTemplate.__init__(self, "hvac")
 
-	def blocks(byte_index, len):
-		lo = 2*byte_index
-		hi = lo+2*len
-		return bulk[lo:hi]
+	def parse_bulk(self, bulk, selection=[], units={}):
+		"""given bulk hex data describing a VRF group, this function returns a dict
+		of readable and sensible values"""
+		data = {}
 
-	def nibblex(byte_index, offset):
-		return int(bulk[2*byte_index + offset], 16)
+		# helper functions for block_parsers
 
-	def blockx(byte_index, len):
-		return int(blocks(byte_index, len), 16)
+		def blocks(byte_index, len):
+			lo = 2*byte_index
+			hi = lo+2*len
+			return bulk[lo:hi]
 
-	def blocki(byte_index, len):
-		return int(blocks(byte_index, len), 10)
+		def nibblex(byte_index, offset):
+			return int(bulk[2*byte_index + offset], 16)
 
-	# a data structure mapping from data name to parse function
-	# with thanks to the documentation from https://gitorious.org/g50a-commander
-	block_parsers = {
-		'Drive'			: (lambda b: bulk_lookup_table['Drive'].get(blockx(1, 1))),
-		'Mode'			: (lambda b: bulk_lookup_table['Mode'].get(blockx(2, 1))),
-		'SetTemp'		: (lambda b: float(blockx(3,1)) + 0.1 * float(blockx(4,1))),
-		'InletTemp'		: (lambda b: float(blockx(5,2)) * 0.1),
-		'AirDirection'	: (lambda b: bulk_lookup_table['AirDirection'].get(blockx(7,1))),
-		'FanSpeed'		: (lambda b: bulk_lookup_table['FanSpeed'].get(blockx(8,1))),
-		'RemoteControl'	: (lambda b: bulk_lookup_table['enable'].get(1-blockx(9,1))), # note the 1-block().. special case 0 enabled 1 disable
-		'DriveItem'		: (lambda b: bulk_lookup_table['onoff'].get(blockx(10,1))),
-		'ModeItem'		: (lambda b: bulk_lookup_table['onoff'].get(blockx(11,1))),
-		'SetTempItem'	: (lambda b: bulk_lookup_table['onoff'].get(blockx(12,1))),
-		'FilterItem'	: (lambda b: bulk_lookup_table['onoff'].get(blockx(13,1))),
-		'Ventilation'	: (lambda b: bulk_lookup_table['Ventilation'].get(blockx(14,1))),
-		'FilterSign'	: (lambda b: bulk_lookup_table['resetable'].get(blockx(15,1))),
-		'ErrorSign'		: (lambda b: bulk_lookup_table['resetable'].get(blockx(16,1))),
-		'Model' 		: (lambda b: bulk_lookup_table['Model'].get(blockx(17,1))),
-		'ModeStatus' 	: (lambda b: bulk_lookup_table['enable'].get(blockx(18,1))),
-		'MidTemp'		: (lambda b: bulk_lookup_table['enable'].get(blockx(19,1))),
-		'ControlValue'	: (lambda b: '0x%s (Unknown)' % blocks(20,1)), # this one is a mystery. just print the hex
-		'Timer'			: (lambda b: bulk_lookup_table['onoff'].get(blockx(21,1))),
-		'IcKind'		: (lambda b: bulk_lookup_table['IcKind'].get(blockx(22,1))),
-		'AutoModeSW'	: (lambda b: bulk_lookup_table['enable'].get(blockx(23,1))),
-		'DryModeSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(24,1))),
-		'FanSpeedSW'	: (lambda b: bulk_lookup_table['FanSpeedSW'].get(blockx(25,1))),
-		'AirDirectionSW': (lambda b: bulk_lookup_table['enable'].get(blockx(26,1))),
-		'SwingSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(27,1))),
-		'VentilationSW'	: (lambda b: bulk_lookup_table['enable'].get(blockx(28,1))),
-		'BypassSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(29,1))),
-		'LcAutoSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(30,1))),
-		'HeatRecoverySW': (lambda b: bulk_lookup_table['enable'].get(blockx(31,1))),
-		'CoolMin'		: (lambda b: float(blocki(32, 1)) + 0.1 * float(nibblex(38, 0))),
-		'HeatMax'		: (lambda b: float(blocki(33, 1)) + 0.1 * float(nibblex(38, 1))),
-		'CoolMax'		: (lambda b: float(blocki(34, 1)) + 0.1 * float(nibblex(39, 0))),
-		'HeatMin'		: (lambda b: float(blocki(35, 1)) + 0.1 * float(nibblex(39, 1))),
-		'AutoMin'		: (lambda b: float(blocki(36, 1)) + 0.1 * float(nibblex(40, 0))),
-		'AutoMax'		: (lambda b: float(blocki(37, 1)) + 0.1 * float(nibblex(40, 1))),
-		'TurnOff'		: (lambda b: bulk_lookup_table['onoff'].get(blockx(41,1))),
-		'TempLimit'		: (lambda b: bulk_lookup_table['enable'].get(blockx(42,1))),
-		'TempDetail'	: (lambda b: bulk_lookup_table['enable'].get(blockx(43,1))),
-		'FanModeSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(44,1))),
-		'AirStageSW'	: (lambda b: bulk_lookup_table['enable'].get(blockx(45,1))),
-		'AirAutoSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(46,1))),
-		'FanAutoSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(47,1)))
-	}
+		def blockx(byte_index, len):
+			return int(blocks(byte_index, len), 16)
 
-	# a helper function for converting a given value from the default units to the 'usr' units
-	def unit_convert(val, default, usr):
-		if default is None:
-			print "# Default unit is none"
-		elif usr is None:
-			pass
-		elif default != usr:
-			if default in conversions and usr in conversions[default]:
-				func = conversions[default][usr]
-				try:
-					val = func(val)
-				except:
-					print "Cannot convert", val, "from", default, "to", usr
-			elif default in conversions:
-				print "Cannot convert from", default, "to", usr
-				print "\tValid options are:\n%s" % ("".join(["\t%s\n" % s for s in conversions[default].keys()]))
-		return val
+		def blocki(byte_index, len):
+			return int(blocks(byte_index, len), 10)
 
-	# Here is where parsing the 'Bulk' text actually happens
-	# ... loop over name:parser_func pairs
-	for name, parser_func in block_parsers.iteritems():
-		# selection as [] means "all values"
-		# ..only add selected values to the data dict
-		if selection == [] or name in selection:
-			# parse with defaults
-			value = parser_func(bulk)
-			# handle unit conversion
-			typename = bulk_types.get(name)
-			# special case: temp is 'None' if zero
-			if typename == 'temp' and value == 0.0:
-				value = None
-			else:
-				default = default_units.get(typename)
-				#print name, typename, default
-				convert = units.get(typename)
-				value = unit_convert(value, default, convert)
-			# store value
-			data[name] = value
-	return data
+		# a data structure mapping from data name to parse function
+		# with thanks to the documentation from https://gitorious.org/g50a-commander
+		block_parsers = {
+			'Drive'			: (lambda b: bulk_lookup_table['Drive'].get(blockx(1, 1))),
+			'Mode'			: (lambda b: bulk_lookup_table['Mode'].get(blockx(2, 1))),
+			'SetTemp'		: (lambda b: float(blockx(3,1)) + 0.1 * float(blockx(4,1))),
+			'InletTemp'		: (lambda b: float(blockx(5,2)) * 0.1),
+			'AirDirection'	: (lambda b: bulk_lookup_table['AirDirection'].get(blockx(7,1))),
+			'FanSpeed'		: (lambda b: bulk_lookup_table['FanSpeed'].get(blockx(8,1))),
+			'RemoteControl'	: (lambda b: bulk_lookup_table['enable'].get(1-blockx(9,1))), # note the 1-block().. special case 0 enabled 1 disable
+			'DriveItem'		: (lambda b: bulk_lookup_table['onoff'].get(blockx(10,1))),
+			'ModeItem'		: (lambda b: bulk_lookup_table['onoff'].get(blockx(11,1))),
+			'SetTempItem'	: (lambda b: bulk_lookup_table['onoff'].get(blockx(12,1))),
+			'FilterItem'	: (lambda b: bulk_lookup_table['onoff'].get(blockx(13,1))),
+			'Ventilation'	: (lambda b: bulk_lookup_table['Ventilation'].get(blockx(14,1))),
+			'FilterSign'	: (lambda b: bulk_lookup_table['resetable'].get(blockx(15,1))),
+			'ErrorSign'		: (lambda b: bulk_lookup_table['resetable'].get(blockx(16,1))),
+			'Model' 		: (lambda b: bulk_lookup_table['Model'].get(blockx(17,1))),
+			'ModeStatus' 	: (lambda b: bulk_lookup_table['enable'].get(blockx(18,1))),
+			'MidTemp'		: (lambda b: bulk_lookup_table['enable'].get(blockx(19,1))),
+			'ControlValue'	: (lambda b: '0x%s (Unknown)' % blocks(20,1)), # this one is a mystery. just print the hex
+			'Timer'			: (lambda b: bulk_lookup_table['onoff'].get(blockx(21,1))),
+			'IcKind'		: (lambda b: bulk_lookup_table['IcKind'].get(blockx(22,1))),
+			'AutoModeSW'	: (lambda b: bulk_lookup_table['enable'].get(blockx(23,1))),
+			'DryModeSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(24,1))),
+			'FanSpeedSW'	: (lambda b: bulk_lookup_table['FanSpeedSW'].get(blockx(25,1))),
+			'AirDirectionSW': (lambda b: bulk_lookup_table['enable'].get(blockx(26,1))),
+			'SwingSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(27,1))),
+			'VentilationSW'	: (lambda b: bulk_lookup_table['enable'].get(blockx(28,1))),
+			'BypassSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(29,1))),
+			'LcAutoSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(30,1))),
+			'HeatRecoverySW': (lambda b: bulk_lookup_table['enable'].get(blockx(31,1))),
+			'CoolMin'		: (lambda b: float(blocki(32, 1)) + 0.1 * float(nibblex(38, 0))),
+			'HeatMax'		: (lambda b: float(blocki(33, 1)) + 0.1 * float(nibblex(38, 1))),
+			'CoolMax'		: (lambda b: float(blocki(34, 1)) + 0.1 * float(nibblex(39, 0))),
+			'HeatMin'		: (lambda b: float(blocki(35, 1)) + 0.1 * float(nibblex(39, 1))),
+			'AutoMin'		: (lambda b: float(blocki(36, 1)) + 0.1 * float(nibblex(40, 0))),
+			'AutoMax'		: (lambda b: float(blocki(37, 1)) + 0.1 * float(nibblex(40, 1))),
+			'TurnOff'		: (lambda b: bulk_lookup_table['onoff'].get(blockx(41,1))),
+			'TempLimit'		: (lambda b: bulk_lookup_table['enable'].get(blockx(42,1))),
+			'TempDetail'	: (lambda b: bulk_lookup_table['enable'].get(blockx(43,1))),
+			'FanModeSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(44,1))),
+			'AirStageSW'	: (lambda b: bulk_lookup_table['enable'].get(blockx(45,1))),
+			'AirAutoSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(46,1))),
+			'FanAutoSW'		: (lambda b: bulk_lookup_table['enable'].get(blockx(47,1)))
+		}
 
-def get_xml_string(groups=[]):
-	mnet_strings = '\n'.join(['<Mnet Group="%d" Bulk="*" EnergyControl="*" SetbackControl="*" ScheduleAvail="*" />' % g for g in groups])
-	body = '<?xml version="1.0" encoding="UTF-8"?><Packet><Command>getRequest</Command><DatabaseManager>%s</DatabaseManager></Packet>' % mnet_strings
-	full_url = 'http://%s:%d/servlet/MIMEReceiveServlet' % (hvac_host, hvac_port)
-	headers = {
-		'Content-type': 'text/xml',
-		'Accept': 'text/html, image/gif, image/jpeg, *;'
-	}
-	req = requests.post(full_url, data=body, headers=headers)
-	return str(req.text)
+		# a helper function for converting a given value from the default units to the 'usr' units
+		def unit_convert(val, default, usr):
+			if default is None:
+				print "# Default unit is none"
+			elif usr is None:
+				pass
+			elif default != usr:
+				if default in conversions and usr in conversions[default]:
+					func = conversions[default][usr]
+					try:
+						val = func(val)
+					except:
+						print "Cannot convert", val, "from", default, "to", usr
+				elif default in conversions:
+					print "Cannot convert from", default, "to", usr
+					print "\tValid options are:\n%s" % ("".join(["\t%s\n" % s for s in conversions[default].keys()]))
+			return val
 
-def status(groups=[], values=[], units={}):
-	# parse as xml 'element tree'
-	r = get_xml_string(groups)
-	xml_response = etree.fromstring(r)
-	# get all relevant (Mnet) tags
-	xml_group_objs = xml_response.findall(".//Mnet")
-	# build result dict
-	group_status = {}
-	for grp in xml_group_objs:
-		group_id = int(grp.get("Group"))
-		group_status[group_id] = parse_bulk(grp.get("Bulk"), selection=values, units=units)
-	return group_status
+		# Here is where parsing the 'Bulk' text actually happens
+		# ... loop over name:parser_func pairs
+		for name, parser_func in block_parsers.iteritems():
+			# selection as [] means "all values"
+			# ..only add selected values to the data dict
+			if selection == [] or name in selection:
+				# parse with defaults
+				value = parser_func(bulk)
+				# handle unit conversion
+				typename = bulk_types.get(name)
+				# special case: temp is 'None' if zero
+				if typename == 'temp' and value == 0.0:
+					value = None
+				else:
+					default = default_units.get(typename)
+					#print name, typename, default
+					convert = units.get(typename)
+					value = unit_convert(value, default, convert)
+				# store value
+				data[name] = value
+		return data
+
+	def get_xml_string(self, groups=[]):
+		mnet_strings = '\n'.join(['<Mnet Group="%d" Bulk="*" EnergyControl="*" SetbackControl="*" ScheduleAvail="*" />' % g for g in groups])
+		body = '<?xml version="1.0" encoding="UTF-8"?><Packet><Command>getRequest</Command><DatabaseManager>%s</DatabaseManager></Packet>' % mnet_strings
+		full_url = 'http://%s:%d/servlet/MIMEReceiveServlet' % (hvac_host, hvac_port)
+		headers = {
+			'Content-type': 'text/xml',
+			'Accept': 'text/html, image/gif, image/jpeg, *;'
+		}
+		req = requests.post(full_url, data=body, headers=headers)
+		return str(req.text)
+
+	def status(self, groups=[], values=[], units={}):
+		# parse as xml 'element tree'
+		r = self.get_xml_string(groups)
+		xml_response = etree.fromstring(r)
+		# get all relevant (Mnet) tags
+		xml_group_objs = xml_response.findall(".//Mnet")
+		# build result dict
+		group_status = {}
+		for grp in xml_group_objs:
+			group_id = int(grp.get("Group"))
+			group_status[group_id] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
+		return group_status
+
+	def get_data(self):
+		pass
 
 if __name__ == '__main__':
-	COLUMNS = [
-		"SetTemp",
-		"InletTemp",
-		"CoolMin",
-		"CoolMax",
-		"HeatMin",
-		"HeatMax",
-		"AutoMin",
-		"AutoMax",
-		"Mode",
-		"FanSpeed"
-	]
 	UNITS = {
 		'temp': 'degF', 
 		'text': 'upper'
 	}
-	print status([i+1 for i in range(15)], COLUMNS, UNITS)
+
+	scraper = ScraperHvac()
+
+	from pprint import pprint
+	pprint(scraper.status([i+1 for i in range(15)], COLUMNS, UNITS))
