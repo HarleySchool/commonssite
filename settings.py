@@ -14,6 +14,8 @@ sql_credentials = "/home/dataupload/sql_creds.txt"
 hvac_host = "10.1.6.200"
 hvac_port = 80
 hvac_log_interval = 10*60 # 10 minutes
+hvac_sql_table_vrf = 'hvac-vrf'
+hvac_sql_table_erv = 'hvac-erv'
 
 ####################
 ## SOLAR SETTINGS ##

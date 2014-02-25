@@ -2,7 +2,8 @@ import time, string, requests
 from settings import hvac_host, hvac_port
 from pprint import pprint
 from xml_import import etree
-from scraper_template import ScraperTemplate
+from commonssite.scrapers.template import ScraperTemplate
+
 import peewee
 
 # bulk-parsing lookup tables
