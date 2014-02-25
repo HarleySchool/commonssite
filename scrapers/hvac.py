@@ -382,6 +382,7 @@ class ScraperHvac(ScraperTemplate):
 				cls = ErvEntry
 			model = cls(Time=now, Name=name)
 			for field in cls.fields():
+				print "%s is" % field, data[field]
 				model[field] = data[field]
 			models.append(model)
 		return models
