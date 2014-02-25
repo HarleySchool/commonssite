@@ -1,6 +1,6 @@
 import requests
-from settings import veris_host, veris_port, veris_uname, veris_password
-from xml_import import etree
+from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
+from commonssite.scrapers.xml_import import etree
 
 def get_xml_string(channel):
 	full_url = "http://%s:%d/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % (veris_host, veris_port, channel)

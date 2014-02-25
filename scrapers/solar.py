@@ -1,5 +1,5 @@
 import requests, json
-from settings import sma_host, sma_port, sma_password
+from commonssite.settings import sma_host, sma_port, sma_password
 from commonssite.scrapers.template import ScraperTemplate
 
 # NOTE: THE FORMAT OF THE DATA IN THIS FILE COMES FROM
