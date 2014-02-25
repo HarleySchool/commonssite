@@ -2,10 +2,10 @@ from peewee import *
 
 # load database configuration
 with open('/home/dataupload/sql_creds.txt', 'r') as creds:
-	db_host = creds.readline()
-	uname = creds.readline()
-	pw = creds.readline()
-db = MySQLDatabase("commons.db", host=db_host, user=uname, passwd=pw)
+	db_host = creds.readline().strip()
+	uname = creds.readline().strip()
+	pw = creds.readline().strip()
+db = MySQLDatabase("commons", host=db_host, user=uname, passwd=pw)
 
 #################
 ## HVAC SCHEMA ##
@@ -67,6 +67,7 @@ class VrfEntry(Model):
 	class Meta:
 		database = db
 		primary_key = CompositeKey('Time', 'Name')
+		db_table='hvac-vrf'
 
 class ErvEntry(Model):
 	Time = DateTimeField(db_column='time')
@@ -80,6 +81,7 @@ class ErvEntry(Model):
 	class Meta:
 		database = db
 		primary_key = CompositeKey('Time', 'Name')
+		db_table='hvac-erv'
 
 if __name__ == '__main__':
 	import datetime
@@ -102,7 +104,7 @@ if __name__ == '__main__':
 		SetTemp=68.0,
 		InletTemp=72.0
 	)
-	erv_inst = VrfEntry(
+	erv_inst = ErvEntry(
 		Time=now,
 		Name='Test-ERV',
 		AirDirection=direction_field[1],
@@ -112,5 +114,5 @@ if __name__ == '__main__':
 		InletTemp=72.0
 	)
 	print "created instances. saving."
-	vrf_inst.save()
-	erv_inst.save()
+	vrf_inst.save(force_insert=True)
+	erv_inst.save(force_insert=True)
