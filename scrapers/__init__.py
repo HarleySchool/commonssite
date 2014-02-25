@@ -1,1 +1,3 @@
-__all__ = ['hvac', 'solar', 'veris', 'weather']
+ScraperHvac = hvac.ScraperHvac
+
+__all__ = ['ScraperHvac']
