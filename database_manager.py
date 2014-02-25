@@ -1,16 +1,11 @@
-import peewee
+from peewee import *
 
 # load database configuration
 with open('/home/dataupload/sql_creds.txt', 'r') as creds:
-	db_socket = creds.readline()
+	db_host = creds.readline()
 	uname = creds.readline()
 	pw = creds.readline()
-db = peewee.MySqlDatabase(db_socket, user=uname, password=pw)
-
-# create a base model that connects to the above database
-class BaseMode(peewee.Model):
-	class Meta:
-		database = db
+db = MySQLDatabase("commons.db", host=db_host, user=uname, passwd=pw)
 
 #################
 ## HVAC SCHEMA ##
@@ -46,16 +41,16 @@ mode_field = [
 ]
 
 speed_field = [
-	('Low', 'Low') 
-	('Mid-Low', 'Mid-Low')
-	('Mid-High', 'Mid-High')
-	('High', 'High')
+	('Low', 'Low'), 
+	('Mid-Low', 'Mid-Low'),
+	('Mid-High', 'Mid-High'),
+	('High', 'High'),
 	('Auto', 'Auto')
 ]
 
-class VrfEntry(BaseModel):
-	Time = DateTimeField(db_column='time', primary_key=True)
-	Name = CharField(db_column='name', primary_key=True)
+class VrfEntry(Model):
+	Time = DateTimeField(db_column='time')
+	Name = CharField(db_column='name')
 	AirDirection = CharField(db_column='air direction', choices=direction_field)
 	FanSpeed = CharField(db_column='fan speed', choices=speed_field)
 	Mode = CharField(db_column='mode', choices=mode_field)
@@ -69,14 +64,22 @@ class VrfEntry(BaseModel):
 	SetTemp = FloatField(db_column='set temp')
 	InletTemp = FloatField(db_column='measured temp')
 
-class ErvEntry(BaseModel):
-	Time = DateTimeField(db_column='time', primary_key=True)
-	Name = CharField(db_column='name', primary_key=True)
+	class Meta:
+		database = db
+		primary_key = CompositeKey('Time', 'Name')
+
+class ErvEntry(Model):
+	Time = DateTimeField(db_column='time')
+	Name = CharField(db_column='name')
 	AirDirection = CharField(db_column='air direction', choices=direction_field)
 	FanSpeed = CharField(db_column='fan speed', choices=speed_field)
 	Mode = CharField(db_column='mode', choices=mode_field)
 	ErrorSign = BooleanField(db_column='error')
 	InletTemp = FloatField(db_column='measured temp')
+
+	class Meta:
+		database = db
+		primary_key = CompositeKey('Time', 'Name')
 
 if __name__ == '__main__':
 	import datetime
