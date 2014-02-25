@@ -91,9 +91,9 @@ if __name__ == '__main__':
 	vrf_inst = VrfEntry(
 		Time=now,
 		Name='Test-VRF',
-		AirDirection=direction_field[1],
-		FanSpeed=speed_field[1],
-		Mode=mode_field[1],
+		AirDirection=direction_field[1][0],
+		FanSpeed=speed_field[1][0],
+		Mode=mode_field[1][0],
 		ErrorSign=False,
 		HeatMin=67.0,
 		HeatMax=76.0,
@@ -107,18 +107,18 @@ if __name__ == '__main__':
 	erv_inst = ErvEntry(
 		Time=now,
 		Name='Test-ERV',
-		AirDirection=direction_field[1],
-		FanSpeed=speed_field[1],
-		Mode=mode_field[1],
+		AirDirection=direction_field[1][0],
+		FanSpeed=speed_field[1][0],
+		Mode=mode_field[1][0],
 		ErrorSign=False,
 		InletTemp=72.0
 	)
 	erv_inst2 = ErvEntry(
 		Time=now,
 		Name='Test2-ERV',
-		AirDirection=direction_field[1],
-		FanSpeed=speed_field[1],
-		Mode=mode_field[1],
+		AirDirection=direction_field[1][0],
+		FanSpeed=speed_field[1][0],
+		Mode=mode_field[1][0],
 		ErrorSign=False,
 		InletTemp=72.0
 	)
