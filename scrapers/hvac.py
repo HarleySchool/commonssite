@@ -380,10 +380,8 @@ class ScraperHvac(ScraperTemplate):
 				cls = VrfEntry
 			else:
 				cls = ErvEntry
-			model = cls(Time=now, Name=name)
-			for field in cls.fields():
-				model.__dict__[field] = data[field]
-				print "%s is" % field, data[field]
+			kargs = dict(zip(cls.fields(), [data[f] for f in cls.fields()]))
+			model = cls(Time=now, Name=name, **kargs)
 			models.append(model)
 		return models
 
