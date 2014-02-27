@@ -2,377 +2,377 @@
 
 class veris(Model):
 Time = DateTimeField(db_column='Time')
-'Channel #1 (Amps)'
-'Channel #1 Max (Amps)'
-'Channel #1 Demand (Amps)'
-'Channel #1 Energy (kWh)'
-'Channel #1 Power (kW)'
-'Channel #1 Power Max (kW)'
-'Channel #1 Power Demand (kW)'
-'Channel #1 Power Factor ()'
-'Channel #2 (Amps)'
-'Channel #2 Max (Amps)'
-'Channel #2 Demand (Amps)'
-'Channel #2 Energy (kWh)'
-'Channel #2 Power (kW)'
-'Channel #2 Power Max (kW)'
-'Channel #2 Power Demand (kW)'
-'Channel #2 Power Factor ()'
-'Channel #3 (Amps)'
-'Channel #3 Max (Amps)'
-'Channel #3 Demand (Amps)'
-'Channel #3 Energy (kWh)'
-'Channel #3 Power (kW)'
-'Channel #3 Power Max (kW)'
-'Channel #3 Power Demand (kW)'
-'Channel #3 Power Factor ()'
-'Channel #4 (Amps)'
-'Channel #4 Max (Amps)'
-'Channel #4 Demand (Amps)'
-'Channel #4 Energy (kWh)'
-'Channel #4 Power (kW)'
-'Channel #4 Power Max (kW)'
-'Channel #4 Power Demand (kW)'
-'Channel #4 Power Factor ()'
-'Channel #5 (Amps)'
-'Channel #5 Max (Amps)'
-'Channel #5 Demand (Amps)'
-'Channel #5 Energy (kWh)'
-'Channel #5 Power (kW)'
-'Channel #5 Power Max (kW)'
-'Channel #5 Power Demand (kW)'
-'Channel #5 Power Factor ()'
-'Channel #6 (Amps)'
-'Channel #6 Max (Amps)'
-'Channel #6 Demand (Amps)'
-'Channel #6 Energy (kWh)'
-'Channel #6 Power (kW)'
-'Channel #6 Power Max (kW)'
-'Channel #6 Power Demand (kW)'
-'Channel #6 Power Factor ()'
-'Channel #7 (Amps)'
-'Channel #7 Max (Amps)'
-'Channel #7 Demand (Amps)'
-'Channel #7 Energy (kWh)'
-'Channel #7 Power (kW)'
-'Channel #7 Power Max (kW)'
-'Channel #7 Power Demand (kW)'
-'Channel #7 Power Factor ()'
-'Channel #8 (Amps)'
-'Channel #8 Max (Amps)'
-'Channel #8 Demand (Amps)'
-'Channel #8 Energy (kWh)'
-'Channel #8 Power (kW)'
-'Channel #8 Power Max (kW)'
-'Channel #8 Power Demand (kW)'
-'Channel #8 Power Factor ()'
-'Channel #9 (Amps)'
-'Channel #9 Max (Amps)'
-'Channel #9 Demand (Amps)'
-'Channel #9 Energy (kWh)'
-'Channel #9 Power (kW)'
-'Channel #9 Power Max (kW)'
-'Channel #9 Power Demand (kW)'
-'Channel #9 Power Factor ()'
-'Channel #10 (Amps)'
-'Channel #10 Max (Amps)'
-'Channel #10 Demand (Amps)'
-'Channel #10 Energy (kWh)'
-'Channel #10 Power (kW)'
-'Channel #10 Power Max (kW)'
-'Channel #10 Power Demand (kW)'
-'Channel #10 Power Factor ()'
-'Channel #11 (Amps)'
-'Channel #11 Max (Amps)'
-'Channel #11 Demand (Amps)'
-'Channel #11 Energy (kWh)'
-'Channel #11 Power (kW)'
-'Channel #11 Power Max (kW)'
-'Channel #11 Power Demand (kW)'
-'Channel #11 Power Factor ()'
-'Channel #12 (Amps)'
-'Channel #12 Max (Amps)'
-'Channel #12 Demand (Amps)'
-'Channel #12 Energy (kWh)'
-'Channel #12 Power (kW)'
-'Channel #12 Power Max (kW)'
-'Channel #12 Power Demand (kW)'
-'Channel #12 Power Factor ()'
-'Channel #13 (Amps)'
-'Channel #13 Max (Amps)'
-'Channel #13 Demand (Amps)'
-'Channel #13 Energy (kWh)'
-'Channel #13 Power (kW)'
-'Channel #13 Power Max (kW)'
-'Channel #13 Power Demand (kW)'
-'Channel #13 Power Factor ()'
-'Channel #14 (Amps)'
-'Channel #14 Max (Amps)'
-'Channel #14 Demand (Amps)'
-'Channel #14 Energy (kWh)'
-'Channel #14 Power (kW)'
-'Channel #14 Power Max (kW)'
-'Channel #14 Power Demand (kW)'
-'Channel #14 Power Factor ()'
-'Channel #15 (Amps)'
-'Channel #15 Max (Amps)'
-'Channel #15 Demand (Amps)'
-'Channel #15 Energy (kWh)'
-'Channel #15 Power (kW)'
-'Channel #15 Power Max (kW)'
-'Channel #15 Power Demand (kW)'
-'Channel #15 Power Factor ()'
-'Channel #16 (Amps)'
-'Channel #16 Max (Amps)'
-'Channel #16 Demand (Amps)'
-'Channel #16 Energy (kWh)'
-'Channel #16 Power (kW)'
-'Channel #16 Power Max (kW)'
-'Channel #16 Power Demand (kW)'
-'Channel #16 Power Factor ()'
-'Channel #17 (Amps)'
-'Channel #17 Max (Amps)'
-'Channel #17 Demand (Amps)'
-'Channel #17 Energy (kWh)'
-'Channel #17 Power (kW)'
-'Channel #17 Power Max (kW)'
-'Channel #17 Power Demand (kW)'
-'Channel #17 Power Factor ()'
-'Channel #18 (Amps)'
-'Channel #18 Max (Amps)'
-'Channel #18 Demand (Amps)'
-'Channel #18 Energy (kWh)'
-'Channel #18 Power (kW)'
-'Channel #18 Power Max (kW)'
-'Channel #18 Power Demand (kW)'
-'Channel #18 Power Factor ()'
-'Channel #19 (Amps)'
-'Channel #19 Max (Amps)'
-'Channel #19 Demand (Amps)'
-'Channel #19 Energy (kWh)'
-'Channel #19 Power (kW)'
-'Channel #19 Power Max (kW)'
-'Channel #19 Power Demand (kW)'
-'Channel #19 Power Factor ()'
-'Channel #20 (Amps)'
-'Channel #20 Max (Amps)'
-'Channel #20 Demand (Amps)'
-'Channel #20 Energy (kWh)'
-'Channel #20 Power (kW)'
-'Channel #20 Power Max (kW)'
-'Channel #20 Power Demand (kW)'
-'Channel #20 Power Factor ()'
-'Channel #21 (Amps)'
-'Channel #21 Max (Amps)'
-'Channel #21 Demand (Amps)'
-'Channel #21 Energy (kWh)'
-'Channel #21 Power (kW)'
-'Channel #21 Power Max (kW)'
-'Channel #21 Power Demand (kW)'
-'Channel #21 Power Factor ()'
-'Channel #22 (Amps)'
-'Channel #22 Max (Amps)'
-'Channel #22 Demand (Amps)'
-'Channel #22 Energy (kWh)'
-'Channel #22 Power (kW)'
-'Channel #22 Power Max (kW)'
-'Channel #22 Power Demand (kW)'
-'Channel #22 Power Factor ()'
-'Channel #23 (Amps)'
-'Channel #23 Max (Amps)'
-'Channel #23 Demand (Amps)'
-'Channel #23 Energy (kWh)'
-'Channel #23 Power (kW)'
-'Channel #23 Power Max (kW)'
-'Channel #23 Power Demand (kW)'
-'Channel #23 Power Factor ()'
-'Channel #24 (Amps)'
-'Channel #24 Max (Amps)'
-'Channel #24 Demand (Amps)'
-'Channel #24 Energy (kWh)'
-'Channel #24 Power (kW)'
-'Channel #24 Power Max (kW)'
-'Channel #24 Power Demand (kW)'
-'Channel #24 Power Factor ()'
-'Channel #25 (Amps)'
-'Channel #25 Max (Amps)'
-'Channel #25 Demand (Amps)'
-'Channel #25 Energy (kWh)'
-'Channel #25 Power (kW)'
-'Channel #25 Power Max (kW)'
-'Channel #25 Power Demand (kW)'
-'Channel #25 Power Factor ()'
-'Channel #26 (Amps)'
-'Channel #26 Max (Amps)'
-'Channel #26 Demand (Amps)'
-'Channel #26 Energy (kWh)'
-'Channel #26 Power (kW)'
-'Channel #26 Power Max (kW)'
-'Channel #26 Power Demand (kW)'
-'Channel #26 Power Factor ()'
-'Channel #27 (Amps)'
-'Channel #27 Max (Amps)'
-'Channel #27 Demand (Amps)'
-'Channel #27 Energy (kWh)'
-'Channel #27 Power (kW)'
-'Channel #27 Power Max (kW)'
-'Channel #27 Power Demand (kW)'
-'Channel #27 Power Factor ()'
-'Channel #28 (Amps)'
-'Channel #28 Max (Amps)'
-'Channel #28 Demand (Amps)'
-'Channel #28 Energy (kWh)'
-'Channel #28 Power (kW)'
-'Channel #28 Power Max (kW)'
-'Channel #28 Power Demand (kW)'
-'Channel #28 Power Factor ()'
-'Channel #29 (Amps)'
-'Channel #29 Max (Amps)'
-'Channel #29 Demand (Amps)'
-'Channel #29 Energy (kWh)'
-'Channel #29 Power (kW)'
-'Channel #29 Power Max (kW)'
-'Channel #29 Power Demand (kW)'
-'Channel #29 Power Factor ()'
-'Channel #30 (Amps)'
-'Channel #30 Max (Amps)'
-'Channel #30 Demand (Amps)'
-'Channel #30 Energy (kWh)'
-'Channel #30 Power (kW)'
-'Channel #30 Power Max (kW)'
-'Channel #30 Power Demand (kW)'
-'Channel #30 Power Factor ()'
-'Channel #31 (Amps)'
-'Channel #31 Max (Amps)'
-'Channel #31 Demand (Amps)'
-'Channel #31 Energy (kWh)'
-'Channel #31 Power (kW)'
-'Channel #31 Power Max (kW)'
-'Channel #31 Power Demand (kW)'
-'Channel #31 Power Factor ()'
-'Channel #32 (Amps)'
-'Channel #32 Max (Amps)'
-'Channel #32 Demand (Amps)'
-'Channel #32 Energy (kWh)'
-'Channel #32 Power (kW)'
-'Channel #32 Power Max (kW)'
-'Channel #32 Power Demand (kW)'
-'Channel #32 Power Factor ()'
-'Channel #33 (Amps)'
-'Channel #33 Max (Amps)'
-'Channel #33 Demand (Amps)'
-'Channel #33 Energy (kWh)'
-'Channel #33 Power (kW)'
-'Channel #33 Power Max (kW)'
-'Channel #33 Power Demand (kW)'
-'Channel #33 Power Factor ()'
-'Channel #34 (Amps)'
-'Channel #34 Max (Amps)'
-'Channel #34 Demand (Amps)'
-'Channel #34 Energy (kWh)'
-'Channel #34 Power (kW)'
-'Channel #34 Power Max (kW)'
-'Channel #34 Power Demand (kW)'
-'Channel #34 Power Factor ()'
-'Channel #35 (Amps)'
-'Channel #35 Max (Amps)'
-'Channel #35 Demand (Amps)'
-'Channel #35 Energy (kWh)'
-'Channel #35 Power (kW)'
-'Channel #35 Power Max (kW)'
-'Channel #35 Power Demand (kW)'
-'Channel #35 Power Factor ()'
-'Channel #36 (Amps)'
-'Channel #36 Max (Amps)'
-'Channel #36 Demand (Amps)'
-'Channel #36 Energy (kWh)'
-'Channel #36 Power (kW)'
-'Channel #36 Power Max (kW)'
-'Channel #36 Power Demand (kW)'
-'Channel #36 Power Factor ()'
-'Channel #37 (Amps)'
-'Channel #37 Max (Amps)'
-'Channel #37 Demand (Amps)'
-'Channel #37 Energy (kWh)'
-'Channel #37 Power (kW)'
-'Channel #37 Power Max (kW)'
-'Channel #37 Power Demand (kW)'
-'Channel #37 Power Factor ()'
-'Channel #38 (Amps)'
-'Channel #38 Max (Amps)'
-'Channel #38 Demand (Amps)'
-'Channel #38 Energy (kWh)'
-'Channel #38 Power (kW)'
-'Channel #38 Power Max (kW)'
-'Channel #38 Power Demand (kW)'
-'Channel #38 Power Factor ()'
-'Channel #39 (Amps)'
-'Channel #39 Max (Amps)'
-'Channel #39 Demand (Amps)'
-'Channel #39 Energy (kWh)'
-'Channel #39 Power (kW)'
-'Channel #39 Power Max (kW)'
-'Channel #39 Power Demand (kW)'
-'Channel #39 Power Factor ()'
-'Channel #40 (Amps)'
-'Channel #40 Max (Amps)'
-'Channel #40 Demand (Amps)'
-'Channel #40 Energy (kWh)'
-'Channel #40 Power (kW)'
-'Channel #40 Power Max (kW)'
-'Channel #40 Power Demand (kW)'
-'Channel #40 Power Factor ()'
-'Channel #41 (Amps)'
-'Channel #41 Max (Amps)'
-'Channel #41 Demand (Amps)'
-'Channel #41 Energy (kWh)'
-'Channel #41 Power (kW)'
-'Channel #41 Power Max (kW)'
-'Channel #41 Power Demand (kW)'
-'Channel #41 Power Factor ()'
-'Channel #42 (Amps)'
-'Channel #42 Max (Amps)'
-'Channel #42 Demand (Amps)'
-'Channel #42 Energy (kWh)'
-'Channel #42 Power (kW)'
-'Channel #42 Power Max (kW)'
-'Channel #42 Power Demand (kW)'
-'Channel #42 Power Factor ()'
-'Frequency (Hz)'
-'Volts L-N 3ph Ave (Volts)'
-'Volts L-L 3ph Ave (Volts)'
-'Volts A-N (Volts)'
-'Volts B-N (Volts)'
-'Volts C-N (Volts)'
-'Volts A-B (Volts)'
-'Volts B-C (Volts)'
-'Volts C-A (Volts)'
-'3ph kWh (kWh)'
-'3ph Total kW (kW)'
-'3ph Total PF ()'
-'3ph Ave Current (Amps)'
-'kW Phase 1 (kW)'
-'kW Phase 2 (kW)'
-'kW Phase 3 (kW)'
-'PF Phase 1 ()'
-'PF Phase 2 ()'
-'PF Phase 3 ()'
-'Current Phase 1 (Amps)'
-'Current Phase 2 (Amps)'
-'Current Phase 3 (Amps)'
-'Current Phase 4 (Amps)'
-'Current Demand Phase 1 (Amps)'
-'Current Demand Phase 2 (Amps)'
-'Current Demand Phase 3 (Amps)'
-'Current Demand Phase 4 (Amps)'
-'Max Current Demand Phase 1 (Amps)'
-'Max Current Demand Phase 2 (Amps)'
-'Max Current Demand Phase 3 (Amps)'
-'Max Current Demand Phase 4 (Amps)'
-'3ph Present KW Total Demand (kW)'
-'3ph Max KW Total Demand (kW)'
-'Max Current Phase 1 (Amps)'
-'Max Current Phase 2 (Amps)'
-'Max Current Phase 3 (Amps)'
-'Max Current Phase 4 (Amps)'
-'3ph Max KW Total (kW)
+FloatField(db_column='Channel #1 (Amps)')
+FloatField(db_column='Channel #1 Max (Amps)')
+FloatField(db_column='Channel #1 Demand (Amps)')
+FloatField(db_column='Channel #1 Energy (kWh)')
+FloatField(db_column='Channel #1 Power (kW)')
+FloatField(db_column='Channel #1 Power Max (kW)')
+FloatField(db_column='Channel #1 Power Demand (kW)')
+FloatField(db_column='Channel #1 Power Factor ()')
+FloatField(db_column='Channel #2 (Amps)')
+FloatField(db_column='Channel #2 Max (Amps)')
+FloatField(db_column='Channel #2 Demand (Amps)')
+FloatField(db_column='Channel #2 Energy (kWh)')
+FloatField(db_column='Channel #2 Power (kW)')
+FloatField(db_column='Channel #2 Power Max (kW)')
+FloatField(db_column='Channel #2 Power Demand (kW)')
+FloatField(db_column='Channel #2 Power Factor ()')
+FloatField(db_column='Channel #3 (Amps)')
+FloatField(db_column='Channel #3 Max (Amps)')
+FloatField(db_column='Channel #3 Demand (Amps)')
+FloatField(db_column='Channel #3 Energy (kWh)')
+FloatField(db_column='Channel #3 Power (kW)')
+FloatField(db_column='Channel #3 Power Max (kW)')
+FloatField(db_column='Channel #3 Power Demand (kW)')
+FloatField(db_column='Channel #3 Power Factor ()')
+FloatField(db_column='Channel #4 (Amps)')
+FloatField(db_column='Channel #4 Max (Amps)')
+FloatField(db_column='Channel #4 Demand (Amps)')
+FloatField(db_column='Channel #4 Energy (kWh)')
+FloatField(db_column='Channel #4 Power (kW)')
+FloatField(db_column='Channel #4 Power Max (kW)')
+FloatField(db_column='Channel #4 Power Demand (kW)')
+FloatField(db_column='Channel #4 Power Factor ()')
+FloatField(db_column='Channel #5 (Amps)')
+FloatField(db_column='Channel #5 Max (Amps)')
+FloatField(db_column='Channel #5 Demand (Amps)')
+FloatField(db_column='Channel #5 Energy (kWh)')
+FloatField(db_column='Channel #5 Power (kW)')
+FloatField(db_column='Channel #5 Power Max (kW)')
+FloatField(db_column='Channel #5 Power Demand (kW)')
+FloatField(db_column='Channel #5 Power Factor ()')
+FloatField(db_column='Channel #6 (Amps)')
+FloatField(db_column='Channel #6 Max (Amps)')
+FloatField(db_column='Channel #6 Demand (Amps)')
+FloatField(db_column='Channel #6 Energy (kWh)')
+FloatField(db_column='Channel #6 Power (kW)')
+FloatField(db_column='Channel #6 Power Max (kW)')
+FloatField(db_column='Channel #6 Power Demand (kW)')
+FloatField(db_column='Channel #6 Power Factor ()')
+FloatField(db_column='Channel #7 (Amps)')
+FloatField(db_column='Channel #7 Max (Amps)')
+FloatField(db_column='Channel #7 Demand (Amps)')
+FloatField(db_column='Channel #7 Energy (kWh)')
+FloatField(db_column='Channel #7 Power (kW)')
+FloatField(db_column='Channel #7 Power Max (kW)')
+FloatField(db_column='Channel #7 Power Demand (kW)')
+FloatField(db_column='Channel #7 Power Factor ()')
+FloatField(db_column='Channel #8 (Amps)')
+FloatField(db_column='Channel #8 Max (Amps)')
+FloatField(db_column='Channel #8 Demand (Amps)')
+FloatField(db_column='Channel #8 Energy (kWh)')
+FloatField(db_column='Channel #8 Power (kW)')
+FloatField(db_column='Channel #8 Power Max (kW)')
+FloatField(db_column='Channel #8 Power Demand (kW)')
+FloatField(db_column='Channel #8 Power Factor ()')
+FloatField(db_column='Channel #9 (Amps)')
+FloatField(db_column='Channel #9 Max (Amps)')
+FloatField(db_column='Channel #9 Demand (Amps)')
+FloatField(db_column='Channel #9 Energy (kWh)')
+FloatField(db_column='Channel #9 Power (kW)')
+FloatField(db_column='Channel #9 Power Max (kW)')
+FloatField(db_column='Channel #9 Power Demand (kW)')
+FloatField(db_column='Channel #9 Power Factor ()')
+FloatField(db_column='Channel #10 (Amps)')
+FloatField(db_column='Channel #10 Max (Amps)')
+FloatField(db_column='Channel #10 Demand (Amps)')
+FloatField(db_column='Channel #10 Energy (kWh)')
+FloatField(db_column='Channel #10 Power (kW)')
+FloatField(db_column='Channel #10 Power Max (kW)')
+FloatField(db_column='Channel #10 Power Demand (kW)')
+FloatField(db_column='Channel #10 Power Factor ()')
+FloatField(db_column='Channel #11 (Amps)')
+FloatField(db_column='Channel #11 Max (Amps)')
+FloatField(db_column='Channel #11 Demand (Amps)')
+FloatField(db_column='Channel #11 Energy (kWh)')
+FloatField(db_column='Channel #11 Power (kW)')
+FloatField(db_column='Channel #11 Power Max (kW)')
+FloatField(db_column='Channel #11 Power Demand (kW)')
+FloatField(db_column='Channel #11 Power Factor ()')
+FloatField(db_column='Channel #12 (Amps)')
+FloatField(db_column='Channel #12 Max (Amps)')
+FloatField(db_column='Channel #12 Demand (Amps)')
+FloatField(db_column='Channel #12 Energy (kWh)')
+FloatField(db_column='Channel #12 Power (kW)')
+FloatField(db_column='Channel #12 Power Max (kW)')
+FloatField(db_column='Channel #12 Power Demand (kW)')
+FloatField(db_column='Channel #12 Power Factor ()')
+FloatField(db_column='Channel #13 (Amps)')
+FloatField(db_column='Channel #13 Max (Amps)')
+FloatField(db_column='Channel #13 Demand (Amps)')
+FloatField(db_column='Channel #13 Energy (kWh)')
+FloatField(db_column='Channel #13 Power (kW)')
+FloatField(db_column='Channel #13 Power Max (kW)')
+FloatField(db_column='Channel #13 Power Demand (kW)')
+FloatField(db_column='Channel #13 Power Factor ()')
+FloatField(db_column='Channel #14 (Amps)')
+FloatField(db_column='Channel #14 Max (Amps)')
+FloatField(db_column='Channel #14 Demand (Amps)')
+FloatField(db_column='Channel #14 Energy (kWh)')
+FloatField(db_column='Channel #14 Power (kW)')
+FloatField(db_column='Channel #14 Power Max (kW)')
+FloatField(db_column='Channel #14 Power Demand (kW)')
+FloatField(db_column='Channel #14 Power Factor ()')
+FloatField(db_column='Channel #15 (Amps)')
+FloatField(db_column='Channel #15 Max (Amps)')
+FloatField(db_column='Channel #15 Demand (Amps)')
+FloatField(db_column='Channel #15 Energy (kWh)')
+FloatField(db_column='Channel #15 Power (kW)')
+FloatField(db_column='Channel #15 Power Max (kW)')
+FloatField(db_column='Channel #15 Power Demand (kW)')
+FloatField(db_column='Channel #15 Power Factor ()')
+FloatField(db_column='Channel #16 (Amps)')
+FloatField(db_column='Channel #16 Max (Amps)')
+FloatField(db_column='Channel #16 Demand (Amps)')
+FloatField(db_column='Channel #16 Energy (kWh)')
+FloatField(db_column='Channel #16 Power (kW)')
+FloatField(db_column='Channel #16 Power Max (kW)')
+FloatField(db_column='Channel #16 Power Demand (kW)')
+FloatField(db_column='Channel #16 Power Factor ()')
+FloatField(db_column='Channel #17 (Amps)')
+FloatField(db_column='Channel #17 Max (Amps)')
+FloatField(db_column='Channel #17 Demand (Amps)')
+FloatField(db_column='Channel #17 Energy (kWh)')
+FloatField(db_column='Channel #17 Power (kW)')
+FloatField(db_column='Channel #17 Power Max (kW)')
+FloatField(db_column='Channel #17 Power Demand (kW)')
+FloatField(db_column='Channel #17 Power Factor ()')
+FloatField(db_column='Channel #18 (Amps)')
+FloatField(db_column='Channel #18 Max (Amps)')
+FloatField(db_column='Channel #18 Demand (Amps)')
+FloatField(db_column='Channel #18 Energy (kWh)')
+FloatField(db_column='Channel #18 Power (kW)')
+FloatField(db_column='Channel #18 Power Max (kW)')
+FloatField(db_column='Channel #18 Power Demand (kW)')
+FloatField(db_column='Channel #18 Power Factor ()')
+FloatField(db_column='Channel #19 (Amps)')
+FloatField(db_column='Channel #19 Max (Amps)')
+FloatField(db_column='Channel #19 Demand (Amps)')
+FloatField(db_column='Channel #19 Energy (kWh)')
+FloatField(db_column='Channel #19 Power (kW)')
+FloatField(db_column='Channel #19 Power Max (kW)')
+FloatField(db_column='Channel #19 Power Demand (kW)')
+FloatField(db_column='Channel #19 Power Factor ()')
+FloatField(db_column='Channel #20 (Amps)')
+FloatField(db_column='Channel #20 Max (Amps)')
+FloatField(db_column='Channel #20 Demand (Amps)')
+FloatField(db_column='Channel #20 Energy (kWh)')
+FloatField(db_column='Channel #20 Power (kW)')
+FloatField(db_column='Channel #20 Power Max (kW)')
+FloatField(db_column='Channel #20 Power Demand (kW)')
+FloatField(db_column='Channel #20 Power Factor ()')
+FloatField(db_column='Channel #21 (Amps)')
+FloatField(db_column='Channel #21 Max (Amps)')
+FloatField(db_column='Channel #21 Demand (Amps)')
+FloatField(db_column='Channel #21 Energy (kWh)')
+FloatField(db_column='Channel #21 Power (kW)')
+FloatField(db_column='Channel #21 Power Max (kW)')
+FloatField(db_column='Channel #21 Power Demand (kW)')
+FloatField(db_column='Channel #21 Power Factor ()')
+FloatField(db_column='Channel #22 (Amps)')
+FloatField(db_column='Channel #22 Max (Amps)')
+FloatField(db_column='Channel #22 Demand (Amps)')
+FloatField(db_column='Channel #22 Energy (kWh)')
+FloatField(db_column='Channel #22 Power (kW)')
+FloatField(db_column='Channel #22 Power Max (kW)')
+FloatField(db_column='Channel #22 Power Demand (kW)')
+FloatField(db_column='Channel #22 Power Factor ()')
+FloatField(db_column='Channel #23 (Amps)')
+FloatField(db_column='Channel #23 Max (Amps)')
+FloatField(db_column='Channel #23 Demand (Amps)')
+FloatField(db_column='Channel #23 Energy (kWh)')
+FloatField(db_column='Channel #23 Power (kW)')
+FloatField(db_column='Channel #23 Power Max (kW)')
+FloatField(db_column='Channel #23 Power Demand (kW)')
+FloatField(db_column='Channel #23 Power Factor ()')
+FloatField(db_column='Channel #24 (Amps)')
+FloatField(db_column='Channel #24 Max (Amps)')
+FloatField(db_column='Channel #24 Demand (Amps)')
+FloatField(db_column='Channel #24 Energy (kWh)')
+FloatField(db_column='Channel #24 Power (kW)')
+FloatField(db_column='Channel #24 Power Max (kW)')
+FloatField(db_column='Channel #24 Power Demand (kW)')
+FloatField(db_column='Channel #24 Power Factor ()')
+FloatField(db_column='Channel #25 (Amps)')
+FloatField(db_column='Channel #25 Max (Amps)')
+FloatField(db_column='Channel #25 Demand (Amps)')
+FloatField(db_column='Channel #25 Energy (kWh)')
+FloatField(db_column='Channel #25 Power (kW)')
+FloatField(db_column='Channel #25 Power Max (kW)')
+FloatField(db_column='Channel #25 Power Demand (kW)')
+FloatField(db_column='Channel #25 Power Factor ()')
+FloatField(db_column='Channel #26 (Amps)')
+FloatField(db_column='Channel #26 Max (Amps)')
+FloatField(db_column='Channel #26 Demand (Amps)')
+FloatField(db_column='Channel #26 Energy (kWh)')
+FloatField(db_column='Channel #26 Power (kW)')
+FloatField(db_column='Channel #26 Power Max (kW)')
+FloatField(db_column='Channel #26 Power Demand (kW)')
+FloatField(db_column='Channel #26 Power Factor ()')
+FloatField(db_column='Channel #27 (Amps)')
+FloatField(db_column='Channel #27 Max (Amps)')
+FloatField(db_column='Channel #27 Demand (Amps)')
+FloatField(db_column='Channel #27 Energy (kWh)')
+FloatField(db_column='Channel #27 Power (kW)')
+FloatField(db_column='Channel #27 Power Max (kW)')
+FloatField(db_column='Channel #27 Power Demand (kW)')
+FloatField(db_column='Channel #27 Power Factor ()')
+FloatField(db_column='Channel #28 (Amps)')
+FloatField(db_column='Channel #28 Max (Amps)')
+FloatField(db_column='Channel #28 Demand (Amps)')
+FloatField(db_column='Channel #28 Energy (kWh)')
+FloatField(db_column='Channel #28 Power (kW)')
+FloatField(db_column='Channel #28 Power Max (kW)')
+FloatField(db_column='Channel #28 Power Demand (kW)')
+FloatField(db_column='Channel #28 Power Factor ()')
+FloatField(db_column='Channel #29 (Amps)')
+FloatField(db_column='Channel #29 Max (Amps)')
+FloatField(db_column='Channel #29 Demand (Amps)')
+FloatField(db_column='Channel #29 Energy (kWh)')
+FloatField(db_column='Channel #29 Power (kW)')
+FloatField(db_column='Channel #29 Power Max (kW)')
+FloatField(db_column='Channel #29 Power Demand (kW)')
+FloatField(db_column='Channel #29 Power Factor ()')
+FloatField(db_column='Channel #30 (Amps)')
+FloatField(db_column='Channel #30 Max (Amps)')
+FloatField(db_column='Channel #30 Demand (Amps)')
+FloatField(db_column='Channel #30 Energy (kWh)')
+FloatField(db_column='Channel #30 Power (kW)')
+FloatField(db_column='Channel #30 Power Max (kW)')
+FloatField(db_column='Channel #30 Power Demand (kW)')
+FloatField(db_column='Channel #30 Power Factor ()')
+FloatField(db_column='Channel #31 (Amps)')
+FloatField(db_column='Channel #31 Max (Amps)')
+FloatField(db_column='Channel #31 Demand (Amps)')
+FloatField(db_column='Channel #31 Energy (kWh)')
+FloatField(db_column='Channel #31 Power (kW)')
+FloatField(db_column='Channel #31 Power Max (kW)')
+FloatField(db_column='Channel #31 Power Demand (kW)')
+FloatField(db_column='Channel #31 Power Factor ()')
+FloatField(db_column='Channel #32 (Amps)')
+FloatField(db_column='Channel #32 Max (Amps)')
+FloatField(db_column='Channel #32 Demand (Amps)')
+FloatField(db_column='Channel #32 Energy (kWh)')
+FloatField(db_column='Channel #32 Power (kW)')
+FloatField(db_column='Channel #32 Power Max (kW)')
+FloatField(db_column='Channel #32 Power Demand (kW)')
+FloatField(db_column='Channel #32 Power Factor ()')
+FloatField(db_column='Channel #33 (Amps)')
+FloatField(db_column='Channel #33 Max (Amps)')
+FloatField(db_column='Channel #33 Demand (Amps)')
+FloatField(db_column='Channel #33 Energy (kWh)')
+FloatField(db_column='Channel #33 Power (kW)')
+FloatField(db_column='Channel #33 Power Max (kW)')
+FloatField(db_column='Channel #33 Power Demand (kW)')
+FloatField(db_column='Channel #33 Power Factor ()')
+FloatField(db_column='Channel #34 (Amps)')
+FloatField(db_column='Channel #34 Max (Amps)')
+FloatField(db_column='Channel #34 Demand (Amps)')
+FloatField(db_column='Channel #34 Energy (kWh)')
+FloatField(db_column='Channel #34 Power (kW)')
+FloatField(db_column='Channel #34 Power Max (kW)')
+FloatField(db_column='Channel #34 Power Demand (kW)')
+FloatField(db_column='Channel #34 Power Factor ()')
+FloatField(db_column='Channel #35 (Amps)')
+FloatField(db_column='Channel #35 Max (Amps)')
+FloatField(db_column='Channel #35 Demand (Amps)')
+FloatField(db_column='Channel #35 Energy (kWh)')
+FloatField(db_column='Channel #35 Power (kW)')
+FloatField(db_column='Channel #35 Power Max (kW)')
+FloatField(db_column='Channel #35 Power Demand (kW)')
+FloatField(db_column='Channel #35 Power Factor ()')
+FloatField(db_column='Channel #36 (Amps)')
+FloatField(db_column='Channel #36 Max (Amps)')
+FloatField(db_column='Channel #36 Demand (Amps)')
+FloatField(db_column='Channel #36 Energy (kWh)')
+FloatField(db_column='Channel #36 Power (kW)')
+FloatField(db_column='Channel #36 Power Max (kW)')
+FloatField(db_column='Channel #36 Power Demand (kW)')
+FloatField(db_column='Channel #36 Power Factor ()')
+FloatField(db_column='Channel #37 (Amps)')
+FloatField(db_column='Channel #37 Max (Amps)')
+FloatField(db_column='Channel #37 Demand (Amps)')
+FloatField(db_column='Channel #37 Energy (kWh)')
+FloatField(db_column='Channel #37 Power (kW)')
+FloatField(db_column='Channel #37 Power Max (kW)')
+FloatField(db_column='Channel #37 Power Demand (kW)')
+FloatField(db_column='Channel #37 Power Factor ()')
+FloatField(db_column='Channel #38 (Amps)')
+FloatField(db_column='Channel #38 Max (Amps)')
+FloatField(db_column='Channel #38 Demand (Amps)')
+FloatField(db_column='Channel #38 Energy (kWh)')
+FloatField(db_column='Channel #38 Power (kW)')
+FloatField(db_column='Channel #38 Power Max (kW)')
+FloatField(db_column='Channel #38 Power Demand (kW)')
+FloatField(db_column='Channel #38 Power Factor ()')
+FloatField(db_column='Channel #39 (Amps)')
+FloatField(db_column='Channel #39 Max (Amps)')
+FloatField(db_column='Channel #39 Demand (Amps)')
+FloatField(db_column='Channel #39 Energy (kWh)')
+FloatField(db_column='Channel #39 Power (kW)')
+FloatField(db_column='Channel #39 Power Max (kW)')
+FloatField(db_column='Channel #39 Power Demand (kW)')
+FloatField(db_column='Channel #39 Power Factor ()')
+FloatField(db_column='Channel #40 (Amps)')
+FloatField(db_column='Channel #40 Max (Amps)')
+FloatField(db_column='Channel #40 Demand (Amps)')
+FloatField(db_column='Channel #40 Energy (kWh)')
+FloatField(db_column='Channel #40 Power (kW)')
+FloatField(db_column='Channel #40 Power Max (kW)')
+FloatField(db_column='Channel #40 Power Demand (kW)')
+FloatField(db_column='Channel #40 Power Factor ()')
+FloatField(db_column='Channel #41 (Amps)')
+FloatField(db_column='Channel #41 Max (Amps)')
+FloatField(db_column='Channel #41 Demand (Amps)')
+FloatField(db_column='Channel #41 Energy (kWh)')
+FloatField(db_column='Channel #41 Power (kW)')
+FloatField(db_column='Channel #41 Power Max (kW)')
+FloatField(db_column='Channel #41 Power Demand (kW)')
+FloatField(db_column='Channel #41 Power Factor ()')
+FloatField(db_column='Channel #42 (Amps)')
+FloatField(db_column='Channel #42 Max (Amps)')
+FloatField(db_column='Channel #42 Demand (Amps)')
+FloatField(db_column='Channel #42 Energy (kWh)')
+FloatField(db_column='Channel #42 Power (kW)')
+FloatField(db_column='Channel #42 Power Max (kW)')
+FloatField(db_column='Channel #42 Power Demand (kW)')
+FloatField(db_column='Channel #42 Power Factor ()')
+FloatField(db_column='Frequency (Hz)')
+FloatField(db_column='Volts L-N 3ph Ave (Volts)')
+FloatField(db_column='Volts L-L 3ph Ave (Volts)')
+FloatField(db_column='Volts A-N (Volts)')
+FloatField(db_column='Volts B-N (Volts)')
+FloatField(db_column='Volts C-N (Volts)')
+FloatField(db_column='Volts A-B (Volts)')
+FloatField(db_column='Volts B-C (Volts)')
+FloatField(db_column='Volts C-A (Volts)')
+FloatField(db_column='3ph kWh (kWh)')
+FloatField(db_column='3ph Total kW (kW)')
+FloatField(db_column='3ph Total PF ()')
+FloatField(db_column='3ph Ave Current (Amps)')
+FloatField(db_column='kW Phase 1 (kW)')
+FloatField(db_column='kW Phase 2 (kW)')
+FloatField(db_column='kW Phase 3 (kW)')
+FloatField(db_column='PF Phase 1 ()')
+FloatField(db_column='PF Phase 2 ()')
+FloatField(db_column='PF Phase 3 ()')
+FloatField(db_column='Current Phase 1 (Amps)')
+FloatField(db_column='Current Phase 2 (Amps)')
+FloatField(db_column='Current Phase 3 (Amps)')
+FloatField(db_column='Current Phase 4 (Amps)')
+FloatField(db_column='Current Demand Phase 1 (Amps)')
+FloatField(db_column='Current Demand Phase 2 (Amps)')
+FloatField(db_column='Current Demand Phase 3 (Amps)')
+FloatField(db_column='Current Demand Phase 4 (Amps)')
+FloatField(db_column='Max Current Demand Phase 1 (Amps)')
+FloatField(db_column='Max Current Demand Phase 2 (Amps)')
+FloatField(db_column='Max Current Demand Phase 3 (Amps)')
+FloatField(db_column='Max Current Demand Phase 4 (Amps)')
+FloatField(db_column='3ph Present KW Total Demand (kW)')
+FloatField(db_column='3ph Max KW Total Demand (kW)')
+FloatField(db_column='Max Current Phase 1 (Amps)')
+FloatField(db_column='Max Current Phase 2 (Amps)')
+FloatField(db_column='Max Current Phase 3 (Amps)')
+FloatField(db_column='Max Current Phase 4 (Amps)')
+FloatField(db_column='3ph Max KW Total (kW)
