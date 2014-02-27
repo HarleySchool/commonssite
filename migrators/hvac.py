@@ -4,19 +4,19 @@
 
 # peewee is the database-handling module.
 from peewee import *
-import csv, re
+import csv, re, datetime
 from commonssite.models import *
 from commonssite.scrapers.hvac import group_id_to_name
 
-csv_file = '/home/commonscontrol/Documents/code/hvac/log-snapshots/0206.csv'
 SEP = '\t'
 date_re = re.compile(r'(\d+)-(\d+)-(\d+)\ (\d+):(\d+)')
 
 def dateparse(datestring):
-	parsed = re.match(datestring)
+	parsed = date_re.match(datestring)
+	print datestring, parsed
 	return datetime.datetime(int(parsed.group(3)), int(parsed.group(1)), int(parsed.group(2)), int(parsed.group(4)), int(parsed.group(5)))
 
-# example header:
+# example file (first few rows):
 """
 Timestamp	Group	SetTemp	InletTemp	CoolMin	CoolMax	HeatMin	HeatMax	AutoMin	AutoMax	Mode	FanSpeed
 2-3-2014 8:35	1	72.5	71.6	66.2	73.4	62.6	73.4	66.2	73.4	HEAT	MID-LOW
@@ -33,39 +33,48 @@ Timestamp	Group	SetTemp	InletTemp	CoolMin	CoolMax	HeatMin	HeatMax	AutoMin	AutoMa
 etc
 """
 
-with open(csv_file, 'rb') as f:
-	reader = csv.reader(f, delimiter=SEP)
-	headers = reader[0]
-	# what does this even do?
-	header_map = dict(zip(headers, range(len(headers))))
+class HvacMigrator(object):
 
-	def get_val(r, name):
-		return r[header_map[name]]
+	@classmethod
+	def migrate(cls, csv_file):
+		with open(csv_file, 'r') as f:
+			reader = csv.reader(f, delimiter=SEP)
+			headers = None
 
-	for row in reader[1:]:
-		model = {}
-		model['Time'] = dateparse(get_val(row, 'Timestamp'))
-		model['Name'] = group_id_to_name(int(get_val(row, 'Group')))
-		for h in headers:
-			# timestamp and group were already handled as special cases
-			if h == 'Timestamp' or h == 'Group':
-				continue
-			try:
-				# try parsing as float
-				model[h] = float(get_val(row, h))
-			except:
-				# default to string
-				model[h] = get_val(row, h)
-		if model['Name'].find('ERV') != -1:
-			cls = VrfEntry
-		else:
-			cls = ErvEntry
-		obj = cls(**model)
-		try:
-			obj.save(force_insert=True)
-			print "saved %s" % model['Name'], model['Time']
-		except Exception as e:
-			print "problem saving", model
-			print e
+			def get_val(r, name):
+				return r[header_map[name]]
 
-print "--done--"
+			for row in reader:
+				if not headers:
+					headers=row
+					header_map = dict(zip(headers, range(len(headers))))
+				else:
+					model = {}
+					model['Time'] = dateparse(get_val(row, 'Timestamp'))
+					model['Name'] = group_id_to_name(int(get_val(row, 'Group')))
+					for h in headers:
+						# timestamp and group were already handled as special cases
+						if h == 'Timestamp' or h == 'Group':
+							continue
+						try:
+							# try parsing as float
+							model[h] = float(get_val(row, h))
+						except:
+							if get_val(row,h) == 'None':
+								model[h] = None
+							else:
+								# default to string
+								model[h] = get_val(row, h)
+					if model['Name'].find('ERV') != -1:
+						cls = VrfEntry
+					else:
+						cls = ErvEntry
+					obj = cls(**model)
+					try:
+						obj.save(force_insert=True)
+						print "saved %s" % model['Name'], model['Time']
+					except Exception as e:
+						print "problem saving", model
+						print e
+
+		print "--done--"

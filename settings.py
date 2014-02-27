@@ -1,11 +1,13 @@
 # at time of writing, commonscontrol.harleyschool.org has the IP address '208.99.242.111'
+import os
+from private import *
 
 ################
 ## SQL SERVER ##
 ################
 
 # credentials (username and password) are stored on the server in a protected file
-sql_credentials = "~/code/commonssite/sql_creds.txt"
+sql_credentials = os.path.expanduser("~/code/commonssite/sql_creds.txt")
 
 ###################
 ## HVAC SETTINGS ##
