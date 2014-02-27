@@ -13,7 +13,6 @@ date_re = re.compile(r'(\d+)-(\d+)-(\d+)\ (\d+):(\d+)')
 
 def dateparse(datestring):
 	parsed = date_re.match(datestring)
-	print datestring, parsed
 	return datetime.datetime(int(parsed.group(3)), int(parsed.group(1)), int(parsed.group(2)), int(parsed.group(4)), int(parsed.group(5)))
 
 # example file (first few rows):
@@ -52,6 +51,10 @@ class HvacMigrator(object):
 					model = {}
 					model['Time'] = dateparse(get_val(row, 'Timestamp'))
 					model['Name'] = group_id_to_name(int(get_val(row, 'Group')))
+					if model['Name'].find('ERV') == -1:
+						cls = VrfEntry
+					else:
+						cls = ErvEntry
 					for h in headers:
 						# timestamp and group were already handled as special cases
 						if h == 'Timestamp' or h == 'Group':
@@ -65,16 +68,8 @@ class HvacMigrator(object):
 							else:
 								# default to string
 								model[h] = get_val(row, h)
-					if model['Name'].find('ERV') != -1:
-						cls = VrfEntry
-					else:
-						cls = ErvEntry
 					obj = cls(**model)
-					try:
-						obj.save(force_insert=True)
-						print "saved %s" % model['Name'], model['Time']
-					except Exception as e:
-						print "problem saving", model
-						print e
+					obj.save(force_insert=True)
+					print "saved %s" % model['Name'], model['Time']
 
 		print "--done--"
