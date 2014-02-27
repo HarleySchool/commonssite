@@ -122,7 +122,7 @@ def listreturn(choice):
   etreeobject = etree.fromstring(thepage)
   headerlist = returnheaders(etreeobject)
   loginlist = loglist(etreeobject)
-  return headerlist#, loginlist
+  return headerlist, loginlist
 
 
 
