@@ -24,18 +24,16 @@
 # explore pythonic way to implement standard dict (not lists)
 
 # Functions:
-# -n writes over the existing data/creates the file, and then writes the headers based on the names in the xml
-# -l logs a row
 # --list writes out a list of headers, then a list of values
 #
 # Choice function:
 # Allows you to choose between multiple panels
-# IN THIS IMPLEMENTATION, your choices are 3 or 4
+# IN THIS IMPLEMENTATION, your choices are 2, 3 or 4
 #
 # uses a settings file, DO NOT RUN WITHOUT settings.py IN THE SAME DIRECTORY
 
 # IMPORT ALL THE THINGS!!!
-from settings import veris_uname, veris_password, url3, url4
+from settings import veris_uname, veris_password, url2, url3, url4
 import requests, sys, time
 from pprint import pprint
 # Import element tree on all installs of python
@@ -64,16 +62,12 @@ except ImportError:
 
 # Decides which url to use
 def url(choice):
-  if choice == 3:
+  if choice == 2:
+    return url2
+  elif choice == 3:
     return url3
   elif choice == 4:
     return url4
-# # Decides which file to put the logs in
-# def filepath(choice):
-#   if choice == 3:
-#     return place3
-#   elif choice == 4:
-#     return place4
 
 # used to use over 20 lines of code here (urllib2)
 # yay for requests!
@@ -123,6 +117,12 @@ def listreturn(choice):
   headerlist = returnheaders(etreeobject)
   loginlist = loglist(etreeobject)
   return headerlist, loginlist
+
+def get_data():
+  z2 = zip(listreturn(2))
+  z3 = zip(listreturn(3))
+  z4 = zip(listreturn(4))
+
 
 
 
