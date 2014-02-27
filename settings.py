@@ -5,7 +5,7 @@
 ################
 
 # credentials (username and password) are stored on the server in a protected file
-sql_credentials = "/home/dataupload/code/commonssite/sql_creds.txt"
+sql_credentials = "~/code/commonssite/sql_creds.txt"
 
 ###################
 ## HVAC SETTINGS ##
@@ -39,8 +39,8 @@ veris_uname = "user"
 # VPMXP settings #
 ##################
 
-url3 = 'http://commonscontrol.harleyschool.org/electric/setup/devicexml.cgi?ADDRESS=3&TYPE=DATA' #TODO use harley intranet ip's here
-url4 = 'http://commonscontrol.harleyschool.org/electric/setup/devicexml.cgi?ADDRESS=4&TYPE=DATA'
+url3 = '%s/setup/devicexml.cgi?ADDRESS=3&TYPE=DATA' % veris_host
+url4 = '%s/setup/devicexml.cgi?ADDRESS=4&TYPE=DATA' % veris_host
 
 ##############################
 ## WEATHER STATION SETTINGS ##
