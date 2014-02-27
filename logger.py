@@ -55,7 +55,7 @@ class Logger(Thread):
 				print e
 
 if __name__ == '__main__':
-	hvlog = HvacLogger(10*MINUTE, 2*DAY) # log every 10 minutes for 2 days
+	hvlog = Logger(ScraperHvac(), 10*MINUTE, 1*HOUR) # log every 10 minutes for an hour (DEBUGGING)
 	hvlog.start()
 
 	hvlog.join()
