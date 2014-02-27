@@ -1,5 +1,5 @@
 # top-level logging script
-import time, datetime
+import time, datetime, math
 from threading import Thread
 from commonssite.settings import hvac_log_interval
 from commonssite.scrapers import *
@@ -22,7 +22,7 @@ class Logger(Thread):
 
 		this function is executed in a separate thread when Logger.start() is called"""
 		tstart = time.time()
-		tnext = tstart + self.interval
+		tnext = tstart
 		tend = tstart + self.span
 
 		def do_log():
@@ -37,25 +37,23 @@ class Logger(Thread):
 			time.sleep(tleft)
 			return time.time()
 
-		# execution begins with a log entry
-		do_log()
-		# now wait for next one
+		# wait for next one
 		while self.span < 0 or tnext < tend:
 			try:
 				now = sleep_remainder()
 				do_log()
 				# update tnext to be the next integer multiple of 'interval' seconds
-				tnext = tstart + interval * (1 + math.floor((now - tstart) / interval))
-				print "next log scheduled for", datetime.fromtimestamp(tnext)
+				tnext = tstart + self.interval * (1 + math.floor((now - tstart) / self.interval))
+				print "next log scheduled for", datetime.datetime.fromtimestamp(tnext)
 			except KeyboardInterrupt:
 				print "exiting HVAC logger thread"
 				break
 			except Exception as e:
-				print "error, but continuing:"
+				print "error, but continuing:", type(e)
 				print e
 
 if __name__ == '__main__':
-	hvlog = Logger(ScraperHvac(), 10*MINUTE, 1*HOUR) # log every 10 minutes for an hour (DEBUGGING)
+	hvlog = Logger(ScraperHvac(), 20*MINUTE) # log every 20 minutes forever 
 	hvlog.start()
 
 	hvlog.join()
