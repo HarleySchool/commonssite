@@ -41,7 +41,7 @@ veris_uname = "user"
 # VPMXP settings #
 ##################
 
-url2 = '%s/setup/devicexml.cgi?ADDRESS=2&TYPE=DATA' % veris_host # TODO: implement in VPMXP
+url2 = '%s/setup/devicexml.cgi?ADDRESS=2&TYPE=DATA' % veris_host
 url3 = '%s/setup/devicexml.cgi?ADDRESS=3&TYPE=DATA' % veris_host
 url4 = '%s/setup/devicexml.cgi?ADDRESS=4&TYPE=DATA' % veris_host
 
