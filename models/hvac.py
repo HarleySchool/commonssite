@@ -1,86 +1,79 @@
 # the ORM objects for HVAC
 from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv
 from commonssite.models.db import db
-from peewee import *
+from django.db import models
 
-direction_field = [
-	('Swing', 'Swing'),
-	('Vertical', 'Vertical'),
-	('Mid-Vertical', 'Mid-Vertical'),
-	('Mid-Horizontal', 'Mid-Horizontal'),
-	('Horizontal', 'Horizontal'),
-	('Mid', 'Mid'),
-	('Auto', 'Auto')
-]
+class ErvEntry(models.Model):
 
-mode_field = [
-	('Fan', 'Fan'),
-	('Cool', 'Cool'),
-	('Heat', 'Heat'),
-	('Dry', 'Dry'),
-	('Auto', 'Auto'),
-	('BAHP', 'BAHP'),
-	('AUTOCOOL', 'AUTOCOOL'),
-	('AUTOHEAT', 'AUTOHEAT'),
-	('VENTILATE', 'VENTILATE'),
-	('PANECOOL', 'PANECOOL'),
-	('PANEHEAT', 'PANEHEAT'),
-	('OUTCOOL', 'OUTCOOL'),
-	('DEFLOST', 'DEFLOST'),
-	('HEATRECOVERY', 'HEATRECOVERY'),
-	('BYPASS', 'BYPASS'),
-	('LC_AUTO', 'LC_AUTO')
-]
+	DIRECTION_CHOICES = (
+		('Swing', 'Swing'),
+		('Vertical', 'Vertical'),
+		('Mid-Vertical', 'Mid-Vertical'),
+		('Mid-Horizontal', 'Mid-Horizontal'),
+		('Horizontal', 'Horizontal'),
+		('Mid', 'Mid'),
+		('Auto', 'Auto'))
 
-speed_field = [
-	('Low', 'Low'), 
-	('Mid-Low', 'Mid-Low'),
-	('Mid-High', 'Mid-High'),
-	('High', 'High'),
-	('Auto', 'Auto')
-]
+	MODE_CHOICES = (
+		('Fan', 'Fan'),
+		('Cool', 'Cool'),
+		('Heat', 'Heat'),
+		('Dry', 'Dry'),
+		('Auto', 'Auto'),
+		('BAHP', 'BAHP'),
+		('AUTOCOOL', 'AUTOCOOL'),
+		('AUTOHEAT', 'AUTOHEAT'),
+		('VENTILATE', 'VENTILATE'),
+		('PANECOOL', 'PANECOOL'),
+		('PANEHEAT', 'PANEHEAT'),
+		('OUTCOOL', 'OUTCOOL'),
+		('DEFLOST', 'DEFLOST'),
+		('HEATRECOVERY', 'HEATRECOVERY'),
+		('BYPASS', 'BYPASS'),
+		('LC_AUTO', 'LC_AUTO')
+	)
 
-class VrfEntry(Model):
-	Time = DateTimeField(db_column='time')
-	Name = CharField(db_column='name')
-	AirDirection = CharField(db_column='air direction', choices=direction_field)
-	FanSpeed = CharField(db_column='fan speed', choices=speed_field)
-	Mode = CharField(db_column='mode', choices=mode_field)
-	ErrorSign = BooleanField(db_column='error')
-	HeatMax = FloatField(db_column='heat max')
-	HeatMin = FloatField(db_column='heat min')
-	CoolMax = FloatField(db_column='cool max')
-	CoolMin = FloatField(db_column='cool min')
-	AutoMax = FloatField(db_column='auto max')
-	AutoMin = FloatField(db_column='auto min')
-	SetTemp = FloatField(db_column='set temp')
-	InletTemp = FloatField(db_column='measured temp')
+	SPEED_CHOICES = (
+		('Low', 'Low'), 
+		('Mid-Low', 'Mid-Low'),
+		('Mid-High', 'Mid-High'),
+		('High', 'High'),
+		('Auto', 'Auto')
+	)
 
-	@classmethod
-	def fields(cls):
-		"""return list of names of non-primary-key fields"""
-		return ['AirDirection','FanSpeed','Mode','ErrorSign','HeatMax','HeatMin','CoolMax','CoolMin','AutoMax','AutoMin','SetTemp','InletTemp']
-
-	class Meta:
-		database = db
-		primary_key = CompositeKey('Time', 'Name')
-		db_table=hvac_sql_table_vrf
-
-class ErvEntry(Model):
-	Time = DateTimeField(db_column='time')
-	Name = CharField(db_column='name')
-	AirDirection = CharField(db_column='air direction', choices=direction_field)
-	FanSpeed = CharField(db_column='fan speed', choices=speed_field)
-	Mode = CharField(db_column='mode', choices=mode_field)
-	ErrorSign = BooleanField(db_column='error')
-	InletTemp = FloatField(db_column='measured temp')
+	Time = models.DateTimeField(db_column='time')
+	Name = models.CharField(db_column='name', max_length=32)
+	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=12)
+	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
+	Mode = models.CharField(db_column='mode', choices=MODE_CHOICES, max_length=14)
+	ErrorSign = models.BooleanField(db_column='error')
+	InletTemp = models.FloatField(db_column='measured temp')
 	
 	@classmethod
 	def fields(cls):
-		"""return list of names of non-primary-key fields"""
+		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
 		return ['AirDirection','FanSpeed','Mode','ErrorSign','InletTemp']
 
 	class Meta:
-		database = db
-		primary_key = CompositeKey('Time', 'Name')
 		db_table=hvac_sql_table_erv
+		unique_together=('time', 'name')
+
+class VrfEntry(ErvEntry):
+	"""While VRF technology is not a subset of ERV technology, it just so happens that our ERV fields
+	in the database are a subset of the VRF fields. So simply for data formatting purposes, this inheritence makes sense
+	"""
+	HeatMax = models.FloatField(db_column='heat max')
+	HeatMin = models.FloatField(db_column='heat min')
+	CoolMax = models.FloatField(db_column='cool max')
+	CoolMin = models.FloatField(db_column='cool min')
+	AutoMax = models.FloatField(db_column='auto max')
+	AutoMin = models.FloatField(db_column='auto min')
+	SetTemp = models.FloatField(db_column='set temp')
+
+	@classmethod
+	def fields(cls):
+		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
+		return ['AirDirection','FanSpeed','Mode','ErrorSign','HeatMax','HeatMin','CoolMax','CoolMin','AutoMax','AutoMin','SetTemp','InletTemp']
+
+	class Meta:
+		db_table=hvac_sql_table_vrf
