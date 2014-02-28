@@ -24,18 +24,16 @@
 # explore pythonic way to implement standard dict (not lists)
 
 # Functions:
-# -n writes over the existing data/creates the file, and then writes the headers based on the names in the xml
-# -l logs a row
 # --list writes out a list of headers, then a list of values
 #
 # Choice function:
 # Allows you to choose between multiple panels
-# IN THIS IMPLEMENTATION, your choices are 3 or 4
+# IN THIS IMPLEMENTATION, your choices are 2, 3 or 4
 #
 # uses a settings file, DO NOT RUN WITHOUT settings.py IN THE SAME DIRECTORY
 
 # IMPORT ALL THE THINGS!!!
-from settings import veris_uname, veris_password, url3, url4
+from commonssite.settings import veris_uname, veris_password, url2, url3, url4
 import requests, sys, time
 from pprint import pprint
 # Import element tree on all installs of python
@@ -64,33 +62,19 @@ except ImportError:
 
 # Decides which url to use
 def url(choice):
-  if choice == 3:
+  if choice == 2:
+    return url2
+  elif choice == 3:
     return url3
   elif choice == 4:
     return url4
-# # Decides which file to put the logs in
-# def filepath(choice):
-#   if choice == 3:
-#     return place3
-#   elif choice == 4:
-#     return place4
 
 # used to use over 20 lines of code here (urllib2)
 # yay for requests!
 def getpage(theurl, veris_uname, veris_password):
-  print 'Getting data'
+  # print 'Getting data'
   get = requests.get(theurl, auth=(veris_uname, veris_password))
   return get.text
-
-# writes over whatever was there and writes the header line based off of the xml provided
-def csvwriteheaders(xmltree, place):
-  biglist = []
-  biglist.append('Time')
-  for thing in xmltree.findall('.//point'):
-    biglist.append(thing.attrib['name'] + ' (' + thing.attrib['units'] + ')')
-  with open(place, 'wb') as csvfile:
-    writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(biglist)
 
 def returnheaders(xmltree):
   biglist = []
@@ -108,22 +92,21 @@ def loglist(xmltree):
     biglist.append(thing.attrib['value'])
   return biglist
 
-# appends to a csv file based on list provided
-def csvwriter(thelist, place):
-    with open(place, 'ab') as csvfile:
-      writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-      writer.writerow(thelist)
 
 # returns a list of headers along with a list of values
 def listreturn(choice):
-  choice = int(sys.argv[2])
   theurl = url(int(choice))
   thepage = getpage(theurl, veris_uname, veris_password)
   etreeobject = etree.fromstring(thepage)
   headerlist = returnheaders(etreeobject)
   loginlist = loglist(etreeobject)
-  return headerlist#, loginlist
+  return headerlist, loginlist
 
+def get_data():
+  z2 = dict(zip(*listreturn(2)))
+  z3 = dict(zip(*listreturn(3)))
+  z4 = dict(zip(*listreturn(4)))
+  return z2, z3, z4
 
 
 # ties it all together
