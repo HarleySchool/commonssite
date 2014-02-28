@@ -33,7 +33,7 @@
 # uses a settings file, DO NOT RUN WITHOUT settings.py IN THE SAME DIRECTORY
 
 # IMPORT ALL THE THINGS!!!
-from settings import veris_uname, veris_password, url2, url3, url4
+from commonssite.settings import veris_uname, veris_password, url2, url3, url4
 import requests, sys, time
 from pprint import pprint
 # Import element tree on all installs of python
@@ -95,7 +95,6 @@ def loglist(xmltree):
 
 # returns a list of headers along with a list of values
 def listreturn(choice):
-  choice = int(sys.argv[2])
   theurl = url(int(choice))
   thepage = getpage(theurl, veris_uname, veris_password)
   etreeobject = etree.fromstring(thepage)
@@ -104,9 +103,10 @@ def listreturn(choice):
   return headerlist, loginlist
 
 def get_data():
-  z2 = zip(listreturn(2))
-  z3 = zip(listreturn(3))
-  z4 = zip(listreturn(4))
+  z2 = dict(zip(*listreturn(2)))
+  z3 = dict(zip(*listreturn(3)))
+  z4 = dict(zip(*listreturn(4)))
+  return z2, z3, z4
 
 
 # ties it all together
