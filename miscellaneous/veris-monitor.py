@@ -1,7 +1,7 @@
 # veris-monitor
 #
 # monitors the page and prints out when things change
-import time, re
+import time, re, datetime
 from commonssite.scrapers import veris2
 
 INTERVAL = 5.0 # seconds
@@ -12,9 +12,11 @@ thresholds = {
 	'Volts' : 1.0,
 	'Amps' : 1.0,
 	'' : .1,
-	'Hz': 0.1,
+	'Hz': 0.5,
 	'Default' : 0.0
 }
+
+ignore = ['Hz', '', 'Default']
 
 unit_parser = re.compile(r'[^(]+\((\w*)\)')
 
@@ -28,7 +30,7 @@ def thresh(name):
 	return thresholds.get(unit(name), 0.0)
 
 def changed(name, val1, val2):
-	if name == 'Time':
+	if name == 'Time' or unit(name) in ignore:
 		return False
 	th = thresh(name)
 	try:
@@ -44,30 +46,23 @@ class Monitor:
 	nupdates = 0
 
 	def get_new_data(self):
-		print "getting update #%d" % self.nupdates
+		print "getting update #%d" % self.nupdates, datetime.datetime.now()
 		# get latest
 		d2, d3, d4 = veris2.get_data()
 		# compare to last_data
-		if self.nupdates == 0:
-			for header, value in d2.iteritems():
-				self.last2[header] = value
-			for header, value in d3.iteritems():
-				self.last3[header] = value
-			for header, value in d4.iteritems():
-				self.last4[header] = value
-		else:
+		if self.nupdates != 0:
 			for header, value in d2.iteritems():
 				if changed(header, self.last2.get(header), value):
 					print "Device 2,", header.ljust(30, ' '), self.last2.get(header,'').ljust(6,' '), " ==> ", d2.get(header)
-					self.last2[header] = value
 			for header, value in d3.iteritems():
 				if changed(header, self.last3.get(header), value):
 					print "Device 3,", header.ljust(30, ' '), self.last3.get(header,'').ljust(6,' '), " ==> ", d3.get(header)
-					self.last3[header] = value
 			for header, value in d4.iteritems():
 				if changed(header, self.last4.get(header), value):
 					print "Device 4,", header.ljust(30, ' '), self.last4.get(header,'').ljust(6,' '), " ==> ", d4.get(header)
-					self.last4[header] = value
+		self.last2 = d2
+		self.last3 = d3
+		self.last4 = d4
 		self.nupdates += 1
 
 if __name__ == '__main__':
