@@ -48,28 +48,33 @@ class HvacMigrator(object):
 					headers=row
 					header_map = dict(zip(headers, range(len(headers))))
 				else:
-					model = {}
-					model['Time'] = dateparse(get_val(row, 'Timestamp'))
-					model['Name'] = group_id_to_name(int(get_val(row, 'Group')))
-					if model['Name'].find('ERV') == -1:
-						cls = VrfEntry
-					else:
-						cls = ErvEntry
-					for h in headers:
-						# timestamp and group were already handled as special cases
-						if h == 'Timestamp' or h == 'Group':
-							continue
+					try:
+						model = {}
+						model['Time'] = dateparse(get_val(row, 'Timestamp'))
+						model['Name'] = group_id_to_name(int(get_val(row, 'Group')))
+						if model['Name'].find('ERV') == -1:
+							cls = VrfEntry
+						else:
+							cls = ErvEntry
+						for h in headers:
+							# timestamp and group were already handled as special cases
+							if h == 'Timestamp' or h == 'Group':
+								continue
+							try:
+								# try parsing as float
+								model[h] = float(get_val(row, h))
+							except:
+								if get_val(row,h) == 'None':
+									model[h] = None
+								else:
+									# default to string
+									model[h] = get_val(row, h)
+						obj = cls(**model)
 						try:
-							# try parsing as float
-							model[h] = float(get_val(row, h))
-						except:
-							if get_val(row,h) == 'None':
-								model[h] = None
-							else:
-								# default to string
-								model[h] = get_val(row, h)
-					obj = cls(**model)
-					obj.save(force_insert=True)
-					print "saved %s" % model['Name'], model['Time']
-
+							obj.save(force_insert=True)
+						except IntegrityError:
+							print model['Name'], model['Time'], "has already been saved"
+						print "saved %s" % model['Name'], model['Time']
+					except:
+						print "random error?"
 		print "--done--"
