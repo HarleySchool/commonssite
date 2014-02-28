@@ -72,19 +72,9 @@ def url(choice):
 # used to use over 20 lines of code here (urllib2)
 # yay for requests!
 def getpage(theurl, veris_uname, veris_password):
-  print 'Getting data'
+  # print 'Getting data'
   get = requests.get(theurl, auth=(veris_uname, veris_password))
   return get.text
-
-# writes over whatever was there and writes the header line based off of the xml provided
-def csvwriteheaders(xmltree, place):
-  biglist = []
-  biglist.append('Time')
-  for thing in xmltree.findall('.//point'):
-    biglist.append(thing.attrib['name'] + ' (' + thing.attrib['units'] + ')')
-  with open(place, 'wb') as csvfile:
-    writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(biglist)
 
 def returnheaders(xmltree):
   biglist = []
@@ -102,11 +92,6 @@ def loglist(xmltree):
     biglist.append(thing.attrib['value'])
   return biglist
 
-# appends to a csv file based on list provided
-def csvwriter(thelist, place):
-    with open(place, 'ab') as csvfile:
-      writer = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
-      writer.writerow(thelist)
 
 # returns a list of headers along with a list of values
 def listreturn(choice):
@@ -122,8 +107,6 @@ def get_data():
   z2 = zip(listreturn(2))
   z3 = zip(listreturn(3))
   z4 = zip(listreturn(4))
-
-
 
 
 # ties it all together
