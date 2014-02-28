@@ -55,10 +55,21 @@ WSGI_APPLICATION = 'webapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
+# Load User and Password from my custom location
+import commonssite.settings as s
+
+with open(s.sql_credentials, 'r') as f:
+    host = f.readline().strip()
+    un = f.readline().strip()
+    pw = f.readline().strip()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST' : '/var/lib/mysql/mysql.sock',
+        'NAME' : 'commons',
+        'USER' : un,
+        'PASSWORD' : pw
     }
 }
 
@@ -67,7 +78,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 
