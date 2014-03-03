@@ -16,8 +16,8 @@ sql_credentials = os.path.expanduser("~/code/commonssite/sql_creds.txt")
 hvac_host = "10.1.6.200"
 hvac_port = 80
 hvac_log_interval = 10*60 # 10 minutes
-hvac_sql_table_vrf = 'hvac-vrf'
-hvac_sql_table_erv = 'hvac-erv'
+hvac_sql_table_vrf = 'hvac-vrf2' # the '2' at the end is the copied table for webapp testing
+hvac_sql_table_erv = 'hvac-erv2'
 
 ####################
 ## SOLAR SETTINGS ##
@@ -41,9 +41,10 @@ veris_uname = "user"
 # VPMXP settings #
 ##################
 
-url2 = '%s/setup/devicexml.cgi?ADDRESS=2&TYPE=DATA' % veris_host # TODO: implement in VPMXP
-url3 = '%s/setup/devicexml.cgi?ADDRESS=3&TYPE=DATA' % veris_host
-url4 = '%s/setup/devicexml.cgi?ADDRESS=4&TYPE=DATA' % veris_host
+url2 = 'http://%s/setup/devicexml.cgi?ADDRESS=2&TYPE=DATA' % veris_host
+url3 = 'http://%s/setup/devicexml.cgi?ADDRESS=3&TYPE=DATA' % veris_host
+url4 = 'http://%s/setup/devicexml.cgi?ADDRESS=4&TYPE=DATA' % veris_host
+
 
 ##############################
 ## WEATHER STATION SETTINGS ##
