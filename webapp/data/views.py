@@ -1,18 +1,19 @@
 from django.http import HttpResponse
-from django.template import RequestContext, loader
+from django.shortcuts import render
 from data.models import ErvEntry, VrfEntry
 import csv, datetime
 
 # Create your views here.
 def index(request):
-	return HttpResponse("Boring page")
+	return render(request, 'data/index.html', {})
 
 def __date_parse(datestring_arg):
 	# ISO 8601 specifies a universal datetime format as yyyyMMddTHHmmssZ
-	fmt = '%Y%m%dT%H%M%S'
+	fmt = r'%Y%m%dT%H%M%S'
 	return datetime.datetime.strptime(datestring_arg, fmt)
 
 def __hvac_range(cls, request, tstart, tend):
+	print "HVAC RANGE for", cls, "from", tstart, "to", tend
 	response = HttpResponse(content_type='text/csv')
 	response['Content-Disposition'] = 'attachment; filename="commonsdata.csv"'
 	writer = csv.writer(response)
@@ -20,7 +21,7 @@ def __hvac_range(cls, request, tstart, tend):
 	headers = cls.all_headers()
 	writer.writerow(headers)
 
-	q = cls.objects.filiter(time__gte=tstart, time__lt=tend)
+	q = cls.objects.filter(Time__gte=tstart, Time__lt=tend)
 
 	# loop over all rows of queried data and write them
 	for vrf_obj in q:
