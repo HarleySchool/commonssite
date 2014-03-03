@@ -54,6 +54,12 @@ class ErvEntry(models.Model):
 		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
 		return ['AirDirection','FanSpeed','Mode','ErrorSign','InletTemp']
 
+	@classmethod
+	def all_headers(cls):
+		headers = ['Time', 'Name']
+		headers.extend(cls.fields())
+		return headers
+
 	class Meta:
 		db_table=hvac_sql_table_erv
 		unique_together=('time', 'name')

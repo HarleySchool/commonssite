@@ -1,0 +1,114 @@
+<html>
+	<head>
+		<title>Harley Commons Data Download</title>
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+		{% load staticfiles %}
+		<script src="{% static "data/jquery.timepicker.js" %}"></script>
+		<script src="{% static "data/jquery.datepair.js" %}"></script>
+		<link rel="stylesheet" href="//jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
+		<script type="text/javascript">
+			// thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
+			var downloadURL = function downloadURL(url) {
+				var hiddenIFrameID = 'hiddenDownloader',
+					iframe = document.getElementById(hiddenIFrameID);
+				if (iframe === null) {
+					iframe = document.createElement('iframe');
+					iframe.id = hiddenIFrameID;
+					iframe.style.display = 'none';
+					document.body.appendChild(iframe);
+				}
+				iframe.src = url;
+			};
+
+			$(document).ready(function(){
+				// set up date and time pickers
+				$('#datepairExample .time').timepicker({
+					'showDuration': true,
+					'timeFormat': 'g:ia'
+				});
+				$('#datepairExample .date').datepicker({
+					'format': 'yyyy-m-d',
+					'autoclose': true
+				});
+
+				// initialize pairs
+				$('#datepairExample').datepair();
+
+
+				function dateurl(datestring){
+					var datefmt_in  = /(\d+)\/(\d+)\/(\d+)/i;
+					var datefmt_out = "20$3$1$2";
+					return datestring.replace(datefmt_in, datefmt_out);
+				}
+
+				function timeurl(timestring){
+					var timefmt_in = /(\d+)\:(\d+)[ap]m/i;
+					var timefmt_out = "$1$200";
+					return timestring.replace(timefmt_in, timefmt_out);
+				}
+
+				function datetime_url(datestring, timestring){
+					return dateurl(datestring) + "T" + timeurl(timestring);
+				}
+
+				// callback
+				$("#submiterv").click(function(event){
+					var date_start = $("input.date.start").val();
+					var time_start = $("input.time.start").val();
+					var date_end = $("input.date.end").val();
+					var time_end = $("input.time.end").val();
+
+					url = "/data/erv?tstart=" + datetime_url(date_start, time_start) + "&tend=" + datetime_url(date_end, time_end);
+					console.log(url);
+					downloadURL(url);
+				});
+			});
+
+		</script>
+		<style type="text/css">
+			*{
+				margin:0px;
+				padding:0px;
+			}
+
+			.wrapper{
+				width:900px;
+				margin:0px auto;
+				background-color: #888;
+				font-family: arial, helvetica, sans-serif;
+				height:100%;
+			}
+
+			#datepairExample{
+				border-radius:10px;
+				border:2px solid;
+				padding:11px;
+				margin:30px 10px;
+			}
+
+			#headline {
+				padding-top:20px;
+				text-align: center;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<h2 id="headline">Download CSV for HVAC data</h2>
+				<div id="datepairExample">
+					<input type="text" class="date start" />
+					<input type="text" class="time start" />
+					<br />to
+					<br />
+					<input type="text" class="date end" />
+					<input type="text" class="time end" />
+					<br />
+					<br />
+					<input type="button" id="submiterv" value="Get ERV" />
+					<input type="button" id="submitvrf" value="Get VRF" />
+		</div>
+	</body>
+</html>
