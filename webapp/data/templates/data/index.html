@@ -54,15 +54,23 @@
 				}
 
 				// callback
-				$("#submiterv").click(function(event){
+				function download_csv(type){
 					var date_start = $("input.date.start").val();
 					var time_start = $("input.time.start").val();
 					var date_end = $("input.date.end").val();
 					var time_end = $("input.time.end").val();
 
-					url = "/data/erv?tstart=" + datetime_url(date_start, time_start) + "&tend=" + datetime_url(date_end, time_end);
+					url = "/data/"+type+"?tstart=" + datetime_url(date_start, time_start) + "&tend=" + datetime_url(date_end, time_end);
 					console.log(url);
 					downloadURL(url);
+				}
+
+				$("#submitvrf").click(function(event){
+					download_csv("vrf");
+				});
+
+				$("#submiterv").click(function(event){
+					download_csv("erv");
 				});
 			});
 
