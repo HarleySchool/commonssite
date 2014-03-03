@@ -39,7 +39,7 @@
 
 				function dateurl(datestring){
 					var datefmt_in  = /(\d+)\/(\d+)\/(\d+)/i;
-					var datefmt_out = "20$3$1$2";
+					var datefmt_out = "$3$1$2";
 					return datestring.replace(datefmt_in, datefmt_out);
 				}
 
