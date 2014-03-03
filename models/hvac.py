@@ -128,6 +128,6 @@ class VrfEntry(models.Model):
 		headers.extend(cls.fields())
 		return headers
 	
-	class Meta(ErvEntry.Meta):
+	class Meta:
 		db_table=hvac_sql_table_vrf
 		unique_together=('time', 'name')
