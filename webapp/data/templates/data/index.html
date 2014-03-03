@@ -1,0 +1,60 @@
+<html>
+	<head>
+		<title>Harley Commons Data Download</title>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+		<script src="//raw.github.com/perifer/timePicker/master/jquery.timePicker.min.js"></script>
+		<script type="text/javascript">
+
+			$(document).ready(function(){
+				// set up date and time pickers
+				$("#tstartdatepicker").datepicker();
+				$("#tenddatepicker").datepicker();
+				$("#tstarttimepicker").timepicker();
+				$("#tendtimepicker").timepicker();
+			});
+
+		</script>
+		<style type="text/css">
+			*{
+				margin:0px;
+				padding:0px;
+			}
+
+			.wrapper{
+				width:900px;
+				margin:0px auto;
+				background-color: #CCC;
+				font-family: arial, helvetica, sans-serif;
+				height:100%;
+			}
+
+			.input-wrapper{
+				border-radius:10px;
+				border:2px solid;
+				padding:11px;
+				margin:30px 10px;
+			}
+
+			#headline {
+				text-align: center;
+			}
+
+		</style>
+	</head>
+	<body>
+		<div class="wrapper">
+			<h2 id="headline">Download CSV for HVAC data</h2>
+			<div class="input-wrapper">
+				<label for="tstart-date">From</label>
+				<input type="text" id="tstartdatepicker" name="tstart-date" />
+				<input type="text" id="tstarttimepicker" name="tstart-time" />
+			</div>
+			<div class="input-wrapper">
+				<label for="tend-date">To</label>
+				<input type="text" id="tenddatepicker" name="tend-date" />
+				<input type="text" id="tendtimepicker" name="tend-time" />
+			</div>
+		</div>
+	</body>
+</html>

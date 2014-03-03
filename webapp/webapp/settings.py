@@ -63,11 +63,12 @@ with open(s.sql_credentials, 'r') as f:
     host = f.readline().strip()
     un = f.readline().strip()
     pw = f.readline().strip()
+    socket = f.readline().strip()
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST' : '/var/lib/mysql/mysql.sock',
+        'HOST' : socket,
         'NAME' : 'commons',
         'USER' : un,
         'PASSWORD' : pw
