@@ -81,5 +81,5 @@ class VrfEntry(ErvEntry):
 		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
 		return ['AirDirection','FanSpeed','Mode','ErrorSign','HeatMax','HeatMin','CoolMax','CoolMin','AutoMax','AutoMin','SetTemp','InletTemp']
 
-	class Meta:
+	class Meta(ErvEntry.Meta):
 		db_table=hvac_sql_table_vrf
