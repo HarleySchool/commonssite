@@ -9,7 +9,8 @@ def index(request):
 
 def __date_parse(datestring_arg):
 	# ISO 8601 specifies a universal datetime format as yyyyMMddTHHmmssZ
-	fmt = r'%Y%m%dT%H%M%S'
+	datestring_arg = ''.join(datestring_arg.split('T'))
+	fmt = r'%Y%m%d%H%M%S'
 	return datetime.datetime.strptime(datestring_arg, fmt)
 
 def __hvac_range(cls, request, tstart, tend):
@@ -32,11 +33,13 @@ def __hvac_range(cls, request, tstart, tend):
 def vrf_csv(request):
 	try:
 		tstart = __date_parse(request.GET.get('tstart'))
-	except:
+	except Exception as e:
+		print e
 		tstart = datetime.datetime.fromtimestamp(0)
 	try:
 		tend = __date_parse(request.GET.get('tend'))
-	except:
+	except Exception as e:
+		print e
 		tend = datetime.datetime.now()
 	return __hvac_range(VrfEntry, request, tstart, tend)
 	
@@ -44,10 +47,12 @@ def vrf_csv(request):
 def erv_csv(request):
 	try:
 		tstart = __date_parse(request.GET.get('tstart'))
-	except:
+	except Exception as e:
+		print e
 		tstart = datetime.datetime.fromtimestamp(0)
 	try:
 		tend = __date_parse(request.GET.get('tend'))
-	except:
+	except Exception as e:
+		print e
 		tend = datetime.datetime.now()
 	return __hvac_range(ErvEntry, request, tstart, tend)
