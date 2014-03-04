@@ -12,7 +12,7 @@ def __date_parse(datestring_arg):
 	datestring_arg = ''.join(datestring_arg.split('T'))
 	fmt = r'%Y%m%d%H%M%S'
 	unaware = datetime.datetime.strptime(datestring_arg, fmt)
-
+	dt_with_timezone = pytz.UTC.localize(unaware)
 	return dt_with_timezone
 
 def __hvac_range(cls, request, tstart, tend):
