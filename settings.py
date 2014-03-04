@@ -9,6 +9,12 @@ from private import *
 # credentials (username and password) are stored on the server in a protected file
 sql_credentials = os.path.expanduser("~/code/commonssite/sql_creds.txt")
 
+#####################
+## SHARED SETTINGS ##
+#####################
+
+datetime_out_format = '%Y-%m-%d %H:%M:%S'
+
 ###################
 ## HVAC SETTINGS ##
 ###################

@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from data.models import ErvEntry, VrfEntry
 import csv, datetime, pytz
+from commonssite.settings import datetime_out_format
 
 # Create your views here.
 def index(request):
@@ -32,7 +33,7 @@ def __hvac_range(cls, request, tstart, tend):
 		# special formatting for datetime so it's readable by spreadsheet programs
 		tspot = headers.index('Time')
 		if tspot > -1:
-			csv_row[tspot] = csv_row[tspot].strftime('%Y-%m-%d %H:%M:%S')
+			csv_row[tspot] = csv_row[tspot].strftime(datetime_out_format)
 		writer.writerow(csv_row)
 	return response
 

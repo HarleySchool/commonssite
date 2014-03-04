@@ -1,44 +1,44 @@
 # the ORM objects for HVAC
-from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv
+from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv, datetime_out_format
 from django.db import models
 
+DIRECTION_CHOICES = (
+	('Swing', 'Swing'),
+	('Vertical', 'Vertical'),
+	('Mid-Vertical', 'Mid-Vertical'),
+	('Mid-Horizontal', 'Mid-Horizontal'),
+	('Horizontal', 'Horizontal'),
+	('Mid', 'Mid'),
+	('Auto', 'Auto'))
+
+MODE_CHOICES = (
+	('Fan', 'Fan'),
+	('Cool', 'Cool'),
+	('Heat', 'Heat'),
+	('Dry', 'Dry'),
+	('Auto', 'Auto'),
+	('BAHP', 'BAHP'),
+	('AUTOCOOL', 'AUTOCOOL'),
+	('AUTOHEAT', 'AUTOHEAT'),
+	('VENTILATE', 'VENTILATE'),
+	('PANECOOL', 'PANECOOL'),
+	('PANEHEAT', 'PANEHEAT'),
+	('OUTCOOL', 'OUTCOOL'),
+	('DEFLOST', 'DEFLOST'),
+	('HEATRECOVERY', 'HEATRECOVERY'),
+	('BYPASS', 'BYPASS'),
+	('LC_AUTO', 'LC_AUTO')
+)
+
+SPEED_CHOICES = (
+	('Low', 'Low'), 
+	('Mid-Low', 'Mid-Low'),
+	('Mid-High', 'Mid-High'),
+	('High', 'High'),
+	('Auto', 'Auto')
+)
+
 class ErvEntry(models.Model):
-
-	DIRECTION_CHOICES = (
-		('Swing', 'Swing'),
-		('Vertical', 'Vertical'),
-		('Mid-Vertical', 'Mid-Vertical'),
-		('Mid-Horizontal', 'Mid-Horizontal'),
-		('Horizontal', 'Horizontal'),
-		('Mid', 'Mid'),
-		('Auto', 'Auto'))
-
-	MODE_CHOICES = (
-		('Fan', 'Fan'),
-		('Cool', 'Cool'),
-		('Heat', 'Heat'),
-		('Dry', 'Dry'),
-		('Auto', 'Auto'),
-		('BAHP', 'BAHP'),
-		('AUTOCOOL', 'AUTOCOOL'),
-		('AUTOHEAT', 'AUTOHEAT'),
-		('VENTILATE', 'VENTILATE'),
-		('PANECOOL', 'PANECOOL'),
-		('PANEHEAT', 'PANEHEAT'),
-		('OUTCOOL', 'OUTCOOL'),
-		('DEFLOST', 'DEFLOST'),
-		('HEATRECOVERY', 'HEATRECOVERY'),
-		('BYPASS', 'BYPASS'),
-		('LC_AUTO', 'LC_AUTO')
-	)
-
-	SPEED_CHOICES = (
-		('Low', 'Low'), 
-		('Mid-Low', 'Mid-Low'),
-		('Mid-High', 'Mid-High'),
-		('High', 'High'),
-		('Auto', 'Auto')
-	)
 
 	Time = models.DateTimeField(db_column='time')
 	Name = models.CharField(db_column='name', max_length=32)
@@ -59,47 +59,14 @@ class ErvEntry(models.Model):
 		headers.extend(cls.fields())
 		return headers
 
+	def __unicode__(self):
+		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
+
 	class Meta:
 		db_table=hvac_sql_table_erv
 		unique_together=('time', 'name')
 
 class VrfEntry(models.Model):
-
-	DIRECTION_CHOICES = (
-		('Swing', 'Swing'),
-		('Vertical', 'Vertical'),
-		('Mid-Vertical', 'Mid-Vertical'),
-		('Mid-Horizontal', 'Mid-Horizontal'),
-		('Horizontal', 'Horizontal'),
-		('Mid', 'Mid'),
-		('Auto', 'Auto'))
-
-	MODE_CHOICES = (
-		('Fan', 'Fan'),
-		('Cool', 'Cool'),
-		('Heat', 'Heat'),
-		('Dry', 'Dry'),
-		('Auto', 'Auto'),
-		('BAHP', 'BAHP'),
-		('AUTOCOOL', 'AUTOCOOL'),
-		('AUTOHEAT', 'AUTOHEAT'),
-		('VENTILATE', 'VENTILATE'),
-		('PANECOOL', 'PANECOOL'),
-		('PANEHEAT', 'PANEHEAT'),
-		('OUTCOOL', 'OUTCOOL'),
-		('DEFLOST', 'DEFLOST'),
-		('HEATRECOVERY', 'HEATRECOVERY'),
-		('BYPASS', 'BYPASS'),
-		('LC_AUTO', 'LC_AUTO')
-	)
-
-	SPEED_CHOICES = (
-		('Low', 'Low'), 
-		('Mid-Low', 'Mid-Low'),
-		('Mid-High', 'Mid-High'),
-		('High', 'High'),
-		('Auto', 'Auto')
-	)
 
 	Time = models.DateTimeField(db_column='time')
 	Name = models.CharField(db_column='name', max_length=32)
@@ -126,6 +93,9 @@ class VrfEntry(models.Model):
 		headers = ['Time', 'Name']
 		headers.extend(cls.fields())
 		return headers
+
+	def __unicode__(self):
+		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
 	
 	class Meta:
 		db_table=hvac_sql_table_vrf
