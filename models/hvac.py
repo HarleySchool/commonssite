@@ -1,6 +1,5 @@
 # the ORM objects for HVAC
 from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv
-from commonssite.models.db import db
 from django.db import models
 
 class ErvEntry(models.Model):
