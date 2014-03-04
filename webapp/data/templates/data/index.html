@@ -43,10 +43,23 @@
 					return datestring.replace(datefmt_in, datefmt_out);
 				}
 
+				function pad(n){
+					return (n < 10) ? "0"+n : ""+n;
+				}
+
 				function timeurl(timestring){
-					var timefmt_in = /(\d+)\:(\d+)[ap]m/i;
-					var timefmt_out = "$1$200";
-					return timestring.replace(timefmt_in, timefmt_out);
+					var timefmt_in = /(\d+)\:(\d+)([ap]m)/i;
+					var regmatch = timestring.match(timefmt_in);
+					var hour12 = parseInt(regmatch[1]);
+					var hour24 = hour12;
+					if(regmatch[3] == 'pm'){
+						// if in PM, add 12. so 1pm is 13 o'clock, 11pm is 23 o'clock
+						hour24 += 12;
+					} else if(regmatch[3] == 'am' && hour12 == 12){
+						// '12am' is actually "zero o'clock"
+						hour24 = 0;
+					}
+					return pad(hour24)+regmatch[2]+"00";
 				}
 
 				function datetime_url(datestring, timestring){
