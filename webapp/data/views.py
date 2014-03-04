@@ -30,7 +30,7 @@ def __hvac_range(cls, request, tstart, tend):
 	for vrf_obj in q:
 		csv_row = map(lambda h: vrf_obj.__dict__.get(h, ''), headers)
 		# special formatting for datetime so it's readable by spreadsheet programs
-		tspot = headers.find('Time')
+		tspot = headers.index('Time')
 		if tspot > -1:
 			csv_row[tspot] = csv_row[tspot].strftime('%Y-%m-%d %H:%M:%S')
 		writer.writerow(csv_row)
