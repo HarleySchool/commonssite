@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from data.models import ErvEntry, VrfEntry
-import csv, datetime
+import csv, datetime, pytz
 
 # Create your views here.
 def index(request):
@@ -11,7 +11,9 @@ def __date_parse(datestring_arg):
 	# ISO 8601 specifies a universal datetime format as yyyyMMddTHHmmssZ
 	datestring_arg = ''.join(datestring_arg.split('T'))
 	fmt = r'%Y%m%d%H%M%S'
-	return datetime.datetime.strptime(datestring_arg, fmt)
+	unaware = datetime.datetime.strptime(datestring_arg, fmt)
+
+	return dt_with_timezone
 
 def __hvac_range(cls, request, tstart, tend):
 	print "HVAC RANGE for", cls, "from", tstart, "to", tend
@@ -27,6 +29,10 @@ def __hvac_range(cls, request, tstart, tend):
 	# loop over all rows of queried data and write them
 	for vrf_obj in q:
 		csv_row = map(lambda h: vrf_obj.__dict__.get(h, ''), headers)
+		# special formatting for datetime so it's readable by spreadsheet programs
+		tspot = headers.find('Time')
+		if tspot > -1:
+			csv_row[tspot] = csv_row[tspot].strftime('%Y-%m-%d %H:%M:%S')
 		writer.writerow(csv_row)
 	return response
 
