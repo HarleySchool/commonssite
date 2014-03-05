@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+	<head>
+		<title>{% block title %}Harley Commons{% endblock %}</title>
+		<!-- Javascript sources -->
+		<script src="{% static "js/jquery.js" %}"></script>
+		{% block scripts %}{% endblock scripts %}
+		<!-- CSS sources -->
+		<link rel="stylesheet" href="{% static 'css/main.css'%}" />
+		{% block styles %}{% endblock styles %}
+	</head>
+	<body>
+		<div id="headline">
+			<h1>Commons Control</h1>
+			<h3>The Harley School</h3>
+		</div>
+		{% block sidebar %}
+		<div id="sidebar">
+			<p class="navlabel">System Settings</p>
+			<ul>
+				<li><a href="http://10.1.6.202/">Electric (Veris)</a></li>
+				<li><a href="http://commonscontrol.harleyschool.org/hvac/en/administrator.html">HVAC (Mitsubishi)</a></li>
+				<li><a href="http://commonscontrol.harleyschool.org/solar/">Solar (SMA Sunny Web Box)</a></li>
+				<li><a href="http://commonscontrol.harleyschool.org/tv1/">Lobby TV #1 (Raspberry Pi)</a></li>
+			</ul>
+			<p class="navlabel">Data Collection</p>
+			<ul>
+				<li><a href="/data/">Download Data (HVAC only)</a></li>
+				<li><a href="{% static "pdf/progress.pdf"%}">(PDF) Web app progress</a></li>
+			</ul>
+		</div>
+		{% endblock sidebar %}
+	</body>
+</html>

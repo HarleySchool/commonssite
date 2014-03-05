@@ -1,1 +1,61 @@
 /* main.css */
+
+*{
+	/* override default margin and padding.
+		(This makes things more consistent across browsers), and any element 
+		may still explicity set margin or padding to some non-zero value) */
+	margin:0px;
+	padding:0px;
+}
+
+body, html{
+	height:100%;
+	font-family: arial, helvetica, sans-serif;
+}
+
+a {
+	text-decoration: none; /* no underline on links */
+}
+
+#headline{
+	background-color: #005030;
+	text-shadow: 2px;
+	text-align: center;
+	padding-top:30px;
+	color: #FFF;
+	height:6em;
+}
+
+#sidebar{
+	background-color: #FEC;
+	text-align: right;
+	padding-top:15px;
+	padding-right:10px;
+	color:#005030;
+	width:250px;
+	height:100%;
+}
+
+#sidebar ul{
+	list-style-type: none; /* remove bullets from list */
+}
+
+#sidebar li{
+	margin-top:10px;
+}
+
+#sidebar a{
+	color: #005030;
+	font-weight: bold;
+}
+
+#sidebar a:hover{
+	color: #116141;
+	text-decoration: underline;
+}
+
+.navlabel{
+	font-weight:bold;
+	color:#000;
+	margin-top:15px;
+}
