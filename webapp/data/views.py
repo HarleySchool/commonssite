@@ -7,7 +7,7 @@ from django.views.decorators.gzip import gzip_page
 
 # Create your views here.
 def index(request):
-	return render(request, 'data/index.html', {})
+	return render(request, 'data/download.html', {})
 
 def __date_parse(datestring_arg):
 	# ISO 8601 specifies a universal datetime format as yyyyMMddTHHmmssZ

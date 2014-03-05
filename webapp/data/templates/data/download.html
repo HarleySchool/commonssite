@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Download Data{% endblock title %}
+
+{% block scripts %}
+	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	<script src="{% static "js/jquery.timepicker.js" %}"></script>
+	<script src="{% static "js/jquery.datepair.js" %}"></script>
+	<script src="{% static "data/js/downloads.js" %}"></script>
+{% endblock scripts %}
+
+{% block styles %}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="//jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
+{% endblock styles %}
+
+{% block content %}
+	<div id="datepairExample">
+		<input type="text" class="date start" />
+		<input type="text" class="time start" />
+		<br />to
+		<br />
+		<input type="text" class="date end" />
+		<input type="text" class="time end" />
+		<br />
+		<br />
+		<input type="button" id="submiterv" value="Get ERV" />
+		<input type="button" id="submitvrf" value="Get VRF" />
+	</div>
+{% endblock content %}

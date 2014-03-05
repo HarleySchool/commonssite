@@ -15,8 +15,8 @@
 			<h1>Commons Control</h1>
 			<h3>The Harley School</h3>
 		</div>
-		{% block sidebar %}
-		<div id="sidebar">
+		<nav id="sidebar" role="content">
+			{% block sidebar %}
 			<p class="navlabel">System Settings</p>
 			<ul>
 				<li><a href="http://10.1.6.202/">Electric (Veris)</a></li>
@@ -29,7 +29,12 @@
 				<li><a href="/data/">Download Data (HVAC only)</a></li>
 				<li><a href="{% static "pdf/progress.pdf"%}">(PDF) Web app progress</a></li>
 			</ul>
-		</div>
-		{% endblock sidebar %}
+			{% endblock sidebar %}
+		</nav>
+
+		<section id="content">
+			{% block content %}
+			{% endblock content %}
+		</section>
 	</body>
 </html>
