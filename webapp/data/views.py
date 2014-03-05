@@ -18,7 +18,7 @@ def __date_parse(datestring_arg):
 	return dt_with_timezone
 
 @gzip_page
-def __hvac_range(cls, request, tstart, tend):
+def __hvac_range(request, cls, tstart, tend):
 	print "HVAC RANGE for", cls, "from", tstart, "to", tend
 	response = HttpResponse(content_type='text/csv')
 	response['Content-Disposition'] = 'attachment; filename="commonsdata.csv"'
@@ -50,7 +50,7 @@ def vrf_csv(request):
 	except Exception as e:
 		print e
 		tend = datetime.datetime.now()
-	return __hvac_range(VrfEntry, request, tstart, tend)
+	return __hvac_range(request, VrfEntry, tstart, tend)
 	
 
 def erv_csv(request):
@@ -64,4 +64,4 @@ def erv_csv(request):
 	except Exception as e:
 		print e
 		tend = datetime.datetime.now()
-	return __hvac_range(ErvEntry, request, tstart, tend)
+	return __hvac_range(request, ErvEntry, tstart, tend)
