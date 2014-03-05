@@ -13,5 +13,9 @@ class ScraperSettings(models.Model):
 	def timedelta(self):
 		return datetime.timedelta(minutes=self.Interval)
 
+	def __unicode__(self):
+		return u'%s' % self.Name
+
 	class Meta:
 		db_table = scrapers_settings_sql_table
+		verbose_name = 'scraper settings'
