@@ -3,20 +3,20 @@ from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv, datetim
 from django.db import models
 
 DIRECTION_CHOICES = (
-	('Swing', 'Swing'),
-	('Vertical', 'Vertical'),
-	('Mid-Vertical', 'Mid-Vertical'),
-	('Mid-Horizontal', 'Mid-Horizontal'),
-	('Horizontal', 'Horizontal'),
-	('Mid', 'Mid'),
-	('Auto', 'Auto'))
+	('SWING', 'Swing'),
+	('VERTICAL', 'Vertical'),
+	('MID-VERTICAL', 'Mid-Vertical'),
+	('MID-HORIZONTAL', 'Mid-Horizontal'),
+	('HORIZONTAL', 'Horizontal'),
+	('MID', 'Mid'),
+	('AUTO', 'Auto'))
 
 MODE_CHOICES = (
-	('Fan', 'Fan'),
-	('Cool', 'Cool'),
-	('Heat', 'Heat'),
-	('Dry', 'Dry'),
-	('Auto', 'Auto'),
+	('FAN', 'Fan'),
+	('COOL', 'Cool'),
+	('HEAT', 'Heat'),
+	('DRY', 'Dry'),
+	('AUTO', 'Auto'),
 	('BAHP', 'BAHP'),
 	('AUTOCOOL', 'AUTOCOOL'),
 	('AUTOHEAT', 'AUTOHEAT'),
@@ -31,11 +31,11 @@ MODE_CHOICES = (
 )
 
 SPEED_CHOICES = (
-	('Low', 'Low'), 
-	('Mid-Low', 'Mid-Low'),
-	('Mid-High', 'Mid-High'),
-	('High', 'High'),
-	('Auto', 'Auto')
+	('LOW', 'Low'), 
+	('MID-LOW', 'Mid-Low'),
+	('MID-HIGH', 'Mid-High'),
+	('HIGH', 'High'),
+	('AUTO', 'Auto')
 )
 
 class ErvEntry(models.Model):
