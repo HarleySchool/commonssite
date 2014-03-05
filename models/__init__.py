@@ -1,4 +1,4 @@
 from commonssite.models.hvac import ErvEntry, VrfEntry
-from commonssite.models.scrapersettings import Settings
+from commonssite.models.scrapersettings import ScraperSettings
 
-__all__ = ['ErvEntry', 'VrfEntry', 'Settings']
+__all__ = ['ErvEntry', 'VrfEntry', 'ScraperSettings']
