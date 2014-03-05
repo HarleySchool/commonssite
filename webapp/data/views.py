@@ -3,6 +3,7 @@ from django.shortcuts import render
 from data.models import ErvEntry, VrfEntry
 import csv, datetime, pytz
 from commonssite.settings import datetime_out_format
+from django.views.decorators.gzip import gzip_page
 
 # Create your views here.
 def index(request):
@@ -16,6 +17,7 @@ def __date_parse(datestring_arg):
 	dt_with_timezone = pytz.UTC.localize(unaware)
 	return dt_with_timezone
 
+@gzip_page
 def __hvac_range(cls, request, tstart, tend):
 	print "HVAC RANGE for", cls, "from", tstart, "to", tend
 	response = HttpResponse(content_type='text/csv')
