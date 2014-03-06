@@ -20,10 +20,12 @@
 
 	.col2{
 		width:10em;
+		text-align:center;
 	}
 
 	.col3{
 		width:10em;
+		text-align:center;
 	}
 
 	.tabletitle{
@@ -38,13 +40,13 @@
 {% endblock styles %}
 
 {% block content %}	
-	<p><input type="button" value="update" onclick="javascript:reload()"/></p>
+	<p><input type="button" value="update" onclick="javascript:location.reload()"/></p>
 	{% for device, updates in monitor.items %}
 		<h3 class="tabletitle">{{ device }}</h3>
 		<table class="update-table">
 			<thead>
 				<tr>
-					<th class="col1">Circuit</th>
+					<th class="col1">Measurement</th>
 					<th class="col2">Previous value</th>
 					<th class="col3">Current value</th>
 				</tr>
@@ -52,9 +54,9 @@
 			<tbody>
 				{% for name, prev, new in updates %}
 				<tr class="{% cycle "dark" "light"%}">
-					<td>{{ name }}</td>
-					<td>{{ prev }}</td>
-					<td>{{ new }}</td>
+					<td class="col1">{{ name }}</td>
+					<td class="col2">{{ prev }}</td>
+					<td class="col3">{{ new }}</td>
 				</tr>
 				{% endfor %}
 			</tbody>
