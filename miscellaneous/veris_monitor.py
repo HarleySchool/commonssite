@@ -10,14 +10,13 @@ unit_parser = re.compile(r'[^(]+\((\w*)\)')
 class Monitor:
 
 	thresholds = {
-		'kW' : 1.0,
-		'kWh' : 1.0,
-		'Volts' : 1.0,
-		'Amps' : 1.0,
-		'Other' : .1,
-		'Hz': 0.5
+		'kW' : (1.0, True),
+		'kWh' : (1.0, True),
+		'Volts' : (1.0, True),
+		'Amps' : (1.0, True),
+		'Hz': (0.5, False),
+		'Other' : (.1, False)
 	}
-	ignore = ['Hz', '', 'Other']
 
 	last2 = {}
 	last3 = {}
@@ -59,12 +58,12 @@ class Monitor:
 		return self.last_update 
 
 	def serialize(self):
-		return (self.nupdates, self.last2, self.last3, self.last4, self.last_update)
+		return (self.nupdates, self.last2, self.last3, self.last4, self.last_update, self.thresholds)
 
 	@classmethod
 	def deserialize(cls, ser):
 		m = Monitor()
-		m.nupdates, m.last2, m.last3, m.last4, m.last_update = ser
+		m.nupdates, m.last2, m.last3, m.last4, m.last_update, m.thresholds = ser
 		return m
 
 	def unit(self, name):
@@ -74,10 +73,15 @@ class Monitor:
 			return 'Other'
 
 	def thresh(self, name):
-		return self.thresholds.get(self.unit(name), 0.0)
+		pair = self.thresholds.get(self.unit(name))
+		if pair:
+			return pair[0]
+		else:
+			return 0.0
 
 	def changed(self, name, val1, val2):
-		if name == 'Time' or self.unit(name) in self.ignore:
+		pair = self.thresholds.get(self.unit(name))
+		if name == 'Time' or pair is None or not pair[1]:
 			return False
 		th = self.thresh(name)
 		try:
@@ -85,16 +89,10 @@ class Monitor:
 		except:
 			return val1 != val2
 
-	def set_ignored(self, units):
-		self.ignore = units
+	def update_setting(self, unit, th_en):
+		self.thresholds[unit] = th_en
 
-	def get_ignored(self):
-		return dict([(u, u not in self.ignore) for u in self.thresholds.keys()])
-
-	def set_thresh(self, unit, val):
-		self.thresholds[unit] = val
-
-	def get_thresholds(self):
+	def get_settings(self):
 		return self.thresholds
 
 if __name__ == '__main__':

@@ -11,5 +11,5 @@ urlpatterns = patterns('',
     url(r'^$', IndexView.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^data/', include('data.urls')),
-    url(r'^verisupdate/', include('live_updates.urls'))
+    url(r'^verismonitor/', include('live_updates.urls'))
 )

@@ -1,41 +1,46 @@
+<p>This page is designed to help track <em>differences</em> in power usage over short intervals. Click "refresh data" to see which values have changed since last time it was clicked. Click threshold values to change them (which affects how sensitive the system is to small changes.)</p>
+<br />
 <div id="settings">
-	<div class="partition">
-		<p>Thresholds for detecting changes</p>
-		<table>
-			{% for unit, val in settings.0.items %}
-			<tr class="{% cycle "dark" "light"%}">
-				<td>{{ unit }}</td>
-				<td class="threshold-value">{{ val }}</td>
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
-	<div class="partition">
-		{% for unit, unignored in settings.1.keys %}
-			<p>{{ unit }}<input type="checkbox" name="{{ unit }}" checked="{{ unignored }}"/></p>
-		{% endfor %}
-	</div>
-</div>
-<hr />
-<p><input type="button" value="update" onclick="javascript:location.reload()"/></p>
-{% for device, updates in monitor.items %}
-	<h3 class="tabletitle">{{ device }}</h3>
-	<table class="update-table">
+	<table class="threshold-values">
 		<thead>
 			<tr>
-				<th class="col1">Circuit</th>
-				<th class="col2">Previous value</th>
-				<th class="col3">Current value</th>
+				<th>Unit</th>
+				<th>Threshold</th>
+				<th>Enable</th>
 			</tr>
 		</thead>
 		<tbody>
-			{% for name, prev, new in updates %}
+			{% for unit, set in settings.items %}
 			<tr class="{% cycle "dark" "light"%}">
-				<td class="col1">{{ name }}</td>
-				<td class="col2">{{ prev }}</td>
-				<td class="col3">{{ new }}</td>
+				<td>{{ unit }}</td>
+				<td><div class="threshold-value" data-unit="{{ unit }}">{{ set.0 }}</div></td>
+				<td><input type="checkbox" class="unit-check" data-unit="{{ unit }}" {{ set.1|yesno:"checked," }}/></td>
 			</tr>
 			{% endfor %}
 		</tbody>
 	</table>
-{% endfor %}
+</div>
+<div id="tables-wrapper">
+	<p><input type="button" value="refresh data" id="refreshbutton"/></p>
+	{% for device, updates in monitor.items %}
+		<h3 class="tabletitle">{{ device }}</h3>
+		<table class="update-table">
+			<thead>
+				<tr>
+					<th class="col1">Circuit</th>
+					<th class="col2">Previous value</th>
+					<th class="col3">Current value</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for name, prev, new in updates %}
+				<tr class="{% cycle "dark" "light"%}">
+					<td class="col1">{{ name }}</td>
+					<td class="col2">{{ prev }}</td>
+					<td class="col3">{{ new }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endfor %}
+</div>
