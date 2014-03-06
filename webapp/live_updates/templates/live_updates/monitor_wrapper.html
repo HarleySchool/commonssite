@@ -8,7 +8,7 @@
 		$(".threshold-value").click(function(event){
 			var val = $(this).text();
 			var unit = $(this).siblings("td").eq(0).text();
-			$(this).html('<input type="text" name="'+unit+'" value="'+val+'"');
+			$(this).html('<input type="text" name="'+unit+'" value="'+val+'"/>');
 		});
 	});
 </script>
@@ -50,6 +50,12 @@
 
 	.partition{
 		width:50%;
+		float:left;
+	}
+
+	.threshold-value{
+		cursor:pointer;
+		width:5em;
 	}
 
 </style>

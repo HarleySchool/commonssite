@@ -11,8 +11,8 @@
 		</table>
 	</div>
 	<div class="partition">
-		{% for unit, unignored in settings.0.keys %}
-			{{ unit }}<input type="checkbox" name="{{ unit }}" checked="{{ unignored }}"/>
+		{% for unit, unignored in settings.1.keys %}
+			<p>{{ unit }}<input type="checkbox" name="{{ unit }}" checked="{{ unignored }}"/></p>
 		{% endfor %}
 	</div>
 </div>

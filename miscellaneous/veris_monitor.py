@@ -14,11 +14,10 @@ class Monitor:
 		'kWh' : 1.0,
 		'Volts' : 1.0,
 		'Amps' : 1.0,
-		'' : .1,
-		'Hz': 0.5,
-		'Default' : 0.0
+		'Other' : .1,
+		'Hz': 0.5
 	}
-	ignore = ['Hz', '', 'Default']
+	ignore = ['Hz', '', 'Other']
 
 	last2 = {}
 	last3 = {}
@@ -72,7 +71,7 @@ class Monitor:
 		try:
 			return unit_parser.match(name).group(1)
 		except:
-			return 'Default'
+			return 'Other'
 
 	def thresh(self, name):
 		return self.thresholds.get(self.unit(name), 0.0)
