@@ -38,7 +38,7 @@
 {% endblock styles %}
 
 {% block content %}	
-	<p><a href="#"><input type="button" value"update" /></a></p>
+	<p><input type="button" value="update" onclick="javascript:reload()"/></p>
 	{% for device, updates in monitor.items %}
 		<h3 class="tabletitle">{{ device }}</h3>
 		<table class="update-table">
