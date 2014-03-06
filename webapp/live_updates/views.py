@@ -5,5 +5,9 @@ from commonssite.miscellaneous.veris_monitor import Monitor
 def updates(request):
 	m = request.session.get('monitor', None)
 	if not m:
-		request.session['monitor'] = Monitor()
-	return render(request, 'live_updates/update_table.html', {'monitor' : m.get_new_data()})
+		m = Monitor()
+	else:
+		m = (Monitor()).from_dicts(m)
+	updates = m.get_new_data()
+	request.session['monitor'] = m.as_dicts()
+	return render(request, 'live_updates/update_table.html', {'monitor' : updates})

@@ -74,6 +74,12 @@ class Monitor:
 		self.nupdates += 1
 		return update_dict
 
+	def as_dicts(self):
+		return (self.last2, self.last3, self.last4)
+
+	def from_dicts(self, dict_tuple):
+		self.last2, self.last3, self.last4 = dict_tuple
+
 if __name__ == '__main__':
 	from sys import argv
 	sleepstyle = True
