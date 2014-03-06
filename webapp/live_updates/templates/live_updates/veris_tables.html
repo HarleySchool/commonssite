@@ -1,63 +1,41 @@
-{% extends "base.html" %}
-
-{% block title %}Veris Live Changes{% endblock %}
-
-{% block styles %}
-<style type="text/css">
-	.dark{
-		background-color:#227252;
-		color:#FFF;
-	}
-
-	.light{
-		background-color: #77C7A7;
-		color:#FFF
-	}
-
-	.col1{
-		width:15em;
-	}
-
-	.col2{
-		width:10em;
-	}
-
-	.col3{
-		width:10em;
-	}
-
-	.tabletitle{
-		margin-top:12px;
-	}
-
-	.update-table{
-		border:1px solid;
-	}
-
-</style>
-{% endblock styles %}
-
-{% block content %}	
-	<p><input type="button" value="update" onclick="javascript:reload()"/></p>
-	{% for device, updates in monitor.items %}
-		<h3 class="tabletitle">{{ device }}</h3>
-		<table class="update-table">
-			<thead>
-				<tr>
-					<th class="col1">Circuit</th>
-					<th class="col2">Previous value</th>
-					<th class="col3">Current value</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for name, prev, new in updates %}
-				<tr class="{% cycle "dark" "light"%}">
-					<td>{{ name }}</td>
-					<td>{{ prev }}</td>
-					<td>{{ new }}</td>
-				</tr>
-				{% endfor %}
-			</tbody>
+<div id="settings">
+	<div class="partition">
+		<p>Thresholds for detecting changes</p>
+		<table>
+			{% for unit, val in settings.0.items %}
+			<tr class="{% cycle "dark" "light"%}">
+				<td>{{ unit }}</td>
+				<td class="threshold-value">{{ val }}</td>
+			</tr>
+			{% endfor %}
 		</table>
-	{% endfor %}
-{% endblock content %}
+	</div>
+	<div class="partition">
+		{% for unit, unignored in settings.0.keys %}
+			{{ unit }}<input type="checkbox" name="{{ unit }}" checked="{{ unignored }}"/>
+		{% endfor %}
+	</div>
+</div>
+<hr />
+<p><input type="button" value="update" onclick="javascript:reload()"/></p>
+{% for device, updates in monitor.items %}
+	<h3 class="tabletitle">{{ device }}</h3>
+	<table class="update-table">
+		<thead>
+			<tr>
+				<th class="col1">Circuit</th>
+				<th class="col2">Previous value</th>
+				<th class="col3">Current value</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for name, prev, new in updates %}
+			<tr class="{% cycle "dark" "light"%}">
+				<td>{{ name }}</td>
+				<td>{{ prev }}</td>
+				<td>{{ new }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endfor %}

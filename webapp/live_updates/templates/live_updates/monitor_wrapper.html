@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Veris Live Changes{% endblock %}
+
+{% block scripts %}
+<script>
+	$(document).ready(function(){
+		$(".threshold-value").click(function(event){
+			var val = $(this).text();
+			var unit = $(this).siblings("td").eq(0).text();
+			$(this).html('<input type="text" name="'+unit+'" value="'+val+'"');
+		});
+	});
+</script>
+{% endblock scripts %}
+
+{% block styles %}
+<style type="text/css">
+	.dark{
+		background-color:#227252;
+		color:#FFF;
+	}
+
+	.light{
+		background-color: #77C7A7;
+		color:#FFF
+	}
+
+	.col1{
+		width:15em;
+	}
+
+	.col2{
+		width:10em;
+	}
+
+	.col3{
+		width:10em;
+	}
+
+	.tabletitle{
+		margin-top:12px;
+	}
+
+	.update-table{
+		border:1px solid;
+	}
+
+	.partition{
+		width:50%;
+	}
+
+</style>
+{% endblock styles %}
+
+{% block content %}
+	{% include "live_updates/veris_tables.html" %}
+{% endblock content %}
