@@ -7,7 +7,7 @@ def updates(request):
 	if not m:
 		m = VerisMonitor()
 	else:
-		m = (VerisMonitor()).from_dicts(m)
+		m = VerisMonitor.deserialize(m)
 	updates = m.get_new_data()
-	request.session['monitor'] = m.as_dicts()
+	request.session['monitor'] = m.serialize()
 	return render(request, 'live_updates/veris_tables.html', {'monitor' : updates})
