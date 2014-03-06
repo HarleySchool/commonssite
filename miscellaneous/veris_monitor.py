@@ -81,6 +81,7 @@ class Monitor:
 	def deserialize(cls, ser):
 		m = Monitor()
 		m.nupdates, m.last2, m.last3, m.last4 = ser
+		return m
 
 if __name__ == '__main__':
 	from sys import argv
