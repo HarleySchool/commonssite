@@ -17,7 +17,7 @@
 	</div>
 </div>
 <hr />
-<p><input type="button" value="update" onclick="javascript:reload()"/></p>
+<p><input type="button" value="update" onclick="javascript:location.reload()"/></p>
 {% for device, updates in monitor.items %}
 	<h3 class="tabletitle">{{ device }}</h3>
 	<table class="update-table">
@@ -31,9 +31,9 @@
 		<tbody>
 			{% for name, prev, new in updates %}
 			<tr class="{% cycle "dark" "light"%}">
-				<td>{{ name }}</td>
-				<td>{{ prev }}</td>
-				<td>{{ new }}</td>
+				<td class="col1">{{ name }}</td>
+				<td class="col2">{{ prev }}</td>
+				<td class="col3">{{ new }}</td>
 			</tr>
 			{% endfor %}
 		</tbody>
