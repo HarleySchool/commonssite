@@ -46,6 +46,11 @@ class Monitor:
 	nupdates = 0
 
 	def get_new_data(self):
+		update_dict = {
+			'Device 2' : [],
+			'Device 3' : [],
+			'Device 4' : []
+		}
 		print "getting update #%d" % self.nupdates, datetime.datetime.now()
 		# get latest
 		d2, d3, d4 = veris2.get_data()
@@ -53,17 +58,21 @@ class Monitor:
 		if self.nupdates != 0:
 			for header, value in d2.iteritems():
 				if changed(header, self.last2.get(header), value):
-					print "Device 2,", header.ljust(30, ' '), self.last2.get(header,'').ljust(6,' '), " ==> ", d2.get(header)
+					#print "Device 2,", header.ljust(30, ' '), self.last2.get(header,'').ljust(6,' '), " ==> ", d2.get(header)
+					update_dict['Device 2'].append((header, last2.get(header), d2.get(header)))
 			for header, value in d3.iteritems():
 				if changed(header, self.last3.get(header), value):
-					print "Device 3,", header.ljust(30, ' '), self.last3.get(header,'').ljust(6,' '), " ==> ", d3.get(header)
+					#print "Device 3,", header.ljust(30, ' '), self.last3.get(header,'').ljust(6,' '), " ==> ", d3.get(header)
+					update_dict['Device 3'].append((header, last3.get(header), d3.get(header)))
 			for header, value in d4.iteritems():
 				if changed(header, self.last4.get(header), value):
-					print "Device 4,", header.ljust(30, ' '), self.last4.get(header,'').ljust(6,' '), " ==> ", d4.get(header)
+					#print "Device 4,", header.ljust(30, ' '), self.last4.get(header,'').ljust(6,' '), " ==> ", d4.get(header)
+					update_dict['Device 4'].append((header, last4.get(header), d4.get(header)))
 		self.last2 = d2
 		self.last3 = d3
 		self.last4 = d4
 		self.nupdates += 1
+		return update_dict
 
 if __name__ == '__main__':
 	from sys import argv

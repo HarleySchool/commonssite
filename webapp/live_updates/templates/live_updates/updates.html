@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Veris Live Changes{% endblock %}
+
+{% block styles %}
+<style type="text/css">
+	.dark{
+		background-color:#227252;
+		color:#FFF;
+	}
+
+	.light{
+		background-color: #338363;
+		color:#FFF
+	}
+
+	.tabletitle{
+		margin-top:12px;
+	}
+
+	.update-table{
+		border:1px solid;
+	}
+
+</style>
+{% endblock styles %}
+
+{% block content %}	
+	<p><a href="#"><input type="button" value"update" /></a></p>
+	{% for device, updates in monitor.items %}
+		<h3 class="tabletitle">{{ device }}</h3>
+		<table class="update-table">
+			<thead>
+				<tr>
+					<th>Circuit</th>
+					<th>Previous value</th>
+					<th>Current value</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for name, prev, new in updates %}
+				<tr class="{% cycle "dark" "light"%}">
+					<td>{{ name }}</td>
+					<td>{{ prev }}</td>
+					<td>{{ new }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% endfor %}
+{% endblock content %}
