@@ -59,15 +59,15 @@ class Monitor:
 			for header, value in d2.iteritems():
 				if changed(header, self.last2.get(header), value):
 					print "Device 2,", header.ljust(30, ' '), self.last2.get(header,'').ljust(6,' '), " ==> ", d2.get(header)
-					update_dict['Device 2'].append((header, last2.get(header), d2.get(header)))
+					update_dict['Device 2'].append((header, self.last2.get(header), d2.get(header)))
 			for header, value in d3.iteritems():
 				if changed(header, self.last3.get(header), value):
 					print "Device 3,", header.ljust(30, ' '), self.last3.get(header,'').ljust(6,' '), " ==> ", d3.get(header)
-					update_dict['Device 3'].append((header, last3.get(header), d3.get(header)))
+					update_dict['Device 3'].append((header, self.last3.get(header), d3.get(header)))
 			for header, value in d4.iteritems():
 				if changed(header, self.last4.get(header), value):
 					print "Device 4,", header.ljust(30, ' '), self.last4.get(header,'').ljust(6,' '), " ==> ", d4.get(header)
-					update_dict['Device 4'].append((header, last4.get(header), d4.get(header)))
+					update_dict['Device 4'].append((header, self.last4.get(header), d4.get(header)))
 		self.last2 = d2
 		self.last3 = d3
 		self.last4 = d4
