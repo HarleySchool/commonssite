@@ -1,27 +1,23 @@
 from django.shortcuts import render
 from commonssite.miscellaneous import VerisMonitor
 
+def update_time_tuple(m):
+	update_dict = m.get_new_data()
+	telapse = 0.0
+	if 'Time' in update_dict:
+		telapse = update_dict.pop('Time')
+	return update_dict, telapse
+
 # Create your views here.
 def initial(request):
 	# create monitor object fresh. stored in session for updates.
 	m = VerisMonitor()
-	init_vals = m.get_new_data() # initial get-data call sets baseline values
+	update_dict, telapse = update_time_tuple(m)
 	request.session['monitor'] = m.serialize()
-	settings = (m.get_thresholds(), m.get_ignored())
-	return render(request, 'live_updates/monitor_wrapper.html', {'monitor' : init_vals, 'settings' : settings})
+	settings = m.get_settings()
+	return render(request, 'live_updates/monitor_wrapper.html', {'monitor' : update_dict, 'settings' : settings, 'telapse' : telapse})
 
-def update(request):
-	m = request.session.get('monitor', None)
-	if not m:
-		m = VerisMonitor()
-	else:
-		m = VerisMonitor.deserialize(m)
-	m.get_new_data()
-	request.session['monitor'] = m.serialize()
-	settings = (m.get_thresholds(), m.get_ignored())
-	return render(request, 'live_updates/veris_tables.html', {'monitor' : m.get_old_data(), 'settings' : settings})
-
-def config(request):
+def refresh(request):
 	# get monitor from session
 	m = request.session.get('monitor', None)
 	if not m:
@@ -29,13 +25,18 @@ def config(request):
 	else:
 		m = VerisMonitor.deserialize(m)
 	# update threshold values
-	for k,v in m.get_thresholds().items():
-		m.set_thresh(k, float(request.GET.get(k, v)))
-	# update ignored values
-	print "IGNORE", request.GET.get("ignore")
-	m.set_ignored(request.GET.get("ignore", m.get_ignored()))
+	print "getting threshold values"
+	for k, (t, e) in m.get_settings().items():
+		try:
+			new_thresh = float(request.GET.get(k, t))
+		except:
+			print request.GET.get(k), "could not be parsed as a float"
+		new_en = request.GET.get("%s-en" % k) or str(e)
+		print k, new_thresh, new_en, (new_en.lower() == "true")
+		m.update_setting(k, (new_thresh, (new_en.lower() == "true")));
+	# refresh the data
+	update_dict, telapse = update_time_tuple(m)
 	# return rendered inner-page (just tables)
 	request.session['monitor'] = m.serialize()
-	settings = (m.get_thresholds(), m.get_ignored())
-	return render(request, 'live_updates/veris_tables.html', {'monitor' : m.get_old_data(), 'settings' : settings})
-
+	settings = m.get_settings()
+	return render(request, 'live_updates/veris_tables.html', {'monitor' : update_dict, 'settings' : settings, 'telapse' : telapse})
