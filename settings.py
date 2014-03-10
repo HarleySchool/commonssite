@@ -43,6 +43,8 @@ sma_log_interval = 10*60 # 10 minutes
 veris_host = "10.1.6.202"
 veris_port = 80
 veris_uname = "user"
+veris_sql_table_channel = 'electric-channel'
+veris_sql_table_device = 'electric-summary'
 
 ##################
 # VPMXP settings #
