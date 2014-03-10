@@ -1,6 +1,5 @@
 import requests, json
 from commonssite.settings import sma_host, sma_port, sma_password
-from commonssite.scrapers.template import ScraperTemplate
 
 # NOTE: THE FORMAT OF THE DATA IN THIS FILE COMES FROM
 # A TECHNICAL DOCUMENT RELEASED BY SMA CALLED
@@ -21,10 +20,7 @@ devices = {
 	}
 }
 
-class ScraperSolar(ScraperTemplate):
-
-	def __init__(self):
-		ScraperTemplate.__init__(self, "solar")
+class ScraperSolar(object):
 
 	def _MD5Hash(self, s):
 		import md5

@@ -1,7 +1,6 @@
 import datetime, string, requests
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
-from commonssite.scrapers.template import ScraperTemplate
 from commonssite.models.hvac import ErvEntry, VrfEntry
 
 # bulk-parsing lookup tables
@@ -233,10 +232,7 @@ def group_id_to_name(id):
 	}
 	return mapping.get(id, str(id))
 
-class ScraperHvac(ScraperTemplate):
-
-	def __init__(self):
-		ScraperTemplate.__init__(self, "hvac")
+class ScraperHvac(object):
 
 	def parse_bulk(self, bulk, selection=[], units={}):
 		"""given bulk hex data describing a VRF group, this function returns a dict

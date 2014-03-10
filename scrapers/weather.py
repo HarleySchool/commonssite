@@ -1,10 +1,8 @@
-from commonssite.scrapers.template import ScraperTemplate
 
-
-class ScraperWeather(ScraperTemplate):
+class ScraperWeather(object):
 
 	def __init__(self):
-		ScraperTemplate.__init__("Weather Station")
+		pass
 
 	def get_data():
 		return []
