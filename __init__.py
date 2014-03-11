@@ -1,3 +1,3 @@
-import webapp.webapp as webapp
+import server.webapp as webapp
 
 __all__ = ['settings', 'webapp']
