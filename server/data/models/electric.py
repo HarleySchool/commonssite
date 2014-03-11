@@ -12,10 +12,10 @@ class ChannelEntry(models.Model):
 	Channel = models.CharField(db_column='channel')
 	Current = models.FloatField(db_column='current')
 	Energy = models.FloatField(db_column='energy')
-	Max = models.FloatField(db_column='max')
+	MaxCurrent = models.FloatField(db_column='current-max')
 	Demand = models.FloatField(db_column='demand')
 	Power = models.FloatField(db_column='power')
-	PowerMax = models.FloatField(db_column='power-max')
+	MaxPower = models.FloatField(db_column='power-max')
 	PowerDemand = models.FloatField(db_column='power-demand')
 	PowerFactor = models.FloatField(db_column='power-factor')
 

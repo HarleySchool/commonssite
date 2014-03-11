@@ -64,7 +64,8 @@ class ErvEntry(models.Model):
 
 	class Meta:
 		db_table=hvac_sql_table_erv
-		unique_together=('time', 'name')
+		unique_together=('Time', 'Name')
+		app_label = 'data'
 
 class VrfEntry(models.Model):
 
@@ -99,4 +100,5 @@ class VrfEntry(models.Model):
 	
 	class Meta:
 		db_table=hvac_sql_table_vrf
-		unique_together=('time', 'name')
+		unique_together=('Time', 'Name')
+		app_label = 'data'

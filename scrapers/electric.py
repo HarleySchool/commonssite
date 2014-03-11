@@ -1,7 +1,7 @@
 import requests, re, pytz, datetime
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
 from commonssite.scrapers.xml_import import etree
-from commonssite.models.electric import ChannelEntry, DeviceSummary
+from commonssite.server.data.models.electric import ChannelEntry, DeviceSummary
 
 class ScraperElectric(object):
 	"""A scraper class for gettind data from our veris system
@@ -20,11 +20,11 @@ class ScraperElectric(object):
 		# the name given by xml mapped to the field name in our DB object
 		mapping = {
 			'' : 'Current',
-			'Max' : 'Max',
+			'Max' : 'MaxCurrent',
 			'Demand' : 'Demand',
 			'Energy' : 'Energy',
 			'Power' : 'Power',
-			'Power Max' : 'PowerMax',
+			'Power Max' : 'MaxPower',
 			'Power Demand' : 'PowerDemand',
 			'Power Factor' : 'PowerFactor'
 		}
