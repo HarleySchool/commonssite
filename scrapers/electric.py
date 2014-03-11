@@ -1,4 +1,4 @@
-import requests, re, pytz
+import requests, re, pytz, datetime
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
 from commonssite.scrapers.xml_import import etree
 from commonssite.models.electric import ChannelEntry, DeviceSummary
@@ -44,10 +44,10 @@ class ScraperElectric(object):
 				obj = objects.get(channel, ChannelEntry(Time=set_time, Panel=set_panel))
 				try:
 					# all fields in this model should be float values
-					obj[self.__map_db_field(column)] = float(val)
+					obj.__dict__[self.__map_db_field(column)] = float(val)
 				except:
 					print "[ERROR] could not parse %s value as float: %s" % (column, val)
-					obj[self.__map_db_field(column)] = None
+					obj.__dict__[self.__map_db_field(column)] = None
 		return objects.values()
 
 	def __xml_to_db_summary(self, xml, set_time, set_panel):

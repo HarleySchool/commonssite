@@ -1,1 +1,3 @@
-__all__ = ['settings']
+import webapp.webapp as webapp
+
+__all__ = ['settings', 'webapp']
