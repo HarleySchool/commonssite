@@ -20,11 +20,11 @@ class ScraperElectric(object):
 		# the name given by xml mapped to the field name in our DB object
 		mapping = {
 			'' : 'Current',
-			'Max' : 'Max',
+			'Max' : 'MaxCurrent',
 			'Demand' : 'Demand',
 			'Energy' : 'Energy',
 			'Power' : 'Power',
-			'Power Max' : 'PowerMax',
+			'Power Max' : 'MaxPower',
 			'Power Demand' : 'PowerDemand',
 			'Power Factor' : 'PowerFactor'
 		}
