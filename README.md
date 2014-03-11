@@ -12,3 +12,9 @@ Updated February 11, 2014
 <!--BREAK-->
 <!--Table of contents will go here-->
 <!--BREAK-->
+
+The Web-App
+-----------
+
+Commons Control uses [Django](http://docs.djangoproject.com) for the server logic. What this means is that whenever somebody uses their browser to interact with `commonscontrol.harleyschool.org`, the pthon code in the `webapp/` directory is executed to form a response. The response is typically an html page, but there are other pages which create and serve csv files.
+
