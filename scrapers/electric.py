@@ -1,7 +1,7 @@
 import requests, re, pytz, datetime
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
 from commonssite.scrapers.xml_import import etree
-from commonssite.models.electric import ChannelEntry, DeviceSummary
+from commonssite.server.data.models.electric import ChannelEntry, DeviceSummary
 
 class ScraperElectric(object):
 	"""A scraper class for gettind data from our veris system

@@ -1,7 +1,7 @@
 import datetime, string, requests, pytz
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
-from commonssite.models.hvac import ErvEntry, VrfEntry
+from commonssite.server.data.models.hvac import ErvEntry, VrfEntry
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
