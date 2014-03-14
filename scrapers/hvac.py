@@ -366,6 +366,13 @@ class ScraperHvac(object):
 			group_status[group_id_to_name(group_id)] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
 		return group_status
 
+	def __map_to_model(self, name):
+		mapping = {
+			'Drive' : 'Running'
+		}
+		# get mapped name (or default to the given name)
+		return mapping.get(name, name)
+
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		now = datetime.datetime.now()
 		now = pytz.UTC.localize(now)
@@ -377,7 +384,8 @@ class ScraperHvac(object):
 				cls = VrfEntry
 			else:
 				cls = ErvEntry
-			kargs = dict(zip(cls.fields(), [data[f] for f in cls.fields()]))
+			model_fields = cls.fields()
+			kargs = dict(zip(map(lambda f : self.__map_to_model(f), model_fields), [data[f] for f in model_fields]))
 			model = cls(Time=now, Name=name, **kargs)
 			models.append(model)
 		return models
