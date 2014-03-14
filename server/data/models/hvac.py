@@ -47,6 +47,7 @@ class ErvEntry(models.Model):
 	Mode = models.CharField(db_column='mode', choices=MODE_CHOICES, max_length=14)
 	ErrorSign = models.BooleanField(db_column='error')
 	InletTemp = models.FloatField(db_column='measured temp')
+	Running = models.BooleanField(db_column='running')
 	
 	@classmethod
 	def fields(cls):
@@ -83,6 +84,7 @@ class VrfEntry(models.Model):
 	AutoMax = models.FloatField(db_column='auto max')
 	AutoMin = models.FloatField(db_column='auto min')
 	SetTemp = models.FloatField(db_column='set temp')
+	Running = models.BooleanField(db_column='running')
 
 	@classmethod
 	def fields(cls):
