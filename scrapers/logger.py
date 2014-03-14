@@ -55,6 +55,8 @@ class Logger(Thread):
 if __name__ == '__main__':
 	hvlog = Logger(ScraperHvac(), 20*MINUTE) # log every 20 minutes forever 
 	hvlog.start()
+	#verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
+	#verlog.start()
 
 	hvlog.join()
 	print "--main done--"

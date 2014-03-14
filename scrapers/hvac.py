@@ -1,7 +1,7 @@
-import datetime, string, requests
+import datetime, string, requests, pytz
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
-from commonssite.models.hvac import ErvEntry, VrfEntry
+from commonssite.server.data.models.hvac import ErvEntry, VrfEntry
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -368,6 +368,7 @@ class ScraperHvac(object):
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		now = datetime.datetime.now()
+		now = pytz.UTC.localize(now)
 		models = []
 		dict_data = self.status_dict(groups=groups, units=units)
 		for (name, data) in dict_data.iteritems():

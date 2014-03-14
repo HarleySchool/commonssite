@@ -5,7 +5,7 @@
 # peewee is the database-handling module.
 from peewee import *
 import csv, re, datetime
-from commonssite.models import *
+from commonssite.server.data.models import *
 from commonssite.scrapers.hvac import group_id_to_name
 
 SEP = '\t'
