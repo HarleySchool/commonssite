@@ -1,7 +1,7 @@
 import datetime, string, requests, pytz
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
-from commonssite.server.data.models.hvac import ErvEntry, VrfEntry
+from commonssite.server.data.models import ErvEntry, VrfEntry
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -366,9 +366,9 @@ class ScraperHvac(object):
 			group_status[group_id_to_name(group_id)] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
 		return group_status
 
-	def __map_to_model(self, name):
+	def __map_from_model(self, name):
 		mapping = {
-			'Drive' : 'Running'
+			'Running' : 'Drive'
 		}
 		# get mapped name (or default to the given name)
 		return mapping.get(name, name)
@@ -385,7 +385,7 @@ class ScraperHvac(object):
 			else:
 				cls = ErvEntry
 			model_fields = cls.fields()
-			kargs = dict(zip(map(lambda f : self.__map_to_model(f), model_fields), [data[f] for f in model_fields]))
+			kargs = dict(zip(model_fields, [data[self.__map_from_model(f)] for f in model_fields]))
 			model = cls(Time=now, Name=name, **kargs)
 			models.append(model)
 		return models
