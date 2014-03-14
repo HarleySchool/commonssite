@@ -1,7 +1,7 @@
 import datetime, string, requests, pytz
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
-from commonssite.server.data.models.hvac import ErvEntry, VrfEntry
+from commonssite.server.hvac.models import ErvEntry, VrfEntry
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -391,4 +391,4 @@ if __name__ == '__main__':
 	scraper = ScraperHvac()
 
 	from pprint import pprint
-	pprint(scraper.status_dict([i+1 for i in range(15)], COLUMNS, UNITS))
+	pprint(scraper.status_dict([i+1 for i in range(15)], [], UNITS))

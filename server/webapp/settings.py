@@ -40,8 +40,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'data',
-    'live_updates',
+    'timeseries',
+    'hvac',
+    'veris',
     'south'
 )
 
