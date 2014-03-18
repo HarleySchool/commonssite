@@ -70,7 +70,7 @@ import commonssite.settings as s
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'main.db',
+        'NAME': os.path.expanduser('~/Documents/commonssite/main.db'),
     }
 }
 # Internationalization
