@@ -4,12 +4,13 @@ from django.contrib import admin
 admin.autodiscover()
 
 class IndexView(TemplateView):
-    template_name = "base.html"
+	template_name = "base.html"
 
 urlpatterns = patterns('',
-    # Examples:
-    url(r'^$', IndexView.as_view()),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^data/', include('data.urls')),
-    url(r'^verismonitor/', include('live_updates.urls'))
+	# Examples:
+	url(r'^$', IndexView.as_view()),
+	url(r'^admin/', include(admin.site.urls)),
+	url(r'^electric/', include('electric.urls')),
+	url(r'^hvac/', include('hvac.urls')),
+	url(r'^timeseries/', include('timeseries.urls'))
 )

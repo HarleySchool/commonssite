@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, url
 
-from live_updates import views
+from electric import views
 
 urlpatterns = patterns('',
 	url(r'^$', views.initial, name='veris-tables-init'),
