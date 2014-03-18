@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Veris Channel Names{% endblock %}
+
+{% block scripts %}
+<script>
+	$(document).ready(function(){
+		$(".given-name").click(function(){
+			var nm = $(this).text();
+			var ch = $(this).data("channel");
+			$(this).parent().html("<input type='text' data-original='"+nm+"' data-channel='"+ch+"' class='gn-input' size='10' value='"+nm+"'/>");
+		});
+
+		$("#submitbtn").click(function(){
+			var updated = {};
+			$(".table-wrapper").each(function(idx, elem){
+				var device = $(elem).find("h3").text();
+				updated[device] = [];
+				$(elem).find(".gn-input").each(function(idx, inpt_elem){
+					var ch = $(inpt_elem).data("channel");
+					var orig = $(inpt_elem).data("original");
+					var new_name = $(inpt_elem).val();
+					if(new_name == '') new_name = orig;
+					updated[device].push([ch, new_name]);
+				});
+			});
+			$.ajax({
+				url: "/electric/update-names/",
+				success: function(data){
+					window.location.reload(true);
+				},
+				dataType: "application/json",
+				data: updated
+			});
+		});
+	});
+</script>
+{% endblock scripts %}
+
+{% block styles %}
+<style type="text/css">
+	.dark{
+		background-color:#227252;
+		color:#FFF;
+	}
+
+	.light{
+		background-color: #77C7A7;
+		color:#FFF
+	}
+	.given-name{
+		cursor:pointer;
+	}
+	.table-wrapper{
+		float:left;
+		margin-right:15px;
+	}
+	table{
+		border-collapse: collapse;
+	}
+	td, th{
+		border:1px solid #000;
+		padding:3px;
+	}
+</style>
+{% endblock styles %}
+
+{% block content %}
+{% for dev, map in name_map.items %}
+	<div class="table-wrapper">
+	<h3>{{ dev }}</h3>
+	<table>
+	<thead>
+		<tr>
+			<th>Channel</th>
+			<th>Given Name</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for ch, nm in map %}
+			<tr class="{% cycle "dark" "light"%}">
+				<td>{{ ch }}</td>
+				<td><div data-channel="{{ ch }}" class="given-name">{{ nm }}</div></td>
+			</tr>
+		{% endfor %}
+	</tbody>
+	</table>
+	</div>
+{% endfor %}
+<input type="button" id="submitbtn" value="update names" />
+{% endblock content %}

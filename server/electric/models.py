@@ -3,7 +3,21 @@
 from django.db import models
 from commonssite.settings import veris_sql_table_channel,	\
 	veris_sql_table_device,									\
+	veris_sql_table_map,									\
 	datetime_out_format
+
+class ChannelNameMap(models.Model):
+
+	Panel = models.CharField(db_column='panel', max_length=16)
+	Channel = models.CharField(db_column='channel', max_length=32)
+	Name = models.CharField(db_column='name', max_length=32)
+
+	def __unicode__(self):
+		return u'%s => %s' % (self.Channel, self.Name)
+
+	class Meta:
+		db_table = veris_sql_table_map
+		unique_together = ('Panel', 'Channel')
 
 class ChannelEntry(models.Model):
 	
