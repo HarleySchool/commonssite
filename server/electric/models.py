@@ -8,8 +8,8 @@ from commonssite.settings import veris_sql_table_channel,	\
 class ChannelEntry(models.Model):
 	
 	Time = models.DateTimeField(db_column='time')
-	Panel = models.CharField(db_column='panel')
-	Channel = models.CharField(db_column='channel')
+	Panel = models.CharField(db_column='panel', max_length=16)
+	Channel = models.CharField(db_column='channel', max_length=32)
 	Current = models.FloatField(db_column='current')
 	Energy = models.FloatField(db_column='energy')
 	MaxCurrent = models.FloatField(db_column='current-max')
@@ -24,15 +24,15 @@ class ChannelEntry(models.Model):
 
 	class Meta:
 		db_table = veris_sql_table_channel
-		unique_together = ('time', 'channel', 'panel')
+		unique_together = ('Time', 'Channel', 'Panel')
 
 class DeviceSummary(models.Model):
 
 	Time = models.DateTimeField(db_column='time')
-	Panel = models.CharField(db_column='panel')
+	Panel = models.CharField(db_column='panel', max_length=16)
 	Frequency = models.FloatField(db_column='frequency')
 	LineNeutral = models.FloatField(db_column='line_neutral_3ph')
-	LineLine = models.FloatField(db_column='line_neutral_3ph')
+	LineLine = models.FloatField(db_column='line_line_3ph')
 	AToNeutral = models.FloatField(db_column='a_to_neutral')
 	BToNeutral = models.FloatField(db_column='b_to_neutral')
 	CToNeutral = models.FloatField(db_column='c_to_neutral')
@@ -74,4 +74,4 @@ class DeviceSummary(models.Model):
 
 	class Meta:
 		db_table = veris_sql_table_device
-		unique_together = ('time', 'panel')
+		unique_together = ('Time', 'Panel')

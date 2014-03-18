@@ -1,13 +1,13 @@
 from django.http import HttpResponse
 from django.shortcuts import render
-from data.models import ErvEntry, VrfEntry
+from hvac.models import ErvEntry, VrfEntry
 import csv, datetime, pytz
 from commonssite.settings import datetime_out_format
 from django.views.decorators.gzip import gzip_page
 
 # Create your views here.
 def index(request):
-	return render(request, 'data/download.html', {})
+	return render(request, 'timeseries/download.html', {})
 
 def __date_parse(datestring_arg):
 	# ISO 8601 specifies a universal datetime format as yyyyMMddTHHmmssZ

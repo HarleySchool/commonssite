@@ -11,6 +11,6 @@ urlpatterns = patterns('',
 	url(r'^$', IndexView.as_view()),
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^electric/', include('electric.urls')),
-	url(r'^hvac/', include('hvac.urls')),
+	#url(r'^hvac/', include('hvac.urls')),
 	url(r'^timeseries/', include('timeseries.urls'))
 )

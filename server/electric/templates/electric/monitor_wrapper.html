@@ -26,7 +26,7 @@
 				sent_data[unit+"-en"] = cells.eq(2).children().is(":checked");
 			});
 
-			$.ajax("/verismonitor/update?",{
+			$.ajax("/electric/update?",{
 				success: function(data){
 					$("#content").html(data);
 					onPageReload();
@@ -77,12 +77,8 @@
 		width:5em;
 	}
 
-<<<<<<< HEAD
 	.threshold-value{
 		cursor:pointer;
-=======
-	.newthreshold-input{
->>>>>>> da89b2d5b613adcca14746adfa854ce8c6f9c067
 		width:5em;
 	}
 
@@ -90,5 +86,5 @@
 {% endblock styles %}
 
 {% block content %}
-	{% include "live_updates/veris_tables.html" %}
+	{% include "electric/veris_tables.html" %}
 {% endblock content %}
