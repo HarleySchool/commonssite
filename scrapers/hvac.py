@@ -399,4 +399,14 @@ if __name__ == '__main__':
 	scraper = ScraperHvac()
 
 	from pprint import pprint
-	pprint(scraper.status_dict([i+1 for i in range(15)], COLUMNS, UNITS))
+	status = {}
+	while raw_input() != 'q':
+		newstatus = scraper.status_dict([10], [], UNITS)
+		changed = {}
+		for room in newstatus.keys():
+			changed[room] = {}
+			for k in newstatus[room].keys():
+				if status.get(room, {}).get(k) != newstatus[room].get(k):
+					changed[room][k] = newstatus[room][k]
+		status = newstatus
+		pprint(changed)
