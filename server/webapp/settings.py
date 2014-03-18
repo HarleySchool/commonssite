@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -67,22 +66,13 @@ WSGI_APPLICATION = 'webapp.wsgi.application'
 # Load User and Password from my custom location
 import commonssite.settings as s
 
-with open(s.sql_credentials, 'r') as f:
-    host = f.readline().strip()
-    un = f.readline().strip()
-    pw = f.readline().strip()
-    socket = f.readline().strip()
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST' : socket,
-        'NAME' : 'commons',
-        'USER' : un,
-        'PASSWORD' : pw
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'main.db',
     }
 }
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 

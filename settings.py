@@ -2,12 +2,7 @@
 import os
 from private import *
 
-################
-## SQL SERVER ##
-################
 
-# credentials (username and password) are stored on the server in a protected file
-sql_credentials = os.path.expanduser("~/code/commonssite/sql_creds.txt")
 
 #####################
 ## SHARED SETTINGS ##
