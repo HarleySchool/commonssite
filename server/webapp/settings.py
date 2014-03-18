@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'timeseries',
     'hvac',
-    'veris',
+    'electric',
     'south'
 )
 
