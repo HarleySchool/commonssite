@@ -3,9 +3,13 @@ Commons Control Data Collection
 
 If you plan on making changes to the data collection system, please read this document first! There are many interacting systems each with their own code and their own rules.
 
-Updated February 11, 2014
+Updated March 21, 2014
 
 ---
+
+This version of the code is speical, instead of using a [mysql](http://www.mysql.com/) server that takes time and effort, this version uses a [sqlite](http://www.sqlite.org/) file. There are some advantages, namely that there is no daemon to run, and that the entire database is one file. This code is meant to be deployed as a backup system in case of the main mysql implementations failure.
+
+--- 
 
 <!--BREAK-->
 <!--Table of contents will go here-->
