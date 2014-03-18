@@ -1,3 +1,5 @@
 from django.contrib import admin
+from electric.models import ChannelEntry, DeviceSummary
 
-# Register your models here.
+admin.site.register(ChannelEntry)
+admin.site.register(DeviceSummary)
