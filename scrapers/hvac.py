@@ -366,6 +366,13 @@ class ScraperHvac(object):
 			group_status[group_id_to_name(group_id)] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
 		return group_status
 
+	def __map_from_model(self, name):
+		mapping = {
+			'Running' : 'Drive'
+		}
+		# get mapped name (or default to the given name)
+		return mapping.get(name, name)
+
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		now = datetime.datetime.now()
 		now = pytz.UTC.localize(now)
@@ -377,7 +384,8 @@ class ScraperHvac(object):
 				cls = VrfEntry
 			else:
 				cls = ErvEntry
-			kargs = dict(zip(cls.fields(), [data[f] for f in cls.fields()]))
+			model_fields = cls.fields()
+			kargs = dict(zip(model_fields, [data[self.__map_from_model(f)] for f in model_fields]))
 			model = cls(Time=now, Name=name, **kargs)
 			models.append(model)
 		return models
@@ -391,4 +399,14 @@ if __name__ == '__main__':
 	scraper = ScraperHvac()
 
 	from pprint import pprint
-	pprint(scraper.status_dict([i+1 for i in range(15)], [], UNITS))
+	status = {}
+	while raw_input() != 'q':
+		newstatus = scraper.status_dict([10], [], UNITS)
+		changed = {}
+		for room in newstatus.keys():
+			changed[room] = {}
+			for k in newstatus[room].keys():
+				if status.get(room, {}).get(k) != newstatus[room].get(k):
+					changed[room][k] = newstatus[room][k]
+		status = newstatus
+		pprint(changed)
