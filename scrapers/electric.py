@@ -48,6 +48,7 @@ class ScraperElectric(object):
 				except:
 					print "[ERROR] could not parse %s value as float: %s" % (column, val)
 					obj.__dict__[self.__map_db_field(column)] = None
+			objects[channel] = obj
 		return objects.values()
 
 	def __xml_to_db_summary(self, xml, set_time, set_panel):

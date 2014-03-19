@@ -27,8 +27,9 @@ class Logger(Thread):
 
 		def do_log():
 			now = datetime.datetime.now()
-			print "------------------------\n%s\tgetting log at" % self.scraper.__class__.__name__, now
-			for entry in self.scraper.get_data():
+			updates = self.scraper.get_data()
+			print "------------------------\n%s\tgetting log at" % self.scraper.__class__.__name__, now, ": %d UPDATES" % len(updates)
+			for entry in updates:
 				entry.save(force_insert=True)
 
 		def sleep_remainder():
