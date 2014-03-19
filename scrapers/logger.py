@@ -27,7 +27,7 @@ class Logger(Thread):
 
 		def do_log():
 			now = datetime.datetime.now()
-			print "------------------------\ngetting log at", now
+			print "------------------------\n%s\tgetting log at" % self.scraper.__class__.__name__, now
 			for entry in self.scraper.get_data():
 				entry.save(force_insert=True)
 
@@ -44,7 +44,7 @@ class Logger(Thread):
 				do_log()
 				# update tnext to be the next integer multiple of 'interval' seconds
 				tnext = tstart + self.interval * (1 + math.floor((now - tstart) / self.interval))
-				print "next log scheduled for", datetime.datetime.fromtimestamp(tnext)
+				print "%s\tnext log scheduled for" % self.scraper.__class__.__name__, datetime.datetime.fromtimestamp(tnext)
 			except KeyboardInterrupt:
 				print "exiting HVAC logger thread"
 				break
@@ -55,8 +55,13 @@ class Logger(Thread):
 if __name__ == '__main__':
 	hvlog = Logger(ScraperHvac(), 20*MINUTE) # log every 20 minutes forever 
 	hvlog.start()
-	#verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
-	#verlog.start()
+	verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
+	verlog.start()
 
-	hvlog.join()
+	try:
+		verlog.join()
+		hvlog.join()
+	except Exception as e:
+		print "somthing went wrong with join...?"
+		print e
 	print "--main done--"
