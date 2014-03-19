@@ -67,11 +67,13 @@ $(document).ready(function(){
 		downloadURL(url);
 	}
 
-	$("#submitvrf").click(function(event){
-		download_csv("vrf");
-	});
-
-	$("#submiterv").click(function(event){
-		download_csv("erv");
+	// set up interactivity for each button (on press, go to its specified csv downloader)
+	console.log("BUTTON INIT");
+	console.log($(".get_data_btn"));
+	$(".get_data_btn").each(function(idx, elem){
+		console.log(elem);
+		$(elem).click(function(){
+			download_csv($(elem).data("type"));
+		})
 	});
 });

@@ -36,6 +36,17 @@ class ChannelEntry(models.Model):
 	def __unicode__(self):
 		return u'%s::%s at %s' % (self.Panel, self.Channel, self.Time.strftime(datetime_out_format))
 
+	@classmethod
+	def fields(cls):
+		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
+		return ['Channel', 'Panel', 'Current', 'Energy', 'MaxCurrent', 'Demand', 'Power', 'MaxPower', 'PowerDemand', 'PowerFactor']
+
+	@classmethod
+	def all_headers(cls):
+		headers = ['Time']
+		headers.extend(cls.fields())
+		return headers
+
 	class Meta:
 		db_table = veris_sql_table_channel
 		unique_together = (('Time', 'Channel', 'Panel'),)
@@ -85,6 +96,17 @@ class DeviceSummary(models.Model):
 
 	def __unicode__(self):
 		return u'%s summary at %s' % (self.Panel, self.Time.strftime(datetime_out_format))
+
+	@classmethod
+	def fields(cls):
+		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
+		return ['Panel', 'Frequency', 'LineNeutral', 'LineLine', 'AToNeutral', 'BToNeutral', 'CToNeutral', 'AToB', 'BToC', 'CToA', 'TotalEnergy', 'TotalPower', 'TotalPowerFactor', 'AverageCurrent3Phase', 'Phase1Power', 'Phase2Power', 'Phase3Power', 'Phase1PowerFactor', 'Phase2PowerFactor', 'Phase3PowerFactor', 'Phase1Current', 'Phase2Current', 'Phase3Current', 'PhaseNeutralCurrent', 'Phase1Demand', 'Phase2Demand', 'Phase3Demand', 'PhaseNeutralDemand', 'Phase1MaxDemand', 'Phase2MaxDemand', 'Phase3MaxDemand', 'PhaseNeutralMaxDemand', 'Demand', 'MaxDemand', 'Phase1MaxCurrent', 'Phase2MaxCurrent', 'Phase3MaxCurrent', 'PhaseNeutralMaxCurrent', 'MaxPower']
+
+	@classmethod
+	def all_headers(cls):
+		headers = ['Time']
+		headers.extend(cls.fields())
+		return headers
 
 	class Meta:
 		db_table = veris_sql_table_device
