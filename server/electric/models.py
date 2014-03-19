@@ -38,7 +38,7 @@ class ChannelEntry(models.Model):
 
 	class Meta:
 		db_table = veris_sql_table_channel
-		unique_together = ('Time', 'Channel', 'Panel')
+		unique_together = (('Time', 'Channel', 'Panel'),)
 
 class DeviceSummary(models.Model):
 

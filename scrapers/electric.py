@@ -41,7 +41,7 @@ class ScraperElectric(object):
 				column = parse_name.group(2)
 				val = pt.attrib['value']
 				# get under-construction channel OR create new one
-				obj = objects.get(channel, ChannelEntry(Time=set_time, Panel=set_panel))
+				obj = objects.get(channel, ChannelEntry(Time=set_time, Panel=set_panel, Channel=channel))
 				try:
 					# all fields in this model should be float values
 					obj.__dict__[self.__map_db_field(column)] = float(val)
