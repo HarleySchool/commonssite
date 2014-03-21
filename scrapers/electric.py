@@ -19,6 +19,7 @@ class ScraperElectric(object):
 	def __map_db_field(self, xml_name):
 		# the name given by xml mapped to the field name in our DB object
 		mapping = {
+			## SINGLE CHANNEL ##
 			'' : 'Current',
 			'Max' : 'MaxCurrent',
 			'Demand' : 'Demand',
@@ -26,7 +27,46 @@ class ScraperElectric(object):
 			'Power' : 'Power',
 			'Power Max' : 'MaxPower',
 			'Power Demand' : 'PowerDemand',
-			'Power Factor' : 'PowerFactor'
+			'Power Factor' : 'PowerFactor',
+			## SUMMARY VALUES ##
+			'Frequency' : 'Frequency',
+			'Volts L-N 3ph Ave' : 'LineNeutral',
+			'Volts L-L 3ph Ave' : 'LineLine',
+			'Volts A-N' : 'AToNeutral',
+			'Volts B-N' : 'BToNeutral',
+			'Volts C-N' : 'CToNeutral',
+			'Volts A-B' : 'AToB',
+			'Volts B-C' : 'BToC',
+			'Volts C-A' : 'CToA',
+			'3ph kWh' : 'TotalEnergy',
+			'3ph Total kW' : 'TotalPower',
+			'3ph Total PF' : 'TotalPowerFactor',
+			'3ph Ave Current' : 'AverageCurrent3Phase',
+			'kW Phase 1' : 'Phase1Power',
+			'kW Phase 2' : 'Phase2Power',
+			'kW Phase 3' : 'Phase3Power',
+			'PF Phase 1' : 'Phase1PowerFactor',
+			'PF Phase 2' : 'Phase2PowerFactor',
+			'PF Phase 3' : 'Phase3PowerFactor',
+			'Current Phase 1' : 'Phase1Current',
+			'Current Phase 2' : 'Phase2Current',
+			'Current Phase 3' : 'Phase3Current',
+			'Current Phase 4' : 'PhaseNeutralCurrent',
+			'Current Demand Phase 1' : 'Phase1Demand',
+			'Current Demand Phase 2' : 'Phase2Demand',
+			'Current Demand Phase 3' : 'Phase3Demand',
+			'Current Demand Phase 4' : 'PhaseNeutralDemand',
+			'Max Current Demand Phase 1' : 'Phase1MaxDemand',
+			'Max Current Demand Phase 2' : 'Phase2MaxDemand',
+			'Max Current Demand Phase 3' : 'Phase3MaxDemand',
+			'Max Current Demand Phase 4' : 'PhaseNeutralMaxDemand',
+			'3ph Present KW Total Demand' : 'Demand',
+			'3ph Max KW Total Demand' : 'MaxDemand',
+			'Max Current Phase 1' : 'Phase1MaxCurrent',
+			'Max Current Phase 2' : 'Phase2MaxCurrent',
+			'Max Current Phase 3' : 'Phase3MaxCurrent',
+			'Max Current Phase 4' : 'PhaseNeutralMaxCurrent',
+			'3ph Max KW Total' : 'MaxPower'
 		}
 		return mapping.get(xml_name)
 
@@ -52,8 +92,19 @@ class ScraperElectric(object):
 		return objects.values()
 
 	def __xml_to_db_summary(self, xml, set_time, set_panel):
-		# TODO parse xml, return DeviceSummary object
-		pass
+		summary_obj = DeviceSummary(Time=set_time, Panel=set_panel)
+		for pt in xml.findall('.//point'):
+			n = pt.attrib['name']
+			parse_name = self.__channel_parser.match(n)
+			if not parse_name:
+				column = self.__map_db_field(n)
+				val = pt.attrib['value']
+				try:
+					summary_obj.__dict__[column] = float(val)
+				except:
+					print "[ERROR] could not parse %s value as float: %s" % (column, val)
+					summary_obj.__dict__[column] = None
+		return summary_obj
 
 	def get_data(self):
 		now = datetime.datetime.now()
@@ -64,5 +115,5 @@ class ScraperElectric(object):
 			xml_tree = etree.fromstring(status_string)
 			# TODO better panel name
 			retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
-			# TODO get device summary
+			retlist.append(self.__xml_to_db_summary(xml_tree, now, 'Panel %d' % d))
 		return retlist

@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from hvac.models import ErvEntry, VrfEntry
-from electric.models import ChannelEntry
+from electric.models import ChannelEntry, DeviceSummary
 import csv, datetime, pytz
 from commonssite.settings import datetime_out_format
 
@@ -59,3 +59,6 @@ def erv_csv(request):
 
 def channel_csv(request):
 	return generic_csv(request, ChannelEntry)
+
+def elec_summary_csv(request):
+	return generic_csv(request, DeviceSummary)
