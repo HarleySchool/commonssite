@@ -1,74 +1,94 @@
 import requests
 import json
-import time
-import threading
-import sys
+import datetime
+import pytz
 from commonssite.settings import sma_host, sma_password, sma_port
+from commonssite.server.solar.models import SMAWeather, SMAPanels, SMAOverview
+
 # Thanks to these pdfs: 
 # http://files.sma.de/dl/1348/NG_PAR-TB-en-22.pdf, 
 # http://files.sma.de/dl/15330/SB3-6TL-21-Parameter-TI-en-10W.pdf
 # for the mapping dict below
 name_mapping_dict = {
-	## OVERVIEW ##
-	'GriPwr' : 'Total AC Power',
-	'GriEgyTdy' : 'Total Energy Used Today',
-	'GriEgyTot' : 'Total Energy Used',
-	'Msg' : 'Message',
-	## WEATHER ## 
-	'ExlSolIrr' : 'Internal Solar Irradation',
-	'IntSolIrr' : 'External Solar Irradation',
-	'TmpAmb C' : 'Ambient Temprature',
-	'TmpMdul C' : 'Module Temprature',
-	'WindVel m/s' : 'Wind Velocity',
-	## INVERTER ## 
-	'A.Ms.Amp' : 'A DC Input',
-	'A.Ms.Vol' : 'A DC Input',
-	'A.Ms.Watt' : 'A DC Input',
-	'A1.Ms.Amp' : 'A1 DC Input',
-	'B.Ms.Amp' : 'B DC Input',
-	'B.Ms.Vol' : 'B DC Input',
-	'B.Ms.Watt' : 'B DC Input',
-	'B1.Ms.Amp' : 'B1 DC Input',
-	'E-Total' : 'Total Yield',
-	'GM.TotS0Out' : 'S0-pulses grid feed-in counter',
-	'GM.TotWhOut' : 'Feed in Reading',
-	'GridMs.A.phsA' : 'Grid Phase 1 Current',
-	'GridMs.A.phsB' : 'Grid Phase 2 Current',
-	'GridMs.A.phsC' : 'Grid Phase 3 Current',
-	'GridMs.Hz' : 'Grid Frequency',
-	'GridMs.PhV.phsA' : 'Grid Phase 1 Voltage',
-	'GridMs.PhV.phsB' : 'Grid Phase 2 Voltage',
-	'GridMs.PhV.phsC' : 'Grid Phase 3 Voltage',
-	'GridMs.TotPF' : 'Grid Displacement Power Factor',
-	'GridMs.TotVA' : 'Grid Apparent Power',
-	'GridMs.TotVAr' : 'Grid Reactive Power',
-	'GridMs.VA.phsA' : 'Grid Phase 1 Apparent Power',
-	'GridMs.VA.phsB' : 'Grid Phase 2 Apparent Power',
-	'GridMs.VA.phsC' : 'Grid Phase 3 Apparent Power',
-	'GridMs.VAr.phsA' : 'Grid Phase 1 Reactive Power',
-	'GridMs.VAr.phsB' : 'Grid Phase 2 Reactive Power',
-	'GridMs.VAr.phsC' : 'Grid Phase 3 Reactive Power',
-	'GridMs.W.phsA' : 'Grid Phase 1 Power',
-	'GridMs.W.phsB' : 'Grid Phase 2 Power',
-	'GridMs.W.phsC' : 'Grid Phase 3 Power',
-	'Inv.TmpLimStt' : 'Derating',
+	'overview' : {
+		'GriPwr' : 'TotalACPower',
+		'GriEgyTdy' : 'TotalEnergyToday',
+		'GriEgyTot' : 'TotalEnergy',
+		'Msg' : 'Message',
+	},
+	'weather' : {
+		'ExlSolIrr' : 'InternalSolarIrradation',
+		'IntSolIrr' : 'ExternalSolarIrradation',
+		'TmpAmb C' : 'AmbientTemprature',
+		'TmpMdul C' : 'ModuleTemprature',
+		'WindVel m/s' : 'WindVelocity',
+	},
+	'panels' : { 
+		'A.Ms.Amp' : 'A_DC_Current',
+		'A.Ms.Vol' : 'A_DC_Voltage',
+		'A.Ms.Watt' : 'A_DC_Power',
+		'A1.Ms.Amp' : 'A1_DC_Current',
+		'B.Ms.Amp' : 'B_DC_Current',
+		'B.Ms.Vol' : 'B_DC_Voltage',
+		'B.Ms.Watt' : 'B_DC_Power',
+		'B1.Ms.Amp' : 'B1_DC_Current',
+		'GridMs.A.phsA' : 'GridPhase1Current',
+		'GridMs.A.phsB' : 'GridPhase2Current',
+		'GridMs.A.phsC' : 'GridPhase3Current',
+		'GridMs.Hz' : 'GridFrequency',
+		'GridMs.PhV.phsA' : 'GridPhase1Voltage',
+		'GridMs.PhV.phsB' : 'GridPhase2Voltage',
+		'GridMs.PhV.phsC' : 'GridPhase3Voltage',
+		'GridMs.TotPF' : 'GridDisplacementPowerFactor',
+		'GridMs.TotVA' : 'GridApparentPower',
+		'GridMs.TotVAr' : 'GridReactivePower',
+		'GridMs.VA.phsA' : 'GridPhase1ApparentPower',
+		'GridMs.VA.phsB' : 'GridPhase2ApparentPower',
+		'GridMs.VA.phsC' : 'GridPhase3ApparentPower',
+		'GridMs.VAr.phsA' : 'GridPhase1ReactivePower',
+		'GridMs.VAr.phsB' : 'GridPhase2ReactivePower',
+		'GridMs.VAr.phsC' : 'GridPhase3ReactivePower',
+		'GridMs.W.phsA' : 'GridPhase1Power',
+		'GridMs.W.phsB' : 'GridPhase2Power',
+		'GridMs.W.phsC' : 'GridPhase3Power',
+		'Inv.TmpLimStt' : 'Derating',
+		'InvCtl.Stt' :'DeviceControlStatus',
+		'Op.Health' : 'OperationHealth',
+		'E-Total' : 'TotalYield',
+		'Iso.FltA' : 'ResidualCurrent',
+		'Mt.TotOpTmh' : 'FeedInTime',
+		'Mt.TotTmh' : 'OperatingTime',
 
-	'InvCtl.Stt' : 'Device Control Status',
-	'Iso.FltA' : 'Residual current',
-	'Mt.TotOpTmh' : 'Feed-in time',
-	'Mt.TotTmh' : 'Operating time',
-	'Op.EvtCntIstl' : 'Number of Installer-Relevant Events',
-	'Op.EvtCntUsr' : 'Number of User-Relevant Events',
-	'Op.EvtNo' : 'Current Event Number',
-	'Op.GriSwCnt' : 'Number of Grid Connections',
-	'Op.GriSwStt' : 'Grid relay/contactor',
-	'Op.Health' : 'Operation Health',
-	'Op.Prio' : 'Recomended Action',
-	'Op.TmsRmg' : 'Waiting time until feed-in',
-	'Pac' : 'Total AC Power',
-	'PCM-DigInStt' : 'Status of digital inputs of power control module',
-	'PlntCtl.Stt' : 'PV System Control Status',
-	'Riso' : 'Insulation resistance'
+		# 'Op.EvtCntIstl' : 
+		# 'Op.EvtCntUsr' : 
+		# 'Op.EvtNo' : 
+		# 'Op.GriSwCnt' : 
+		# 'Op.GriSwStt' : 
+		# 'Op.Prio' : 
+		# 'Op.TmsRmg' : 
+		# 'Pac' : 
+		# 'PCM-DigInStt' : 
+		# 'PlntCtl.Stt' : 
+		# 'Riso' : 
+		# 'GM.TotS0Out' : 
+		# 'GM.TotWhOut' : 
+	}
+}
+
+
+devices = {
+	'weather' : {
+		'key' : 'SENS0700:26877',
+		'name' : 'SMA Weather Sensor',
+		'channels' : 'null',
+		'children' : 'null'
+	},
+	'power' : {
+		'key' : 'WRHV5K84:19120146',
+		'name' : 'SMA Solar Data',
+		'channels' : 'null',
+		'children' : 'null'
+	}
 }
 
 class ScraperSMA(object):
@@ -76,13 +96,9 @@ class ScraperSMA(object):
 	def __init__(self):
 		self.__setdevs()
 
-	# Take a standard name and return a human readable name
-	def __mapdict(self, smaname):
-		query = name_mapping_dict.get(smaname)
-		if query == None:
-			return smaname
-		else:
-			return query
+	# Take a standard name and return a human readable name (default to the standard name)
+	def __mapdict(self, dname, smaname):
+		return name_mapping_dict[dname].get(smaname, smaname)
 
 	def __unitvalparse(self, val, unit):
 		if val == '':
@@ -173,9 +189,56 @@ class ScraperSMA(object):
 		return req.json()
 
 	def get_data(self):
-		from pprint import pprint
+		# TODO convert given units to default units
+		now = datetime.datetime.now()
+		now = pytz.UTC.localize(now)
 		objects = []
-		pprint(self.__doGetData())
+		# GET DEVICE DATA
+		data_dict = self.__doGetData()
+		if 'id' in data_dict and int(data_dict['id']) == 1:
+			for dev_dict in data_dict['result']['devices']:
+				if dev_dict.get('key') == devices['weather']['key']:
+					# PARSE WEATHER
+					weather = SMAWeather(Time=now)
+					weather.__dict__['InternalSolarIrradation'] = 0.0
+					# over_list = over_dict['results']['overview']
+					# for field in over_list:
+					# 	nm = field['name']
+					# 	try:
+					# 		val = float(field['value'])
+					# 	except:
+					# 		val = field['value']
+					# 	weather.__dict__[self.__mapdict('overview', nm)] = val
+					# objects.append(overview)
+				elif dev_dict.get('key') == devices['power']['key']:
+					# PARSE PANELS
+					panels = SMAPanels(Time=now)
+					# over_list = over_dict['results']['overview']
+					# for field in over_list:
+					# 	nm = field['name']
+					# 	try:
+					# 		val = float(field['value'])
+					# 	except:
+					# 		val = field['value']
+					# 	panels.__dict__[self.__mapdict('overview', nm)] = val
+					# objects.append(overview)
+		# GET OVERVIEW
+		over_dict = self.__doGetPlantOverview()
+		if 'id' in over_dict and int(over_dict['id']) == 4:
+			overview = SMAOverview(Time=now)
+			over_list = over_dict['results']['overview']
+			for field in over_list:
+				nm = field['name']
+				try:
+					val = float(field['value'])
+				except:
+					val = field['value']
+				overview.__dict__[self.__mapdict('overview', nm)] = val
+			objects.append(overview)
+		# TESTING
+		from pprint import pprint
+		pprint(data_dict)
+		pprint(over_dict)
 		return objects
 
 if __name__ == '__main__':
