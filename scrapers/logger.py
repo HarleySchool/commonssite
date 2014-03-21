@@ -1,7 +1,6 @@
 # top-level logging script
 import time, datetime, math
 from threading import Thread
-from commonssite.settings import hvac_log_interval
 from commonssite.scrapers import *
 
 MINUTE = 60
@@ -58,10 +57,13 @@ if __name__ == '__main__':
 	hvlog.start()
 	verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
 	verlog.start()
+	smalog = Logger(ScraperSMA(), 20*MINUTE)
+	smalog.start()
 
 	try:
 		verlog.join()
 		hvlog.join()
+		smalog.join()
 	except Exception as e:
 		print "somthing went wrong with join...?"
 		print e

@@ -83,7 +83,6 @@ class SMAPanels(models.Model):
 	FeedInTime = models.FloatField() # hours
 	OperatingTime = models.FloatField() # Hours
 	OperationHealth = models.CharField(max_length=16)
-	TotalACPower = models.FloatField() # Watts
 
 	@classmethod
 	def fields(cls):

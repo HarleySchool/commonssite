@@ -84,7 +84,7 @@ devices = {
 		'children' : 'null'
 	},
 	'power' : {
-		'key' : 'WRHV5K84:19120146',
+		'key' : 'WRHV5K84:191201464',
 		'name' : 'SMA Solar Data',
 		'channels' : 'null',
 		'children' : 'null'
@@ -200,33 +200,32 @@ class ScraperSMA(object):
 				if dev_dict.get('key') == devices['weather']['key']:
 					# PARSE WEATHER
 					weather = SMAWeather(Time=now)
-					weather.__dict__['InternalSolarIrradation'] = 0.0
-					# over_list = over_dict['results']['overview']
-					# for field in over_list:
-					# 	nm = field['name']
-					# 	try:
-					# 		val = float(field['value'])
-					# 	except:
-					# 		val = field['value']
-					# 	weather.__dict__[self.__mapdict('overview', nm)] = val
-					# objects.append(overview)
+					weather_list = dev_dict['channels']
+					for field in weather_list:
+					 	nm = field['name']
+					 	try:
+					 		val = float(field['value'])
+					 	except:
+					 		val = field['value']
+					 	weather.__dict__[self.__mapdict('weather', nm)] = val
+					objects.append(weather)
 				elif dev_dict.get('key') == devices['power']['key']:
 					# PARSE PANELS
 					panels = SMAPanels(Time=now)
-					# over_list = over_dict['results']['overview']
-					# for field in over_list:
-					# 	nm = field['name']
-					# 	try:
-					# 		val = float(field['value'])
-					# 	except:
-					# 		val = field['value']
-					# 	panels.__dict__[self.__mapdict('overview', nm)] = val
-					# objects.append(overview)
+					over_list = dev_dict['channels']
+					for field in over_list:
+						nm = field['name']
+						try:
+							val = float(field['value'])
+						except:
+							val = field['value']
+						panels.__dict__[self.__mapdict('panels', nm)] = val
+					objects.append(panels)
 		# GET OVERVIEW
 		over_dict = self.__doGetPlantOverview()
 		if 'id' in over_dict and int(over_dict['id']) == 4:
 			overview = SMAOverview(Time=now)
-			over_list = over_dict['results']['overview']
+			over_list = over_dict['result']['overview']
 			for field in over_list:
 				nm = field['name']
 				try:
@@ -235,12 +234,15 @@ class ScraperSMA(object):
 					val = field['value']
 				overview.__dict__[self.__mapdict('overview', nm)] = val
 			objects.append(overview)
-		# TESTING
+		return objects
+
+	def print_debug(self):
 		from pprint import pprint
+		data_dict = self.__doGetData()
+		over_dict = self.__doGetPlantOverview()
 		pprint(data_dict)
 		pprint(over_dict)
-		return objects
 
 if __name__ == '__main__':
 	scraper = ScraperSMA()
-	scraper.get_data()
+	scraper.print_debug()
