@@ -90,6 +90,9 @@ class Monitor:
 		if name == 'Time' or pair is None or not pair[1]:
 			return False
 		th = self.thresh(name)
+		if th == 0.0:
+			# if threshold is 0, anything is a 'change'
+			return True
 		try:
 			return abs(float(val2) - float(val1)) > th
 		except:

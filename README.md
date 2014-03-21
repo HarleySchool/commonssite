@@ -1,5 +1,3 @@
-<style type="text/css"> *{font-family:arial,helvetica,sans-serif;}</style>
-
 Commons Control Data Collection
 ===============================
 
