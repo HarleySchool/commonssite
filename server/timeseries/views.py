@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from hvac.models import ErvEntry, VrfEntry
 from electric.models import ChannelEntry, DeviceSummary
+from solar.models import SMAOverview, SMAPanels, SMAWeather
 import csv, datetime, pytz
 from commonssite.settings import datetime_out_format
 
@@ -62,3 +63,12 @@ def channel_csv(request):
 
 def elec_summary_csv(request):
 	return generic_csv(request, DeviceSummary)
+
+def solar_power_csv(request):
+	return generic_csv(request, SMAPanels)
+
+def solar_weather_csv(request):
+	return generic_csv(request, SMAWeather)
+
+def solar_overview_csv(request):
+	return generic_csv(request, SMAOverview)

@@ -68,7 +68,6 @@ $(document).ready(function(){
 	}
 
 	// set up interactivity for each button (on press, go to its specified csv downloader)
-	console.log("BUTTON INIT");
 	console.log($(".get_data_btn"));
 	$(".get_data_btn").each(function(idx, elem){
 		console.log(elem);

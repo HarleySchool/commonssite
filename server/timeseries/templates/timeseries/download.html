@@ -25,9 +25,21 @@
 		<input type="text" class="time end" />
 		<br />
 		<br />
-		<input type="button" class="get_data_btn" data-type="erv" value="Get ERV" />
-		<input type="button" class="get_data_btn" data-type="vrf" value="Get VRF" />
-		<input type="button" class="get_data_btn" data-type="circuits" value="Get Circuits" />
-		<input type="button" class="get_data_btn" data-type="summary" value="Get Electric Summary" />
+		<div class="blue rounded">
+			<h3>HVAC Data</h3>
+			<input type="button" class="get_data_btn" data-type="erv" value="Get ERV" />
+			<input type="button" class="get_data_btn" data-type="vrf" value="Get VRF" />
+		</div>
+		<div class="red rounded">
+			<h3>Electrical Data</h3>
+			<input type="button" class="get_data_btn" data-type="circuits" value="Get Circuits" />
+			<input type="button" class="get_data_btn" data-type="elec-summary" value="Get Electrical Summaries" />
+		</div>
+		<div class="yellow rounded">
+			<h3>Solar Data</h3>
+			<input type="button" class="get_data_btn" data-type="sma-panel" value="Get Solar Power" />
+			<input type="button" class="get_data_btn" data-type="sma-weather" value="Get Solar Weather Station" />
+			<input type="button" class="get_data_btn" data-type="sma-over" value="Get Solar Summaries" />
+		</div>
 	</div>
 {% endblock content %}

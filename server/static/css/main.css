@@ -65,3 +65,22 @@ section#content{
 	color:#000;
 	margin-top:15px;
 }
+
+.rounded{
+	border-radius: 5px;
+	padding:4px;
+	margin:3px;
+	display:inline-block;
+}
+
+.red {
+	background-color: rgba(255, 0, 0, 0.4);
+}
+
+.blue {
+	background-color: rgba(0, 0, 255, 0.4);
+}
+
+.yellow {
+	background-color: rgba(255, 255, 0, 0.4);
+}
