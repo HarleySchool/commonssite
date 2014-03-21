@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'timeseries',
     'hvac',
     'electric',
+    'solar',
     'south'
 )
 

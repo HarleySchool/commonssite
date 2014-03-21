@@ -30,11 +30,14 @@ hvac_sql_table_erv = 'hvac-erv'
 ## SOLAR SETTINGS ##
 ####################
 
-sma_host = "10.1.6.201"
+sma_host = "commonscontrol.harleyschool.org"
 sma_port = 80
 # NOTE: According to the RPC manual, sma_log_interval cannot be
 # less than 30 seconds
 sma_log_interval = 10*60 # 10 minutes
+sma_sql_table_weather = 'sma-weather'
+sma_sql_table_panels = 'sma-panels'
+sma_sql_table_overview = 'sma-overview'
 
 #######################
 ## ELECTRIC SETTINGS ##
