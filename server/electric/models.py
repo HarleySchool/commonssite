@@ -4,7 +4,7 @@ from django.db import models
 from commonssite.settings import veris_sql_table_channel,	\
 	veris_sql_table_device,									\
 	veris_sql_table_map,									\
-	datetime_out_format
+	datetime_spreadsheet_format
 
 class ChannelNameMap(models.Model):
 
@@ -34,7 +34,7 @@ class ChannelEntry(models.Model):
 	PowerFactor = models.FloatField(db_column='power-factor')
 
 	def __unicode__(self):
-		return u'%s::%s at %s' % (self.Panel, self.Channel, self.Time.strftime(datetime_out_format))
+		return u'%s::%s at %s' % (self.Panel, self.Channel, self.Time.strftime(datetime_spreadsheet_format))
 
 	@classmethod
 	def fields(cls):
@@ -95,7 +95,7 @@ class DeviceSummary(models.Model):
 	MaxPower = models.FloatField(db_column='max_3ph_power')
 
 	def __unicode__(self):
-		return u'%s summary at %s' % (self.Panel, self.Time.strftime(datetime_out_format))
+		return u'%s summary at %s' % (self.Panel, self.Time.strftime(datetime_spreadsheet_format))
 
 	@classmethod
 	def fields(cls):

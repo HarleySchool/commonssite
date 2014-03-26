@@ -15,7 +15,8 @@ $(document).ready(function(){
 	// set up date and time pickers
 	$('#datepairExample .time').timepicker({
 		'showDuration': true,
-		'timeFormat': 'g:ia'
+		'timeFormat': 'g:ia',
+		'setTime' : new Date()
 	});
 	$('#datepairExample .date').datepicker({
 		'format': 'yyyy-m-d',
@@ -23,7 +24,9 @@ $(document).ready(function(){
 	});
 
 	// initialize pairs
-	$('#datepairExample').datepair();
+	$('#datepairExample').datepair({
+		'defaultDateDelta' : 7
+	});
 
 
 	function dateurl(datestring){

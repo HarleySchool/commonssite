@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Chart Demo{% endblock title %}
+
+{% block scripts %}
+	<script src="{% static "js/commonsapi.js" %}"></script>
+	<script>
+		$(document).ready(function(){
+			makeLineChart("#wrapper");
+		});
+	</script>
+{% endblock scripts %}
+
+{% block styles %}
+	<style>
+		#chart{
+			width:600px;
+			height:300px;
+			border:1px solid #000;
+		}
+	</style>
+{% endblock styles %}
+
+{% block content %}
+	<div id="wrapper">
+		<canvas id="chart"></canvas>
+	</div>
+{% endblock content %}

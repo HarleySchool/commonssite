@@ -1,5 +1,5 @@
 # the ORM objects for HVAC
-from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv, datetime_out_format
+from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv, datetime_spreadsheet_format
 from django.db import models
 
 DIRECTION_CHOICES = (
@@ -61,7 +61,7 @@ class ErvEntry(models.Model):
 		return headers
 
 	def __unicode__(self):
-		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
+		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_spreadsheet_format))
 
 	class Meta:
 		db_table=hvac_sql_table_erv
@@ -98,7 +98,7 @@ class VrfEntry(models.Model):
 		return headers
 
 	def __unicode__(self):
-		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
+		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_spreadsheet_format))
 	
 	class Meta:
 		db_table=hvac_sql_table_vrf

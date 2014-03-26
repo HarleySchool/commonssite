@@ -13,7 +13,7 @@ sql_credentials = os.path.expanduser("~/code/commonssite/sql_creds.txt")
 ## SHARED SETTINGS ##
 #####################
 
-datetime_out_format = '%Y-%m-%d %H:%M:%S'
+datetime_spreadsheet_format = '%Y-%m-%d %H:%M:%S'
 scrapers_settings_sql_table = 'scraper-settings'
 
 ###################
