@@ -46,7 +46,7 @@ class Logger(Thread):
 				tnext = tstart + self.interval * (1 + math.floor((now - tstart) / self.interval))
 				print "%s\tnext log scheduled for" % self.scraper.__class__.__name__, datetime.datetime.fromtimestamp(tnext)
 			except KeyboardInterrupt:
-				print "exiting HVAC logger thread"
+				print "exiting logger thread"
 				break
 			except Exception as e:
 				print "error, but continuing:", type(e)
@@ -57,16 +57,16 @@ if __name__ == '__main__':
 	ervlog.start()
 	vrflog = Logger(ScraperVRF(), 20*MINUTE) # log every 20 minutes forever 
 	vrflog.start()
-	verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
-	verlog.start()
-	smalog = Logger(ScraperSMA(), 20*MINUTE)
-	smalog.start()
+	# verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
+	# verlog.start()
+	# smalog = Logger(ScraperSMA(), 20*MINUTE)
+	# smalog.start()
 
 	try:
-		verlog.join()
 		ervlog.join()
 		vrflog.join()
-		smalog.join()
+		# verlog.join()
+		# smalog.join()
 	except Exception as e:
 		print "somthing went wrong with join...?"
 		print e

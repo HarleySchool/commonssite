@@ -366,7 +366,8 @@ class HvacServerInterface(object):
 			group_status[group_id_to_name(group_id)] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
 		return group_status
 
-	def __map_from_model(self, name):
+	@classmethod
+	def map_from_model(cls, name):
 		mapping = {
 			'Running' : 'Drive'
 		}
@@ -386,7 +387,7 @@ class ScraperERV(object):
 			# check if VRF or ERV
 			if name.find('ERV') > -1:
 				model_fields = ErvEntry.get_field_names()
-				kargs = dict(zip(model_fields, [data[self.__map_from_model(f)] for f in model_fields]))
+				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
 				model = ErvEntry(Time=now, Name=name, **kargs)
 				models.append(model)
 		return models
@@ -404,7 +405,7 @@ class ScraperVRF(object):
 			# check if VRF or ERV
 			if name.find('ERV') == -1:
 				model_fields = VrfEntry.get_field_names()
-				kargs = dict(zip(model_fields, [data[self.__map_from_model(f)] for f in model_fields]))
+				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
 				model = VrfEntry(Time=now, Name=name, **kargs)
 				models.append(model)
 		return models
