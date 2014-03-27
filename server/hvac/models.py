@@ -1,4 +1,5 @@
 # the ORM objects for HVAC
+from timeseries.models import TimeseriesBase
 from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv, datetime_out_format
 from django.db import models
 
@@ -38,9 +39,8 @@ SPEED_CHOICES = (
 	('AUTO', 'Auto')
 )
 
-class ErvEntry(models.Model):
+class ErvEntry(TimeseriesBase):
 
-	Time = models.DateTimeField(db_column='time')
 	Name = models.CharField(db_column='name', max_length=32)
 	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=12)
 	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
@@ -48,17 +48,6 @@ class ErvEntry(models.Model):
 	ErrorSign = models.BooleanField(db_column='error')
 	InletTemp = models.FloatField(db_column='measured temp')
 	Running = models.NullBooleanField(db_column='running')
-	
-	@classmethod
-	def fields(cls):
-		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
-		return ['AirDirection','FanSpeed','Mode','ErrorSign','InletTemp','Running']
-
-	@classmethod
-	def all_headers(cls):
-		headers = ['Time', 'Name']
-		headers.extend(cls.fields())
-		return headers
 
 	def __unicode__(self):
 		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
@@ -66,11 +55,9 @@ class ErvEntry(models.Model):
 	class Meta:
 		db_table=hvac_sql_table_erv
 		unique_together=('Time', 'Name')
-		app_label = 'data'
 
-class VrfEntry(models.Model):
+class VrfEntry(TimeseriesBase):
 
-	Time = models.DateTimeField(db_column='time')
 	Name = models.CharField(db_column='name', max_length=32)
 	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=12)
 	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
@@ -86,21 +73,9 @@ class VrfEntry(models.Model):
 	SetTemp = models.FloatField(db_column='set temp')
 	Running = models.NullBooleanField(db_column='running')
 
-	@classmethod
-	def fields(cls):
-		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
-		return ['AirDirection','FanSpeed','Mode','ErrorSign','HeatMax','HeatMin','CoolMax','CoolMin','AutoMax','AutoMin','SetTemp','InletTemp','Running']
-
-	@classmethod
-	def all_headers(cls):
-		headers = ['Time', 'Name']
-		headers.extend(cls.fields())
-		return headers
-
 	def __unicode__(self):
 		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
 	
 	class Meta:
 		db_table=hvac_sql_table_vrf
 		unique_together=('Time', 'Name')
-		app_label = 'data'
