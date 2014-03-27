@@ -57,15 +57,18 @@ if __name__ == '__main__':
 	ervlog.start()
 	vrflog = Logger(ScraperVRF(), 20*MINUTE) # log every 20 minutes forever 
 	vrflog.start()
-	# verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
-	# verlog.start()
+	veris_circuits_log = Logger(ScraperCircuits(), 20*MINUTE) # log every 20 minutes forever 
+	veris_circuits_log.start()
+	veris_summary_log = Logger(ScraperPowerSummary(), 20*MINUTE) # log every 20 minutes forever 
+	veris_summary_log.start()
 	# smalog = Logger(ScraperSMA(), 20*MINUTE)
 	# smalog.start()
 
 	try:
 		ervlog.join()
 		vrflog.join()
-		# verlog.join()
+		veris_circuits_log.join()
+		veris_summary_log.join()
 		# smalog.join()
 	except Exception as e:
 		print "somthing went wrong with join...?"
