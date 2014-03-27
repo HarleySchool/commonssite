@@ -42,7 +42,7 @@ SPEED_CHOICES = (
 class ErvEntry(TimeseriesBase):
 
 	Name = models.CharField(db_column='name', max_length=32)
-	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=12)
+	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=16)
 	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
 	Mode = models.CharField(db_column='mode', choices=MODE_CHOICES, max_length=14)
 	ErrorSign = models.BooleanField(db_column='error')
@@ -59,7 +59,7 @@ class ErvEntry(TimeseriesBase):
 class VrfEntry(TimeseriesBase):
 
 	Name = models.CharField(db_column='name', max_length=32)
-	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=12)
+	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=16)
 	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
 	Mode = models.CharField(db_column='mode', choices=MODE_CHOICES, max_length=14)
 	ErrorSign = models.BooleanField(db_column='error')
