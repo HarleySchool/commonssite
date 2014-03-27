@@ -53,8 +53,10 @@ class Logger(Thread):
 				print e
 
 if __name__ == '__main__':
-	hvlog = Logger(ScraperHvac(), 20*MINUTE) # log every 20 minutes forever 
-	hvlog.start()
+	ervlog = Logger(ScraperERV(), 20*MINUTE) # log every 20 minutes forever 
+	ervlog.start()
+	vrflog = Logger(ScraperVRF(), 20*MINUTE) # log every 20 minutes forever 
+	vrflog.start()
 	verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
 	verlog.start()
 	smalog = Logger(ScraperSMA(), 20*MINUTE)
@@ -62,7 +64,8 @@ if __name__ == '__main__':
 
 	try:
 		verlog.join()
-		hvlog.join()
+		ervlog.join()
+		vrflog.join()
 		smalog.join()
 	except Exception as e:
 		print "somthing went wrong with join...?"
