@@ -12,9 +12,11 @@ class TimeseriesBase(models.Model):
 		fields = []
 		if hasattr(cls, "_meta"):
 			if hasattr(cls._meta, "fields"):
-				fields = cls._meta.fields
+				fields = [field.name for field in cls._meta.fields]
 		for h in cls.get_header_names():
 			fields.remove(h)
+		if u'id' in fields:
+			fields.remove(u'id')
 		return fields
 
 	@classmethod
