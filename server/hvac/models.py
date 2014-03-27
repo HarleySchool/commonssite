@@ -1,5 +1,5 @@
 # the ORM objects for HVAC
-from timeseries.models import TimeseriesBase
+from commonssite.server.timeseries.models import TimeseriesBase
 from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv, datetime_out_format
 from django.db import models
 

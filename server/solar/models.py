@@ -1,5 +1,5 @@
 from django.db import models
-from timeseries.models import TimeseriesBase
+from commonssite.server.timeseries.models import TimeseriesBase
 from commonssite.settings import sma_sql_table_panels, sma_sql_table_weather, sma_sql_table_overview
 
 class SMAWeather(TimeseriesBase):

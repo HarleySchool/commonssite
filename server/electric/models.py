@@ -1,5 +1,5 @@
 # ORM model for Electric/Veris data
-from timeseries.models import TimeseriesBase
+from commonssite.server.timeseries.models import TimeseriesBase
 from django.db import models
 from commonssite.settings import veris_sql_table_channel,	\
 	veris_sql_table_device,									\
