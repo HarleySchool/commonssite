@@ -11,6 +11,10 @@
 #include <SD.h>
 #include <map>
 
+// Default pins for Ethernet shield with an SD card slot
+#define SDCS 4 // NOTE that pins 11, 12, and 13 are also reserved for SD communication. see here: http://arduino.cc/en/Reference/SDCardNotes
+#define ETHCS 10
+#define LOGFILE "DATA.LOG"
 #define SERVERPORT 80
 
 class NetworkSensor{
@@ -21,7 +25,6 @@ public:
 	// logging functions
 	void logf(String name, float value, unsigned int precision);
 	void logi(String name, int value);
-	void logs(String name, String value);
 	// function to serve data
 	void serve();
 private:
@@ -54,13 +57,13 @@ private:
 		// returns string of val with number of decimal places determine by precision
 		// NOTE: precision is 1 followed by the number of zeros for the desired number of decimial places
 		// example: floatToString( 3.1415, 100); // returns "3.14" (two decimal places)
-		String s = int(val) + ".";
+		String s = String(int(val)) + String(".");
 	    unsigned int frac;
 	    if(val >= 0)
 	        frac = (val - int(val)) * precision;
 	    else
 	        frac = (int(val)- val ) * precision;
-	    s += frac;
+	    s += String(frac);
 	    return s;
 	}
 };
