@@ -9,11 +9,8 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <SD.h>
+#include <map>
 
-// Default pins for Ethernet shield with an SD card slot
-#define SDCS 4 // NOTE that pins 11, 12, and 13 are also reserved for SD communication. see here: http://arduino.cc/en/Reference/SDCardNotes
-#define ETHCS 10
-#define LOGFILE "data.log"
 #define SERVERPORT 80
 
 class NetworkSensor{
@@ -31,10 +28,9 @@ private:
 	// ETHERNET CONFIGURATION
 	EthernetServer server;
 	bool initialized;
-	// SD writing helper
-	String get_current_file();
+	std::map<String, String> recent_values;
 	void log(String name, String stringifiedValue);
-
+	String as_json();
 
 	/////////////////////////////////
 	// String manipulation helpers //
