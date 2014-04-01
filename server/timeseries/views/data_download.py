@@ -1,12 +1,12 @@
-from django.http import HttpResponse
+import csv
+import datetime
+import pytz
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render
-from hvac.models import ErvEntry, VrfEntry
-from electric.models import ChannelEntry, DeviceSummary
-from solar.models import SMAOverview, SMAPanels, SMAWeather
-import csv, datetime, pytz
 from commonssite.settings import datetime_out_format
+from timeseries.models import ModelRegistry
+from timeseries import get_registered_model
 
-# Create your views here.
 def index(request):
 	return render(request, 'timeseries/download.html', {})
 
@@ -18,12 +18,12 @@ def __date_parse(datestring_arg):
 	dt_with_timezone = pytz.UTC.localize(unaware)
 	return dt_with_timezone
 
-def __data_range(request, cls, tstart, tend):
+def __csv_range(request, cls, tstart, tend):
 	response = HttpResponse(content_type='text/csv')
-	response['Content-Disposition'] = 'attachment; filename="commonsdata.csv"'
+	response['Content-Disposition'] = 'attachment; filename="%s.csv"' % cls.__name__
 	writer = csv.writer(response)
 
-	headers = cls.all_headers()
+	headers = cls.get_header_names() + cls.get_field_names()
 	writer.writerow(headers)
 
 	q = cls.objects.filter(Time__gte=tstart, Time__lt=tend)
@@ -38,7 +38,7 @@ def __data_range(request, cls, tstart, tend):
 		writer.writerow(csv_row)
 	return response
 
-def generic_csv(request, model):
+def generic_csv(request, model_name):
 	try:
 		tstart = __date_parse(request.GET.get('tstart'))
 	except Exception as e:
@@ -49,26 +49,12 @@ def generic_csv(request, model):
 	except Exception as e:
 		print e
 		tend = datetime.datetime.now()
-	return __data_range(request, model, tstart, tend)
-
-def vrf_csv(request):
-	return generic_csv(request, VrfEntry)
-	
-
-def erv_csv(request):
-	return generic_csv(request, ErvEntry)
-
-def channel_csv(request):
-	return generic_csv(request, ChannelEntry)
-
-def elec_summary_csv(request):
-	return generic_csv(request, DeviceSummary)
-
-def solar_power_csv(request):
-	return generic_csv(request, SMAPanels)
-
-def solar_weather_csv(request):
-	return generic_csv(request, SMAWeather)
-
-def solar_overview_csv(request):
-	return generic_csv(request, SMAOverview)
+	# find the specified model class
+	for m in ModelRegistry.objects.all():
+		if m.short_name == model_name:
+			break
+	# retrieve model class from cache, or import it
+	try:
+		return __csv_range(request, get_registered_model(m.model_class), tstart, tend)
+	except ImportError:
+		return HttpResponseServerError("Could not locate database table for type %s" % model_name)

@@ -62,7 +62,7 @@ $(document).ready(function(){
 		var date_end = $("input.date.end").val();
 		var time_end = $("input.time.end").val();
 
-		url = "/timeseries/"+type+"?tstart=" + datetime_url(date_start, time_start) + "&tend=" + datetime_url(date_end, time_end);
+		url = "/data/download/"+type+"?tstart=" + datetime_url(date_start, time_start) + "&tend=" + datetime_url(date_end, time_end);
 		console.log(url);
 		downloadURL(url);
 	}
