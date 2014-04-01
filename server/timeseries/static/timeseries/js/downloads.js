@@ -26,28 +26,23 @@ $(document).ready(function(){
 	$('#datepairExample').datepair();
 
 	// ajax query for building page content
-	$.ajax({
-		url : '/data/api/systems/',
-		contentType : 'json',
-		success : function(systems){
-			console.log(systems);
-			var container = $("div.buttons-container");
-			for(sysname in systems){
-				var classname = "buttons-"+sysname.toLowerCase();
-				container.append("<div class='"+classname+"'><h3>"+sysname+"</h3></div>");
-				var sysdiv = $("div."+classname);
-				for(subsys in systems[sysname]){
-					sysdiv.append("<input type='button' class='get_data_btn' data-type='"+subsys+"' value='Get "+subsys+"' />")
-				}
+	Commons.getSystems(function(systems){
+		var container = $("div.buttons-container");
+		for(sysname in systems){
+			var classname = "buttons-"+sysname.toLowerCase();
+			container.append("<div class='"+classname+"'><h3>"+sysname+"</h3></div>");
+			var sysdiv = $("div."+classname);
+			for(subsys in systems[sysname]){
+				sysdiv.append("<input type='button' class='get_data_btn' data-type='"+subsys+"' value='Get "+subsys+"' />")
 			}
-			// set up interactivity for each button (on press, go to its specified csv downloader)
-			$(".get_data_btn").each(function(idx, elem){
-				$(elem).click(function(){
-					console.log("csv trigger set for "+elem);
-					download_csv($(elem).data("type"));
-				})
-			});
 		}
+		// set up interactivity for each button (on press, go to its specified csv downloader)
+		$(".get_data_btn").each(function(idx, elem){
+			$(elem).click(function(){
+				console.log("csv trigger set for "+elem);
+				download_csv($(elem).data("type"));
+			})
+		});
 	});
 
 	// helper functions
