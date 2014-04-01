@@ -26,7 +26,7 @@ __setting up your Mac or Linux computer for back-end development__:
 6. Make a directory "~/.virtualenv". Go there in the command line and run `virtualenv --system-site-packages Django` (if you installed virtualenv with `--user`, you may need to find where it is first.. on my machine it was "~/.local/bin/virtualenv")
 7. Open the file "~/.virtualenv/Django/bin/activate" with your editor of choice. In the blank space after "export PATH", add the following:
 
-		export PYTHONPATH="~/code:$PYTHONPATH"
+		export PYTHONPATH="~/code:~/code/commonssite/weewx/bin:$PYTHONPATH"
 		export DJANGO_SETTINGS_MODULE="commonssite.server.webapp.settings"
 
 8. That's pretty much it for setup! Now when you run `source ~/.virtualenv/Django/bin/activate`, you should be able to run any of the code in the commonssite repository. Just type `deactivate` to get out of that virtual environment. Since that's a lot of typing, a shortcut is to modify "~/.bash_aliases" (or "~/.bashrc" if it doesn't exist) with the following:
