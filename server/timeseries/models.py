@@ -47,7 +47,7 @@ class ModelRegistry(models.Model):
 	system = models.CharField(max_length=16)
 	model_class = models.CharField(max_length=64)
 	scraper_class = models.CharField(max_length=64, null=True)
-	description = models.CharField(max_length=256)
+	description = models.TextField()
 	short_name = models.CharField(max_length=32)
 
 	def __unicode__(self):
