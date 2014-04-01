@@ -36,6 +36,7 @@ NetworkSensor::NetworkSensor(uint8_t mac[], uint8_t ip[]) : server(SERVERPORT), 
 	// Serial.print(ip[0]); Serial.print("."); Serial.print(ip[1]); Serial.print("."); Serial.print(ip[2]); Serial.print("."); Serial.println(ip[3]);
 	// server.begin();
 	Serial.println("skipped ethernet setup");
+	delay(1000);
 }
 
 NetworkSensor::~NetworkSensor(){}
@@ -73,7 +74,7 @@ void NetworkSensor::serve()
 				currentLineIsBlank = (c == '\n' || c == '\r');
 			}
 		}
-		delay(1);
+		delay(30);
 		client.stop();
 	}
 }
@@ -113,15 +114,18 @@ void NetworkSensor::log(String name, String stringifiedValue)
 		// writing now happens in 3 parts:
 		//	1) content up-to-line
 		if(line_start > -1){
+			memset(buf, 0, 128);
 			String prev_content = contents.substring(0, line_start);
 			prev_content.toCharArray(buf, 128);
 			data_file.write(buf);
 		}
 		//	2) new-line
+		memset(buf, 0, 128);
 		String newline = quoted_name + " : " + stringifiedValue + ",\n";
 		newline.toCharArray(buf, 128);
 		data_file.write(buf);
 		//	3) content after-line
+		memset(buf, 0, 128);
 		String post_content = contents.substring(line_end+1);
 		post_content.toCharArray(buf, 128);
 		data_file.write(buf);
@@ -141,7 +145,8 @@ String NetworkSensor::get_current_file()
 	File data_file = SD.open(LOGFILE);
 	if(data_file){
 		Serial.println("===============");
-		while(data_file.available()) Serial.print((char)data_file.read());
+		char c;
+		while(data_file.available() && (c=data_file.read()) != EOF) Serial.print(c);
 		data_file.close();
 		Serial.println("===============");
 	} else{
