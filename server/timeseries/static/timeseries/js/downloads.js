@@ -25,6 +25,27 @@ $(document).ready(function(){
 	// initialize pairs
 	$('#datepairExample').datepair();
 
+	// ajax query for building page content
+	Commons.getSystems(function(systems){
+		var container = $("div.buttons-container");
+		for(sysname in systems){
+			var classname = "buttons-"+sysname.toLowerCase();
+			container.append("<div class='"+classname+"'><h3>"+sysname+"</h3></div>");
+			var sysdiv = $("div."+classname);
+			for(subsys in systems[sysname]){
+				sysdiv.append("<input type='button' class='get_data_btn' data-type='"+subsys+"' value='Get "+subsys+"' />")
+			}
+		}
+		// set up interactivity for each button (on press, go to its specified csv downloader)
+		$(".get_data_btn").each(function(idx, elem){
+			$(elem).click(function(){
+				console.log("csv trigger set for "+elem);
+				download_csv($(elem).data("type"));
+			})
+		});
+	});
+
+	// helper functions
 
 	function dateurl(datestring){
 		var datefmt_in  = /(\d+)\/(\d+)\/(\d+)/i;
@@ -62,17 +83,7 @@ $(document).ready(function(){
 		var date_end = $("input.date.end").val();
 		var time_end = $("input.time.end").val();
 
-		url = "/timeseries/"+type+"?tstart=" + datetime_url(date_start, time_start) + "&tend=" + datetime_url(date_end, time_end);
-		console.log(url);
+		url = "/data/download/"+type+"?tstart=" + datetime_url(date_start, time_start) + "&tend=" + datetime_url(date_end, time_end);
 		downloadURL(url);
 	}
-
-	// set up interactivity for each button (on press, go to its specified csv downloader)
-	console.log($(".get_data_btn"));
-	$(".get_data_btn").each(function(idx, elem){
-		console.log(elem);
-		$(elem).click(function(){
-			download_csv($(elem).data("type"));
-		})
-	});
 });

@@ -46,24 +46,37 @@ class Logger(Thread):
 				tnext = tstart + self.interval * (1 + math.floor((now - tstart) / self.interval))
 				print "%s\tnext log scheduled for" % self.scraper.__class__.__name__, datetime.datetime.fromtimestamp(tnext)
 			except KeyboardInterrupt:
-				print "exiting HVAC logger thread"
+				print "exiting logger thread"
 				break
 			except Exception as e:
 				print "error, but continuing:", type(e)
 				print e
 
 if __name__ == '__main__':
-	hvlog = Logger(ScraperHvac(), 20*MINUTE) # log every 20 minutes forever 
-	hvlog.start()
-	verlog = Logger(ScraperElectric(), 20*MINUTE) # log every 20 minutes forever 
-	verlog.start()
-	smalog = Logger(ScraperSMA(), 20*MINUTE)
-	smalog.start()
+	# ervlog = Logger(ScraperERV(), 20*MINUTE) # log every 20 minutes forever 
+	# ervlog.start()
+	# vrflog = Logger(ScraperVRF(), 20*MINUTE) # log every 20 minutes forever 
+	# vrflog.start()
+	# veris_circuits_log = Logger(ScraperCircuits(), 20*MINUTE) # log every 20 minutes forever 
+	# veris_circuits_log.start()
+	# veris_summary_log = Logger(ScraperPowerSummary(), 20*MINUTE) # log every 20 minutes forever 
+	# veris_summary_log.start()
+	solar_panel_log = Logger(ScraperSolarPanels(), 20*MINUTE)
+	solar_panel_log.start()
+	solar_weather_log = Logger(ScraperSolarWeather(), 20*MINUTE)
+	solar_weather_log.start()
+	solar_overview_log = Logger(ScraperSolarOverview(), 20*MINUTE)
+	solar_overview_log.start()
 
 	try:
-		verlog.join()
-		hvlog.join()
-		smalog.join()
+		# ervlog.join()
+		# vrflog.join()
+		# veris_circuits_log.join()
+		# veris_summary_log.join()
+		# smalog.join()
+		solar_panel_log.join()
+		solar_weather_log.join()
+		solar_overview_log.join()
 	except Exception as e:
 		print "somthing went wrong with join...?"
 		print e

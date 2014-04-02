@@ -3,20 +3,24 @@ from commonssite.settings import veris_host, veris_port, veris_uname, veris_pass
 from commonssite.scrapers.xml_import import etree
 from commonssite.server.electric.models import ChannelEntry, DeviceSummary
 
-class ScraperElectric(object):
+class ElectricServerInterface(object):
+	"""The class in charge of handling the network interface with the veris server"""
+
+	def get_xml_data(self, channel):
+		full_url = "http://%s:%d/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % (veris_host, veris_port, channel)
+		req = requests.get(full_url, auth=(veris_uname, veris_password))
+		return etree.fromstring(str(req.text))
+
+	
+class VerisScraperBase(object):
 	"""A scraper class for gettind data from our veris system
 	"""
 
-	__devices = [2, 3, 4]
+	devices = [2, 3, 4]
 	#__datetime_fmt = '%Y-%m-%d %H:%M:%S' # format of incoming XML datetime string
-	__channel_parser = re.compile(r'(Channel \#\d+)\s?(.*)')
+	channel_parser = re.compile(r'(Channel \#\d+)\s?(.*)')
 
-	def __get_xml_string(self, channel):
-		full_url = "http://%s:%d/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % (veris_host, veris_port, channel)
-		req = requests.get(full_url, auth=(veris_uname, veris_password))
-		return str(req.text)
-
-	def __map_db_field(self, xml_name):
+	def map_db_field(self, xml_name):
 		# the name given by xml mapped to the field name in our DB object
 		mapping = {
 			## SINGLE CHANNEL ##
@@ -70,12 +74,15 @@ class ScraperElectric(object):
 		}
 		return mapping.get(xml_name)
 
+
+class ScraperCircuits(VerisScraperBase):
+
 	def __xml_to_db_entries(self, xml, set_time, set_panel):
 		# TODO attrib['alarm'] and attrib['units']
 		objects = {} # collection of under-construction model objects
 		for pt in xml.findall('.//point'):
 			n = pt.attrib['name']
-			parse_name = self.__channel_parser.match(n)
+			parse_name = self.channel_parser.match(n)
 			if parse_name:
 				channel = parse_name.group(1)
 				column = parse_name.group(2)
@@ -84,36 +91,48 @@ class ScraperElectric(object):
 				obj = objects.get(channel, ChannelEntry(Time=set_time, Panel=set_panel, Channel=channel))
 				try:
 					# all fields in this model should be float values
-					obj.__dict__[self.__map_db_field(column)] = float(val)
+					obj.__dict__[self.map_db_field(column)] = float(val)
 				except:
 					print "[ERROR] could not parse %s value as float: %s" % (column, val)
-					obj.__dict__[self.__map_db_field(column)] = None
+					obj.__dict__[self.map_db_field(column)] = None
 			objects[channel] = obj
 		return objects.values()
+
+	def get_data(self):
+		esi = ElectricServerInterface()
+		now = datetime.datetime.now()
+		now = pytz.UTC.localize(now)
+		retlist = []
+		for d in self.devices:
+			xml_tree = esi.get_xml_data(d)
+			# TODO better panel name
+			retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
+		return retlist
+
+class ScraperPowerSummary(VerisScraperBase):
 
 	def __xml_to_db_summary(self, xml, set_time, set_panel):
 		summary_obj = DeviceSummary(Time=set_time, Panel=set_panel)
 		for pt in xml.findall('.//point'):
 			n = pt.attrib['name']
-			parse_name = self.__channel_parser.match(n)
+			parse_name = self.channel_parser.match(n)
 			if not parse_name:
-				column = self.__map_db_field(n)
+				column = self.map_db_field(n)
 				val = pt.attrib['value']
 				try:
 					summary_obj.__dict__[column] = float(val)
 				except:
 					print "[ERROR] could not parse %s value as float: %s" % (column, val)
-					summary_obj.__dict__[column] = None
-		return summary_obj
+					summary_obj.__dict__[self.map_db_field(column)] = None
+		return [summary_obj]
 
 	def get_data(self):
+		esi = ElectricServerInterface()
 		now = datetime.datetime.now()
 		now = pytz.UTC.localize(now)
 		retlist = []
-		for d in self.__devices:
-			status_string = self.__get_xml_string(d)
-			xml_tree = etree.fromstring(status_string)
+		for d in self.devices:
+			xml_tree = esi.get_xml_data(d)
 			# TODO better panel name
-			retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
-			retlist.append(self.__xml_to_db_summary(xml_tree, now, 'Panel %d' % d))
+			retlist.extend(self.__xml_to_db_summary(xml_tree, now, 'Panel %d' % d))
 		return retlist

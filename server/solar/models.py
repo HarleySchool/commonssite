@@ -1,54 +1,30 @@
 from django.db import models
+from commonssite.server.timeseries.models import TimeseriesBase
 from commonssite.settings import sma_sql_table_panels, sma_sql_table_weather, sma_sql_table_overview
 
-class SMAWeather(models.Model):
+class SMAWeather(TimeseriesBase):
 	
-	Time = models.DateTimeField(db_column='time')
 	InternalSolarIrradation = models.FloatField()
 	ExternalSolarIrradation = models.FloatField()
 	AmbientTemprature = models.FloatField()
 	ModuleTemprature = models.FloatField()
 	WindVelocity = models.FloatField()
 
-	@classmethod
-	def fields(cls):
-		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
-		return ['InternalSolarIrradation', 'ExternalSolarIrradation', 'AmbientTemprature', 'ModuleTemprature', 'WindVelocity']
-
-	@classmethod
-	def all_headers(cls):
-		headers = ['Time']
-		headers.extend(cls.fields())
-		return headers
-
 	class Meta:
 		db_table = sma_sql_table_weather
 
-class SMAOverview(models.Model):
+class SMAOverview(TimeseriesBase):
 
-	Time = models.DateTimeField(db_column='time')
 	TotalACPower = models.FloatField()
 	TotalEnergyToday = models.FloatField()
 	TotalEnergy = models.FloatField()
 	Message = models.CharField(max_length=128)
 
-	@classmethod
-	def fields(cls):
-		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
-		return ['TotalACPower', 'TotalEnergyToday', 'TotalEnergy', 'Message']
-
-	@classmethod
-	def all_headers(cls):
-		headers = ['Time']
-		headers.extend(cls.fields())
-		return headers
-
 	class Meta:
 		db_table = sma_sql_table_overview
 
-class SMAPanels(models.Model):
+class SMAPanels(TimeseriesBase):
 
-	Time = models.DateTimeField(db_column='time')
 	A_DC_Current = models.FloatField()
 	A_DC_Voltage = models.FloatField()
 	A_DC_Power = models.FloatField()
@@ -83,17 +59,6 @@ class SMAPanels(models.Model):
 	FeedInTime = models.FloatField() # hours
 	OperatingTime = models.FloatField() # Hours
 	OperationHealth = models.CharField(max_length=16)
-
-	@classmethod
-	def fields(cls):
-		"""return list of names of non-unique fields (i.e. everything except 'time' and 'name'). Useful in automatically creating objects"""
-		return ['A_DC_Current', 'A_DC_Voltage', 'A_DC_Power', 'A1_DC_Current', 'B_DC_Current', 'B_DC_Voltage', 'B_DC_Power', 'B1_DC_Current', 'TotalYield', 'GridPhase1Current', 'GridPhase2Current', 'GridPhase3Current', 'GridFrequency', 'GridPhase1Voltage', 'GridPhase2Voltage', 'GridPhase3Voltage', 'GridDisplacementPowerFactor', 'GridApparentPower', 'GridReactivePower', 'GridPhase1ApparentPower', 'GridPhase2ApparentPower', 'GridPhase3ApparentPower', 'GridPhase1ReactivePower', 'GridPhase2ReactivePower', 'GridPhase3ReactivePower', 'GridPhase1Power', 'GridPhase2Power', 'GridPhase3Power', 'Derating', 'DeviceControlStatus', 'ResidualCurrent', 'FeedInTime', 'OperatingTime', 'OperationHealth', 'TotalACPower']
-
-	@classmethod
-	def all_headers(cls):
-		headers = ['Time']
-		headers.extend(cls.fields())
-		return headers
 
 	class Meta:
 		db_table = sma_sql_table_panels
