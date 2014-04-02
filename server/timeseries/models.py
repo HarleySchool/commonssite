@@ -26,9 +26,9 @@ class TimeseriesBase(models.Model):
 		# unique_together is a tuple of tuples, e.g. (('Time', 'System'),)
 		if hasattr(cls, "_meta"):
 			if hasattr(cls._meta, "unique_together"):
-				return list(cls._meta.unique_together[0])
-		else:
-			return ['Time']
+				if len(cls._meta.unique_together) > 0:
+					return list(cls._meta.unique_together[0])
+		return ['Time']
 
 	class Meta:
 		abstract = True
