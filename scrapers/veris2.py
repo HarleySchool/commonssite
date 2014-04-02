@@ -34,7 +34,7 @@
 
 # IMPORT ALL THE THINGS!!!
 from commonssite.settings import veris_uname, veris_password, url2, url3, url4
-import requests, sys, time
+import requests, sys
 from pprint import pprint
 # Import element tree on all installs of python
 try:

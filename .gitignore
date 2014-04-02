@@ -1,3 +1,5 @@
 sql_creds.txt
 *.pyc
 server/static-collected
+private.py
+
