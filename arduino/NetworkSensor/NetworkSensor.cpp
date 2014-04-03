@@ -6,40 +6,42 @@ NetworkSensor::NetworkSensor(uint8_t mac[], uint8_t ip[]) : server(SERVERPORT), 
 {
 	// Serial connection for debugging
 	Serial.begin(9600);
+	
+	// SS (Slave Select) pins are handled by SDMode() and ethernetMode()
+	pinMode(ETHSS, OUTPUT);
+	pinMode(SDSS,  OUTPUT);
+
+	// initialize
+	initSD();
+	initEthernet();
+}
+
+NetworkSensor::~NetworkSensor(){}
+
+void NetworkSensor::initSD()
+{
 	// SD pin configuration
-	pinMode(ETHCS, OUTPUT);
-	Serial.print("Initializing SD card... ");
+	SDMode();
 	// see if the card is present and can be initialized:
 	if (SD.begin(SDCS)) {
 		Serial.println("SD card initialized.");
-		// remove log file if it exists
-		if(SD.exists(LOGFILE)) SD.remove(LOGFILE);
-		// create empty log file
-		File data_file = SD.open(LOGFILE, FILE_WRITE);
-		data_file.close();
-		// print content (Debug)
-		data_file = SD.open(LOGFILE);
-		if(data_file){
-			Serial.println("===============");
-			while(data_file.available()) Serial.print(data_file.read());
-			data_file.close();
-			Serial.println("===============");
-		}
+		clearLogFile();
 	} else{
 		initialized = false;
 		Serial.println("failed, or card not plugged in");
 	}
-	// Server initialization
-	// IPAddress ip_addr(ip[0], ip[1], ip[2], ip[3]);
-	// Ethernet.begin(mac, ip_addr);
-	// Serial.print("Opened server connection on ");
-	// Serial.print(ip[0]); Serial.print("."); Serial.print(ip[1]); Serial.print("."); Serial.print(ip[2]); Serial.print("."); Serial.println(ip[3]);
-	// server.begin();
-	Serial.println("skipped ethernet setup");
-	delay(1000);
 }
 
-NetworkSensor::~NetworkSensor(){}
+void NetworkSensor::initEthernet(uint8_t mac[], uint8_t ip[])
+{
+	// Server initialization
+	ethernetMode()
+	IPAddress ip_addr(ip[0], ip[1], ip[2], ip[3]);
+	Ethernet.begin(mac, ip_addr);
+	Serial.print("Opened server connection on ");
+	Serial.print(ip[0]); Serial.print("."); Serial.print(ip[1]); Serial.print("."); Serial.print(ip[2]); Serial.print("."); Serial.println(ip[3]);
+	server.begin();
+}
 
 void NetworkSensor::serve()
 {
@@ -47,6 +49,7 @@ void NetworkSensor::serve()
 		Serial.println("ERROR: attempting to used uninitialized NetworkSensor (did you forget 'sensor=NetworkSensor(mac, ip)' ??");
 		return;
 	}
+	ethernetMode();
 	EthernetClient client = server.available();
 	if (client) {
 		// an http request ends with a blank line
@@ -63,8 +66,14 @@ void NetworkSensor::serve()
 					client.println("Content-Type: application/json");
 					client.println();
 
-					String json = this->as_json();
-					client.println(json);
+					String content = getCurrentFile();
+					client.println("{");
+					{
+						// the format of the file is lines of 'Name : value,', so
+						// no further processing is needed to make it json-style
+						client.println(content);
+					}
+					client.println("}");
 
 					// for debugging
 					Serial.println(json);
@@ -74,9 +83,14 @@ void NetworkSensor::serve()
 				currentLineIsBlank = (c == '\n' || c == '\r');
 			}
 		}
-		delay(30);
+		delay(1);
 		client.stop();
 	}
+}
+
+long NetworkSensor::getUTC()
+{
+
 }
 
 void NetworkSensor::logf(String name, float value, unsigned int precision)
@@ -89,26 +103,46 @@ void NetworkSensor::logi(String name, int value)
 	log(name, String(value));
 }
 
+void NetworkSensor::logs(String name, String value){
+	String quoted_value = "\"" + value + "\"";
+	log(name, quoted_value);
+}
+
 void NetworkSensor::log(String name, String stringifiedValue)
 {
-	Serial.print("beginning log of ");
-	Serial.println(stringifiedValue);
 	if(!initialized){
 		Serial.println("ERROR: attempting to used uninitialized NetworkSensor (did you forget 'sensor=NetworkSensor(mac, ip)' ??");
 		return;
 	}
-	char buf[128];
-	String contents = get_current_file();
+	SDMode();
+	// create character array buffers (used when converting Strings to char[]s)
+	char buf1[256];
+	// get current contents of log file
+	String contents = getCurrentFile();
+	// surround 'name' with quotes
 	String quoted_name = String("\"") + name + String("\"");
-	int line_end = -1;
-	int line_start = str_search(contents, quoted_name, 0); // lines start with 'quoted_name', so search for the existing line
+
+	// --------------------------------------------------------------------------- //
+	// Now we search for a line with that name and replace it if it exists         //
+	// (essentially a map from name->value that gets overwritten with new values)  //
+	// --------------------------------------------------------------------------- //
+
+	// lines start with the quoted name, so search for the existing line
+	int line_end = -1, line_start = str_search(contents.toCharArray(), quoted_name.toCharArray(), 0);
 	if(line_start > -1){
-		// find the index of the end of the line so we can splice it out from start to end
-		line_end = str_search(contents, "\n", line_start);
+		// if we found a line with the given name, search for the end of the line
+		// so we can splice it out from start to end
+		line_end = str_search(contents.toCharArray(), "\n", line_start);
 	}
-	Serial.print("Replacement line: [");
-	Serial.print(line_start); Serial.print(", "); Serial.print(line_end);
-	Serial.println("]");
+	// Debugging
+	{
+		Serial.print("Replacement line: [");
+		Serial.print(line_start); Serial.print(", "); Serial.print(line_end);
+		Serial.println("]");
+	}
+	// clear existing content (to be overwritten anyway)
+	clearLogFile();
+	// open the file for writing
 	File data_file = SD.open(LOGFILE, FILE_WRITE);
 	if(data_file){
 		// writing now happens in 3 parts:
@@ -136,21 +170,34 @@ void NetworkSensor::log(String name, String stringifiedValue)
 	}
 }
 
-String NetworkSensor::get_current_file()
+void NetworkSensor::clearLogFile()
+{
+	// remove log file if it exists
+	if(SD.exists(LOGFILE)) SD.remove(LOGFILE);
+	// create empty log file
+	File data_file = SD.open(LOGFILE, FILE_WRITE);
+	data_file.close();
+}
+
+String NetworkSensor::getCurrentFile()
 {
 	if(!initialized){
 		Serial.println("ERROR: attempting to used uninitialized NetworkSensor (did you forget 'sensor=NetworkSensor(mac, ip)' ??");
-		return "";
+		return String("");
 	}
+	String content("");
 	File data_file = SD.open(LOGFILE);
 	if(data_file){
 		Serial.println("===============");
 		char c;
-		while(data_file.available() && (c=data_file.read()) != EOF) Serial.print(c);
+		while(data_file.available() && (c=data_file.read()) != EOF){
+			Serial.print(c);
+			content += c;
+		}
 		data_file.close();
 		Serial.println("===============");
 	} else{
-		Serial.println("get_current_file unable to open file.");
+		Serial.println("getCurrentFile unable to open file.");
 	}
-	return "";
+	return content;
 }
