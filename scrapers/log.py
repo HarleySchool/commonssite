@@ -1,6 +1,10 @@
 import time
 import threading
 import heapq
+from commonssite.server.timeseries.models import ModelRegistry
+from commonssite.server.timeseries import get_registered_scraper
+def minutes(seconds):
+	return seconds * 60
 class scheduler():
 	def __init__(self):
 		self.heap = []
@@ -19,7 +23,7 @@ class scheduler():
 	def startheap(self):
 		t = time.time()
 		for func, interval in self.taskdict.iteritems():
-			nextgo = t + interval
+			nextgo = t
 			heapq.heappush(self.heap, (nextgo, func))
 	def main(self):
 		self.startheap()
@@ -29,9 +33,11 @@ class scheduler():
 			# don't even cut it close
 			# use run_theaded to clear the main thread
 			#############################
+			print '=================='
 			func, nexttime = self.popandnext()
 			self.run_threaded(func)
 			sleeptime = nexttime - time.time()
+			print "I done did it at %s, I'm gon do it again in %s seconds" % (time.time(), sleeptime)
 			if sleeptime < 1 and sleeptime > -3:
 				pass
 			elif sleeptime < -3:
@@ -40,12 +46,17 @@ class scheduler():
 			else:
 				time.sleep(sleeptime)
 
+def dolog(scraper):
+	def getandsave():
+		data = scraper.get_data()
+		for item in data:
+			item.save(force_insert=True)
+	return getandsave
+
 if __name__ == '__main__':
-	def hi():
-		print 'hi from hi'
-	def lo():
-		print 'hi from lo'
-	timing = scheduler()
-	timing.register(hi, 2)
-	timing.register(lo, 4)
-	timing.main()
+	cron = scheduler()
+	model_list = [get_registered_scraper(r.scraper_class) for r in ModelRegistry.objects.all()]
+	for scraper in model_list:
+		scraperinst = scraper()
+		cron.register(dolog(scraperinst), 20)
+	cron.main()

@@ -39,8 +39,8 @@ class SMAServerInterface(object):
 		# self.actualdata = data['result']['devices']
 
 	def __MD5Hash(self, s):
-		import md5
-		m = md5.new()
+		import hashlib
+		m = hashlib.md5()
 		m.update(s)
 		return m.hexdigest()
 
