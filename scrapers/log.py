@@ -4,6 +4,7 @@ import heapq
 from commonssite.server.timeseries.models import ModelRegistry
 from commonssite.server.timeseries import get_registered_scraper
 def minutes(seconds):
+	# because math
 	return seconds * 60
 class scheduler():
 	def __init__(self):
@@ -33,18 +34,22 @@ class scheduler():
 			# don't even cut it close
 			# use run_theaded to clear the main thread
 			#############################
-			print '=================='
-			func, nexttime = self.popandnext()
-			self.run_threaded(func)
-			sleeptime = nexttime - time.time()
-			print "I done did it at %s, I'm gon do it again in %s seconds" % (time.time(), sleeptime)
-			if sleeptime < 1 and sleeptime > -3:
-				pass
-			elif sleeptime < -3:
-				print 'Sleep time error, heave you suspended your computer recently?'
-				exit()
-			else:
-				time.sleep(sleeptime)
+			try:
+				print '=================='
+				func, nexttime = self.popandnext()
+				self.run_threaded(func)
+				sleeptime = nexttime - time.time()
+				print "I done did it at %s, I'm gon do it again in %s seconds" % (time.time(), sleeptime)
+				if sleeptime < 1 and sleeptime > -3:
+					pass
+				elif sleeptime < -3:
+					print 'Sleep time error, heave you suspended your computer recently?'
+					exit()
+				else:
+					time.sleep(sleeptime)
+			except KeyboardInterrupt:
+				print "exiting cleanly"
+				break
 
 def dolog(scraper):
 	def getandsave():
@@ -58,5 +63,5 @@ if __name__ == '__main__':
 	model_list = [get_registered_scraper(r.scraper_class) for r in ModelRegistry.objects.all()]
 	for scraper in model_list:
 		scraperinst = scraper()
-		cron.register(dolog(scraperinst), 20)
+		cron.register(dolog(scraperinst), minutes(20))
 	cron.main()
