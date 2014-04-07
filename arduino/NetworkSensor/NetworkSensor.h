@@ -8,9 +8,9 @@
 #include "Arduino.h"
 #include <SPI.h>
 #include <Ethernet.h>
-#include <EthernetUdp.h> // used to sync time with NTP
 #include <SD.h>
-#include <map>
+#include <EthernetUdp.h> // used to sync time with NTP
+#include <Time.h>
 
 // Default pins for Ethernet shield with an SD card slot
 #define SDSS 4 // NOTE that pins 11, 12, and 13 are also reserved for SD communication. see here: http://arduino.cc/en/Reference/SDCardNotes
@@ -18,9 +18,52 @@
 #define LOGFILE "DATA.LOG"
 #define SERVERPORT 80
 
+// definitions used for NTP time sync
+#define UDP_PORT 8888
+// default sync time set to every 6 hours (measured in minutes)
+#define NTP_SYNC 360L
+// NTP protocol specifies a header with 4x16 values. We use 3 of them (ignoring checksum), so 3x16=48
+#define NTP_PACKET_SIZE 48
+// NTP, as specified in the protocol, communicates on port 123
+#define NTP_PORT 123
+
 /*
  * BIG TODO: better file format on SD. overwriting every line is not an efficient use of space.
  */
+
+// This class is inspired by the work found here: https://github.com/OpenReefs/Open-Reefs-Controllers/tree/master/examples/ntpSync
+// which is covered by the Createive Commons license.
+// License: http://creativecommons.org/licenses/by-nc-sa/3.0/)
+class TimeNTP{
+public:
+	// public-facing functions for getting current time
+	unsigned int year();
+	unsigned int month();
+	unsigned int day();
+	unsigned int hour();
+	unsigned int minute();
+	unsigned int second();
+	unsigned long now();
+
+	TimeNTP();
+	TimeNTP(unsigned long sync_period_minutes);
+
+	// check if sync period is up (and if so, sync time)
+	// optional to force update
+	void checkSync(bool force_update=false, int max_retries=4);
+private:
+	// send packet to the server requesting an update
+	void sendNTPpacket(IPAddress& address);
+	// read response packet (to be used after sendNTPpacket)
+	unsigned long readResponseAsEpoch();
+
+	// keep track of sync time (very infrequent updates; more than once per day is pushing it)
+	// last_update is initialized to 0L, which is useful as a check for whether it has been synced at all
+	unsigned long last_update, sync_period;
+
+	IPAddress ip;
+	EthernetUDP Udp;
+};
 
 class NetworkSensor{
 public:
@@ -31,17 +74,16 @@ public:
 	// destructor (called when object is destroyed; responsible for cleaning up (i.e. deallocate memory))
 	~NetworkSensor();
 
+	// function to serve data
+	void serve();
+
+	// function to get UTC time over the network (using the TimeNTP)
+	unsigned long getTime();
+
 	// logging functions
 	void logf(String name, float value, unsigned int precision);
 	void logi(String name, int value);
 	void logs(String name, String value);
-
-	// function to serve data
-	void serve();
-
-	// function to get UTC time over the network
-	// For reference: http://arduino.cc/en/Tutorial/UdpNTPClient
-	long getUTC();
 private:
 	// the initialized variable is a bit of a hack to get around the problem of needing a generic constructor.
 	// surely there is a better way, but this works!
@@ -50,12 +92,12 @@ private:
 	// Reference to the server object
 	EthernetServer server;
 
-	// keeping time with global clock. 
-	// logged UTC time is `millis() + UTCoffset`
-	long UTCoffset;
+	// Network-based clock for keeping track of time accurately
+	TimeNTP clock;
 
-	// Get current log file contents
-	String getCurrentFile();
+	// initialization helpers
+	void initSD();
+	void initEthernet(uint8_t mac[], uint8_t ip[]);
 
 	// Write given name:value pair to the log
 	void log(String name, String stringifiedValue);
@@ -64,27 +106,6 @@ private:
 	inline void ethernetMode()	{ digitalWrite(SDSS, HIGH); digitalWrite(ETHSS, LOW); }
 	// Set Slave-Select pins enabling SD card usage
 	inline void SDMode()		{ digitalWrite(ETHSS, HIGH); digitalWrite(SDSS, LOW); }
-
-	// initialization helpers
-	void initSD();
-	void initEthernet(uint8_t mac[], uint8_t ip[]);
-
-	// deletes and recreates the log file
-	// TODO - multiple log files handled more intelligently
-	void clearLogFile();
-
-	/////////////////////////////////
-	// String manipulation helpers //
-	/////////////////////////////////
-
-	// Locate a substring within another string.
-	// much like the built-in strstr function, but with an optional start offset 
-	int str_search(const char[] s, const char[] sub, int start=0){
-		// &s[start] works like this:
-		// char c = s[start];   // c is the character at index 'start'
-		// char* subarray = &c; // arrays are just pointers, so the address of c is like an array starting at 'start'
-		return strstr(&s[start], sub);
-	}
 
 	// returns string of val with number of decimal places determine by precision
 	// NOTE: precision is 1 followed by the number of zeros for the desired number of decimial places
