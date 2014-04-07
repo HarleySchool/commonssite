@@ -11,10 +11,7 @@ NetworkSensor sensor;
 unsigned int last_log = 0;
 
 void setup(){
-  Serial.begin(9600);
-  Serial.println("serial connection open.");
-  delay(1000);
-  sensor = NetworkSensor(mac, ip);
+  sensor.begin(mac, ip);
   sensor.logf("Pi", 3.14159, 1000); // log a floating point with 3 decimal places of precision
   sensor.logi("Time", 12345); // log an integer
   sensor.logf("Pi", 3.14159, 1); // log a floating point with 3 decimal places of precision
