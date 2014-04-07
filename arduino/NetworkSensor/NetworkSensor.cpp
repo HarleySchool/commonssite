@@ -1,47 +1,28 @@
 #include "NetworkSensor.h"
 
-NetworkSensor::NetworkSensor() : server(SERVERPORT), initialized(false) {}
+NetworkSensor::NetworkSensor() : initialized(false), server(SERVERPORT) {}
 
-NetworkSensor::NetworkSensor(uint8_t mac[], uint8_t ip[]) : server(SERVERPORT), initialized(true)
+NetworkSensor::NetworkSensor(uint8_t mac[], uint8_t ip[]) : initialized(true), server(SERVERPORT)
 {
 	// Serial connection for debugging
 	Serial.begin(9600);
+	Serial.println("Serial connection ready.");
 	
 	// SS (Slave Select) pins are handled by SDMode() and ethernetMode()
 	pinMode(ETHSS, OUTPUT);
 	pinMode(SDSS,  OUTPUT);
 
 	// initialize
+	Serial.println("connecting SD");
 	initSD();
-	initEthernet();
+	Serial.println("connecting Ethernet");
+	initEthernet(mac, ip);
+
+	// set up clock (important that it is after initEthernet())
+	this->clock = TimeNTP(NTP_SYNC);
 }
 
 NetworkSensor::~NetworkSensor(){}
-
-void NetworkSensor::initSD()
-{
-	// SD pin configuration
-	SDMode();
-	// see if the card is present and can be initialized:
-	if (SD.begin(SDCS)) {
-		Serial.println("SD card initialized.");
-		clearLogFile();
-	} else{
-		initialized = false;
-		Serial.println("failed, or card not plugged in");
-	}
-}
-
-void NetworkSensor::initEthernet(uint8_t mac[], uint8_t ip[])
-{
-	// Server initialization
-	ethernetMode()
-	IPAddress ip_addr(ip[0], ip[1], ip[2], ip[3]);
-	Ethernet.begin(mac, ip_addr);
-	Serial.print("Opened server connection on ");
-	Serial.print(ip[0]); Serial.print("."); Serial.print(ip[1]); Serial.print("."); Serial.print(ip[2]); Serial.print("."); Serial.println(ip[3]);
-	server.begin();
-}
 
 void NetworkSensor::serve()
 {
@@ -50,6 +31,9 @@ void NetworkSensor::serve()
 		return;
 	}
 	ethernetMode();
+	// make sure clock is synchronized
+	this->clock.checkSync();
+	// check for client connections and write requested data back
 	EthernetClient client = server.available();
 	if (client) {
 		// an http request ends with a blank line
@@ -66,7 +50,7 @@ void NetworkSensor::serve()
 					client.println("Content-Type: application/json");
 					client.println();
 
-					String content = getCurrentFile();
+					String content("NO CONTENT YET, SORRY");
 					client.println("{");
 					{
 						// the format of the file is lines of 'Name : value,', so
@@ -76,7 +60,7 @@ void NetworkSensor::serve()
 					client.println("}");
 
 					// for debugging
-					Serial.println(json);
+					Serial.println(content);
 					
 					break;
 				}
@@ -88,9 +72,9 @@ void NetworkSensor::serve()
 	}
 }
 
-long NetworkSensor::getUTC()
+unsigned long NetworkSensor::getTime()
 {
-
+	return this->clock.now();
 }
 
 void NetworkSensor::logf(String name, float value, unsigned int precision)
@@ -103,9 +87,34 @@ void NetworkSensor::logi(String name, int value)
 	log(name, String(value));
 }
 
-void NetworkSensor::logs(String name, String value){
+void NetworkSensor::logs(String name, String value)
+{
 	String quoted_value = "\"" + value + "\"";
 	log(name, quoted_value);
+}
+
+void NetworkSensor::initSD()
+{
+	// SD pin configuration
+	SDMode();
+	// see if the card is present and can be initialized:
+	if (SD.begin(SDSS)) {
+		Serial.println("SD card initialized.");
+	} else{
+		initialized = false;
+		Serial.println("failed, or card not plugged in");
+	}
+}
+
+void NetworkSensor::initEthernet(uint8_t mac[], uint8_t ip[])
+{
+	// Server initialization
+	ethernetMode();
+	IPAddress ip_addr(ip[0], ip[1], ip[2], ip[3]);
+	Ethernet.begin(mac, ip_addr);
+	Serial.print("Opened server connection on ");
+	Serial.print(ip[0]); Serial.print("."); Serial.print(ip[1]); Serial.print("."); Serial.print(ip[2]); Serial.print("."); Serial.println(ip[3]);
+	server.begin();
 }
 
 void NetworkSensor::log(String name, String stringifiedValue)
@@ -115,89 +124,139 @@ void NetworkSensor::log(String name, String stringifiedValue)
 		return;
 	}
 	SDMode();
-	// create character array buffers (used when converting Strings to char[]s)
-	char buf1[256];
-	// get current contents of log file
-	String contents = getCurrentFile();
-	// surround 'name' with quotes
-	String quoted_name = String("\"") + name + String("\"");
+	// TODO
+}
 
-	// --------------------------------------------------------------------------- //
-	// Now we search for a line with that name and replace it if it exists         //
-	// (essentially a map from name->value that gets overwritten with new values)  //
-	// --------------------------------------------------------------------------- //
+// ---------------
+// -- NTP Clock --
+// ---------------
 
-	// lines start with the quoted name, so search for the existing line
-	int line_end = -1, line_start = str_search(contents.toCharArray(), quoted_name.toCharArray(), 0);
-	if(line_start > -1){
-		// if we found a line with the given name, search for the end of the line
-		// so we can splice it out from start to end
-		line_end = str_search(contents.toCharArray(), "\n", line_start);
-	}
-	// Debugging
-	{
-		Serial.print("Replacement line: [");
-		Serial.print(line_start); Serial.print(", "); Serial.print(line_end);
-		Serial.println("]");
-	}
-	// clear existing content (to be overwritten anyway)
-	clearLogFile();
-	// open the file for writing
-	File data_file = SD.open(LOGFILE, FILE_WRITE);
-	if(data_file){
-		// writing now happens in 3 parts:
-		//	1) content up-to-line
-		if(line_start > -1){
-			memset(buf, 0, 128);
-			String prev_content = contents.substring(0, line_start);
-			prev_content.toCharArray(buf, 128);
-			data_file.write(buf);
+
+TimeNTP::TimeNTP() : last_update(0L), sync_period(0L)
+{}
+
+TimeNTP::TimeNTP(unsigned long sync_period_minutes)
+: last_update(0L), sync_period(sync_period_minutes * 60000L)
+{
+	// based on a query from pool.ntp.org
+	// NOTE that this may become obsolete. The correct way to do it
+	// would be to do our own DNS on pool.ntp.org, but that is too
+	// complicated for now.
+	ip = IPAddress(166, 70, 136, 41);
+	Udp.begin(UDP_PORT);
+}
+
+void TimeNTP::checkSync(bool force_update, int max_retries)
+{
+	// check if update needed
+	if(force_update || (millis() - last_update) > sync_period){
+		unsigned long epochTime = 0L;
+		int tries = 0;
+		while(epochTime == 0L && tries++ < max_retries){
+			Serial.println("syncing NTP");
+			sendNTPpacket(this->ip);
+			delay(1000);
+			epochTime = readResponseAsEpoch();
 		}
-		//	2) new-line
-		memset(buf, 0, 128);
-		String newline = quoted_name + " : " + stringifiedValue + ",\n";
-		newline.toCharArray(buf, 128);
-		data_file.write(buf);
-		//	3) content after-line
-		memset(buf, 0, 128);
-		String post_content = contents.substring(line_end+1);
-		post_content.toCharArray(buf, 128);
-		data_file.write(buf);
-		// for changes to take effect, file must be closed
-		data_file.close();
-	} else{
-		Serial.println("Could no open file for splicing.");
+		// update if successful
+		if(epochTime != 0L){
+			last_update = millis();
+			setTime(epochTime);
+			Serial.print("Time synced! it is now ");
+			Serial.print(this->month());
+			Serial.print("/");
+			Serial.print(this->day());
+			Serial.print("/");
+			Serial.print(this->year());
+			Serial.print(" ");
+			Serial.print(this->hour());
+			Serial.print(":");
+			Serial.print(this->minute());
+			Serial.print(":");
+			Serial.println(this->second());
+		} else{
+			Serial.println("Sync failed");
+		}
 	}
 }
 
-void NetworkSensor::clearLogFile()
+unsigned long TimeNTP::now()
 {
-	// remove log file if it exists
-	if(SD.exists(LOGFILE)) SD.remove(LOGFILE);
-	// create empty log file
-	File data_file = SD.open(LOGFILE, FILE_WRITE);
-	data_file.close();
+	if(last_update > 0L) return now();
+	else return 0L;
 }
 
-String NetworkSensor::getCurrentFile()
+unsigned int TimeNTP::year()
 {
-	if(!initialized){
-		Serial.println("ERROR: attempting to used uninitialized NetworkSensor (did you forget 'sensor=NetworkSensor(mac, ip)' ??");
-		return String("");
+	if(last_update > 0L) return year();
+	else return 0L;
+}
+
+unsigned int TimeNTP::month()
+{
+	if(last_update > 0L) return month();
+	else return 0L;
+}
+
+unsigned int TimeNTP::day(){
+	if(last_update > 0L) return day();
+	else return 0L;
+}
+
+unsigned int TimeNTP::hour(){
+	if(last_update > 0L) return hour();
+	else return 0L;
+}
+
+unsigned int TimeNTP::minute(){
+	if(last_update > 0L) return minute();
+	else return 0L;
+}
+
+unsigned int TimeNTP::second(){
+	if(last_update > 0L) return second();
+	else return 0L;
+}
+
+void TimeNTP::sendNTPpacket(IPAddress& address)
+{
+	// consume and discard all existing requests
+	while(Udp.parsePacket() > 0);
+	// PROTOCOL SPECIFICATION: http://tools.ietf.org/html/rfc958#appendix-A
+	// (or see the Time>TimeNTP example that comes with Arduino)
+	// create byte buffer
+	byte packetBuffer[NTP_PACKET_SIZE];
+	// clear buffer to zeros
+	memset(packetBuffer, 0, NTP_PACKET_SIZE);
+	// set packet data as an NTP request
+	packetBuffer[0]  = 0b11100011;
+	packetBuffer[1]  = 0;
+	packetBuffer[2]  = 0xEC;
+	packetBuffer[3]  = 6;
+	packetBuffer[12] = 49;
+	packetBuffer[13] = 0x4E;
+	packetBuffer[14] = 49;
+	packetBuffer[15] = 52;
+	Udp.beginPacket(address, NTP_PORT);
+	Udp.write(packetBuffer, NTP_PACKET_SIZE);
+	Udp.endPacket();
+}
+
+unsigned long TimeNTP::readResponseAsEpoch()
+{
+	// PROTOCOL SPECIFICATION: http://tools.ietf.org/html/rfc958#appendix-B
+	if(Udp.parsePacket() >= NTP_PACKET_SIZE){
+		byte packetBuffer[NTP_PACKET_SIZE];
+		Udp.read(packetBuffer, NTP_PACKET_SIZE);
+		unsigned long highWord, lowWord, epoch;
+		highWord = word(packetBuffer[40], packetBuffer[41]);
+		lowWord = word(packetBuffer[42], packetBuffer[43]);
+		epoch = highWord << 16 | lowWord;
+		// NTP specifies the # of seconds since 1900.
+		// Unix time is since 1970.
+		// There are 2208988800 seconds between 1900 and 1970  
+		epoch -= 2208988800UL;
+		return epoch;
 	}
-	String content("");
-	File data_file = SD.open(LOGFILE);
-	if(data_file){
-		Serial.println("===============");
-		char c;
-		while(data_file.available() && (c=data_file.read()) != EOF){
-			Serial.print(c);
-			content += c;
-		}
-		data_file.close();
-		Serial.println("===============");
-	} else{
-		Serial.println("getCurrentFile unable to open file.");
-	}
-	return content;
+	return 0L;
 }
