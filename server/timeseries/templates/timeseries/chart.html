@@ -8,6 +8,7 @@
 	<script src="{% static "js/jquery.timepicker.js" %}"></script>
 	<script src="{% static "js/jquery.datepair.js" %}"></script>
 	<script src="{% static "timeseries/js/downloads.js" %}"></script>
+	<script src="{% static "js/highcharts/highcharts.js" %}"></script>
 	<script>
 	$(function(){
 		$("#testbtn").click(function(){
@@ -16,10 +17,10 @@
 				type: 'POST',
 				contentType: 'json',
 				data: JSON.stringify({
-					'HVAC:VRF' : {
-						'from' : 1396898373-31*7*24*60*60,
-						'to' : 1396898373,
-						'columns' : ['SetTemp', 'InletTemp']
+					'electric:Electric Overview' : {
+						'from' : new Date() / 1000 - 8*60*60,
+						'to' : new Date() / 1000,
+						'columns' : ['TotalPower']
 					}
 				}),
 				beforeSend: function(xhr, settings) {
@@ -31,14 +32,61 @@
 					}
 				}
 			}).done(function(data){
-				console.log(data);
+				make_chart(data["electric:Electric Overview"]);
 			});
 		});
 	});
+	function make_chart(data){
+		var series = [];
+		var npts = data['Time'].length;
+		for(ser in data){
+			if(ser !== 'Time'){
+				points = [];
+				for(var i=0; i<npts; i++){
+					points.push([1000*data['Time'][i], data[ser][i]]);
+				}
+				series.push({
+					name: ser,
+					data: points
+				});
+			}
+		}
+		var newdiv = $("<div style='width:600px'></div>");
+		$("#container").append(newdiv);
+		newdiv.highcharts({
+	            chart: {
+	                type: 'spline'
+	            },
+	            title: {
+	                text: 'Comparing data'
+	            },
+	            xAxis: {
+	                type: 'datetime',
+	                dateTimeLabelFormats: { // don't display the dummy year
+	                    month: '%e. %b',
+	                    year: '%b'
+	                }
+	            },
+	            yAxis: {
+	                title: {
+	                    text: 'Power (w)'
+	                }
+	            },
+	            tooltip: {
+	                formatter: function() {
+	                        return '<b>'+ this.series.name +'</b><br/>'+
+	                        Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' Watts';
+	                }
+	            },
+	            
+	            series: series
+	        });
+	}
 	</script>
 {% endblock scripts %}
 
 
 {% block content %}
 	<input type="button" value="test post" id="testbtn" />
+	<div id="container" style="width:100%"></div>
 {% endblock content %}

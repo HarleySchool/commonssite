@@ -1,6 +1,7 @@
 import json
 import datetime
 import pytz
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from timeseries.models import ModelRegistry
 from timeseries import get_registered_model
@@ -51,6 +52,10 @@ def get_systems(request):
 	# construct response
 	return HttpResponse(content_type='application/json', content=json.dumps(systems))
 
+def __td_seconds(timedelta):
+	return timedelta.seconds + timedelta.days*3600*24
+
+@csrf_exempt
 def query(request):
 	"""construct and resturn a json object containing arrays of data corresponding to the requested fields
 	
@@ -115,7 +120,7 @@ def query(request):
 				for col, val in obj.iteritems():
 					if col == 'Time':
 						# a silly way to convert from a DateTime object into epoch time
-						val = (val - _epoch).total_seconds()
+						val = __td_seconds(val - _epoch)
 					data[full_name][col].append(val)
 		return HttpResponse(content_type='application/json', content=json.dumps(data))
 	else:
