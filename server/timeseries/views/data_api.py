@@ -14,8 +14,7 @@ model_types = {
 	'string' : [u'CharField', u'BooleanField', u'TextField']
 }
 
-# step 1 of api communication: get information about what systems are available
-def get_systems(request):
+def systems_dict():
 	"""construct and return a json object describing the different systems with available timeseries data. Note that no actual data is returned.
 	A 'system' is something like 'HVAC' or 'Electric', and a subsystem is, for example, VRF within HVAC
 
@@ -57,8 +56,12 @@ def get_systems(request):
 			'selection' : header_selections,
 			'units' : {} # TODO
 		}
+	return systems
+
+# step 1 of api communication: get information about what systems are available
+def get_systems(request):
 	# construct response
-	return HttpResponse(content_type='application/json', content=json.dumps(systems))
+	return HttpResponse(content_type='application/json', content=json.dumps(systems_dict()))
 
 # convert a datetime.timedelta object into total seconds
 # (used in computing epoch time)
@@ -108,11 +111,11 @@ def query(request):
 			Time : [1368921000, 1368993000, 1369075000, ...]
 			TotalPower : [10.4, 10.1, 8.0, ...],
 			MaxPower : [11.0, 10.5, 8.2]
-		}
+		}, ...
 	}
 	"""
 	if request.method == 'GET':
-		return render(request, "timeseries/chart.html", {})
+		return render(request, "timeseries/chart.html", {'systems' : systems_dict()})
 	elif request.method == 'POST' and request.is_ajax():
 		post = json.loads(request.body)
 		data = {}
@@ -136,6 +139,8 @@ def query(request):
 			cols = spec.get('columns')
 			if 'Time' not in cols:
 				cols.append('Time')
+			if spec['series'] == []:
+				spec['series'] = ['']
 			for series in spec['series']:
 				# parsing series is sort of tricky. Given a filter that doesn't uniquely identify
 				# a series, we return _all_ matching series. (for example, 'Panel=Panel 2' will
@@ -144,10 +149,11 @@ def query(request):
 				header_permutations = model.get_series_identifiers()
 				# now we use the filter function to narrow down to just the selected headers
 				filtered_headers = header_permutations
-				for series_filter in series.split('&'):
-					filter_col_name = series_filter.split('=')[0]
-					filter_val      = series_filter.split('=')[1]
-					filtered_headers = filter(lambda d: d[filter_col_name] == filter_val, filtered_headers)
+				if series != '':
+					for series_filter in series.split('&'):
+						filter_col_name = series_filter.split('=')[0]
+						filter_val      = series_filter.split('=')[1]
+						filtered_headers = filter(lambda d: d[filter_col_name] == filter_val, filtered_headers)
 				print "HEADER FILTER"
 				print filtered_headers
 				for unique_header_permutation in filtered_headers:
