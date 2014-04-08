@@ -14,9 +14,6 @@ model_types = {
 	'string' : [u'CharField', u'BooleanField', u'TextField']
 }
 
-_epoch = datetime.datetime(1970,1,1)
-_epoch = pytz.UTC.localize(_epoch)
-
 # step 1 of api communication: get information about what systems are available
 def get_systems(request):
 	"""construct and return a json object describing the different systems with available timeseries data. Note that no actual data is returned.
@@ -52,8 +49,15 @@ def get_systems(request):
 	# construct response
 	return HttpResponse(content_type='application/json', content=json.dumps(systems))
 
+# convert a datetime.timedelta object into total seconds
+# (used in computing epoch time)
 def __td_seconds(timedelta):
 	return timedelta.seconds + timedelta.days*3600*24
+
+_epoch = datetime.datetime(1970,1,1)
+_epoch = pytz.UTC.localize(_epoch)
+def __epoch(date):
+	return __td_seconds(date - _epoch)
 
 @csrf_exempt
 def query(request):
@@ -119,8 +123,7 @@ def query(request):
 			for obj in objects:
 				for col, val in obj.iteritems():
 					if col == 'Time':
-						# a silly way to convert from a DateTime object into epoch time
-						val = __td_seconds(val - _epoch)
+						val = __epoch(val)
 					data[full_name][col].append(val)
 		return HttpResponse(content_type='application/json', content=json.dumps(data))
 	else:
