@@ -33,7 +33,7 @@ $(document).ready(function(){
 			container.append("<div class='"+classname+"'><h3>"+sysname+"</h3></div>");
 			var sysdiv = $("div."+classname);
 			for(subsys in systems[sysname]){
-				sysdiv.append("<input type='button' class='get_data_btn' data-type='"+subsys+"' value='Get "+subsys+"' />")
+				sysdiv.append("<button type='button' class='btn btn-xs btn-primary get_data_btn' data-type='"+subsys+"''>Get "+subsys+"</button>")
 			}
 		}
 		// set up interactivity for each button (on press, go to its specified csv downloader)
