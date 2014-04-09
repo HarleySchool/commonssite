@@ -4,12 +4,12 @@
 {% block title %}Download Data{% endblock title %}
 
 {% block scripts %}
-	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-	<script src="{% static "js/jquery.timepicker.js" %}"></script>
-	<script src="{% static "js/jquery.datepair.js" %}"></script>
-	<script src="{% static "timeseries/js/downloads.js" %}"></script>
-	<script src="{% static "timeseries/js/moment.min.js" %}"></script>
-	<script src="{% static "timeseries/js/daterangepicker.js" %}"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="{% static "js/jquery.timepicker.js" %}"></script>
+<script src="{% static "js/jquery.datepair.js" %}"></script>
+<script src="{% static "timeseries/js/downloads.js" %}"></script>
+<script src="{% static "timeseries/js/moment.min.js" %}"></script>
+<script src="{% static "timeseries/js/daterangepicker.js" %}"></script>
 {% endblock scripts %}
 
 {% block styles %}
@@ -26,32 +26,32 @@
 {% block content %}
 <div class="well">
 
-               <form class="form-horizontal">
-                 <fieldset>
-                  <div class="control-group">
-                    <label class="control-label" for="reservationtime">Choose your start and end times</label>
-                    <div class="controls">
-                     <div class="input-prepend input-group">
-                       <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
-                       <input type="text" style="width: 400px" name="reservation" id="reservationtime" class="form-control"  class="span4"/>
-                     </div>
-                    </div>
-                  </div>
-                 </fieldset>
-               </form>
+ <form class="form-horizontal">
+   <fieldset>
+    <div class="control-group">
+      <label class="control-label" for="reservationtime">Choose your start and end times</label>
+      <div class="controls">
+       <div class="input-prepend input-group">
+         <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+         <input type="text" style="width: 400px" name="reservation" id="reservationtime" class="form-control"  class="span4"/>
+       </div>
+     </div>
+   </div>
+ </fieldset>
+</form>
 
-               <script type="text/javascript">
-               $(document).ready(function() {
-                  $('#reservationtime').daterangepicker({
-                    timePicker: true,
-                    timePickerIncrement: 30,
-                    format: 'MM/DD/YYYY h:mm A'
-                  }, function(start, end, label) {
-                    console.log(start.toISOString(), end.toISOString(), label);
-                  });
-               });
-               </script>
+<script type="text/javascript">
+ $(document).ready(function() {
+  $('#reservationtime').daterangepicker({
+    timePicker: true,
+    timePickerIncrement: 30,
+    format: 'MM/DD/YYYY h:mm A'
+  }, function(start, end, label) {
+    console.log(start.toISOString(), end.toISOString(), label);
+  });
+});
+</script>
 
-            </div>           
-		<div class="buttons-container"></div>
+</div>           
+<div class="buttons-container"></div>
 {% endblock content %}
