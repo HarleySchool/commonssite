@@ -54,7 +54,7 @@
 			<select class="system_select"><!-- drop down menu -->
 				{% for sys, subs in systems.iteritems %}
 				{% for subsys, specs in subs.iteritems %}
-				<option data-subsysid="{{ subsys}}_params" data-sys="{{ sys }}" data-sub="{{ subsys }}">{{ sys }} - {{ subsys }}</option>
+				<option data-subsysid="{{ specs.id }}_params" data-sys="{{ sys }}" data-sub="{{ subsys }}">{{ sys }} - {{ subsys }}</option>
 				{% endfor %}
 				{% endfor %}
 			</select>
@@ -62,7 +62,7 @@
 		{% for sys, subs in systems.iteritems %}
 		{% for subsys, specs in subs.iteritems %}
 		<!-- EACH OF THE SUBSYSTEMS' PARAMETERS (CHECKBOXES) -->
-		<div class="params_wrapper" id="{{ subsys }}_params">
+		<div class="params_wrapper" id="{{ specs.id }}_params">
 		{% if specs.selection|length > 0 %}
 			<div class="header_select">
 				<h3>Select Series</h3>
@@ -77,9 +77,9 @@
 			{% endfor %}
 			</div>
 		{% endif %}
-			<div class="column_select" id="columns_{{ subsys }}">
+			<div class="column_select" id="columns_{{ specs.id }}">
 				<h3>Select Columns</h3>
-				<label class="check_label"><input type="checkbox" class="check_all" id="{{ subsys }}_col_check_all" />&nbsp;(select all)</label><br />
+				<label class="check_label"><input type="checkbox" class="check_all" id="{{ specs.id }}_col_check_all" />&nbsp;(select all)</label><br />
 			{% for col in specs.numeric %}
 				<label class="check_label"><input type="checkbox" class="check_option" data-colname="{{ col }}" id="check_{{ col }}" />&nbsp;{{ col }}</label><br />
 			{% endfor %}
