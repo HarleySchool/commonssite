@@ -39,29 +39,32 @@ class scheduler():
 	def main(self):
 		# main loop
 		self.startheap()
-		while True:
-			## Insert thing to do here ##
-			# should not take over the time speced in interval
-			# don't even cut it close
-			# use run_theaded to clear the main thread
-			#############################
-			print '=================='
-			func, nexttime = self.popandnext()
-			self.run_threaded(func)
-			# Calculate the time that we should sleep
-			sleeptime = nexttime - time.time()
-			# Print some things
-			print "I done did it at %s, I'm gon do it again in %s seconds" % (time.time(), sleeptime)
-			# Gets around a negative sleep time error by using pass
-			if sleeptime < 1 and sleeptime > -3:
-				pass
-			elif sleeptime < -3:
-				print 'Sleep time error, heave you suspended your computer recently?'
-				exit()
-			else:
-				# If there is more than 1 second between functions, sleep the remainder of the time
-				time.sleep(sleeptime)
-
+		try:
+			while True:
+				## Insert thing to do here ##
+				# should not take over the time speced in interval
+				# don't even cut it close
+				# use run_theaded to clear the main thread
+				#############################
+				print '=================='
+				func, nexttime = self.popandnext()
+				self.run_threaded(func)
+				# Calculate the time that we should sleep
+				sleeptime = nexttime - time.time()
+				# Print some things
+				print "I done did it at %s, I'm gon do it again in %s seconds" % (time.time(), sleeptime)
+				# Gets around a negative sleep time error by using pass
+				if sleeptime < 1 and sleeptime > -3:
+					pass
+				elif sleeptime < -3:
+					print 'Sleep time error, heave you suspended your computer recently?'
+					self.heap = []
+					self.startheap
+				else:
+					# If there is more than 1 second between functions, sleep the remainder of the time
+					time.sleep(sleeptime)
+		except KeyboardInterrupt:
+			break
 def dolog(scraper):
 	# Returns a function that logs data in the database
 	def getandsave():
