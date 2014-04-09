@@ -25,6 +25,7 @@ def get_systems(request):
 	{
 		'system name' : {
 			'subsystem name' : {
+				id : 'CamelCaseId',
 				description : 'this is a really fancy and efficient subsystem',
 				numeric : ['ColumnName1', 'ColumnName2'],
 				units : {
@@ -46,6 +47,7 @@ def get_systems(request):
 			'description' : registry.description,
 			'numeric' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['numeric']],
 			'string' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['string']],
+			'id' : registry.make_id(),
 			'units' : {} # TODO
 		}
 	# construct response
