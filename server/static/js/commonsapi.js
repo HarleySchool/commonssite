@@ -71,7 +71,7 @@ var Commons = {
 			tooltip: {
 				formatter: function() {
 						return '<b>'+ this.series.name +'</b><br/>'+
-						Highcharts.dateFormat('%x %R', this.x) +': '+ this.y;
+						Highcharts.dateFormat('%m/%d %H:%M', this.x) +': '+ this.y;
 				}
 			}
 		}
