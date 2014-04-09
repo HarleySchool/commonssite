@@ -22,6 +22,7 @@ def systems_dict():
 	{
 		'system name' : {
 			'subsystem name' : {
+				id : 'CamelCaseId',
 				description : 'this is a really fancy and efficient subsystem',
 				numeric : ['ColumnName1', 'ColumnName2'],
 				selection : {
@@ -54,6 +55,7 @@ def systems_dict():
 			'numeric' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['numeric']],
 			'string' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['string']],
 			'selection' : header_selections,
+			'id' : registry.make_id(),
 			'units' : {} # TODO
 		}
 	return systems
