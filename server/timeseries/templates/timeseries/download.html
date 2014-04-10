@@ -14,11 +14,6 @@
 {% block styles %}
 <link rel="stylesheet" href="{% static "timeseries/css/daterangepicker-bs3.css " %}" />
 {% endblock styles %}
-{% block nav %}
-<li><a href="/"><span class="glyphicon glyphicon-home"></a></li>
-<li class="active"><a href="/timeseries/"><span class="glyphicon glyphicon-download"></span></a></li>
-<li><a href="/electric">Veris Monitor</a></li>
-{% endblock nav %}
 
 {% block content %}
 {% include "timeseries/daterange.html" %}
