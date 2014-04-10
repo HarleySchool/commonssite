@@ -22,8 +22,7 @@ $(document).ready(function(){
 		'autoclose': true
 	});
 
-	// initialize pairs
-	$('#datepairExample').datepair();
+
 
 	// ajax query for building page content
 	Commons.getSystems(function(systems){
