@@ -73,7 +73,13 @@ $(document).ready(function(){
 	}
 
 	function datetime_url(datestring, timestring){
-		return dateurl(datestring) + "T" + timeurl(timestring);
+		// TODO there must be built-in methods for doing this local timezone business
+		var localTime = new Date();
+		var tz_offset_mins = localTime.getTimezoneOffset();
+		var tz_sign = tz_offset_mins < 0 ? '+' : '-'; // deliberately opposite sign
+		var tz_hour_str = pad(Math.floor(tz_offset_mins / 60));
+		var tz_mins_str = pad(tz_offset_mins % 60);
+		return dateurl(datestring) + "T" + timeurl(timestring) + tz_sign + tz_hour_str + tz_mins_str;
 	}
 
 	// callback

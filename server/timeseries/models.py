@@ -31,6 +31,14 @@ class TimeseriesBase(models.Model):
 					return list(cls._meta.unique_together[0])
 		return ['Time']
 
+	@classmethod
+	def get_series_identifiers(cls):
+		"""Return a list of dicts, where each is a unique combination of header:value for all of the headers
+		"""
+		all_headers = cls.get_header_names()
+		all_headers.remove('Time')
+		return list(cls.objects.values(*all_headers).distinct())
+
 	class Meta:
 		abstract = True
 

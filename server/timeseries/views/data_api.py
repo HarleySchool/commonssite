@@ -1,5 +1,6 @@
 import json
 from timeseries import parse_time
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from timeseries.models import ModelRegistry
 from timeseries import get_registered_model
@@ -12,8 +13,7 @@ model_types = {
 	'string' : [u'CharField', u'BooleanField', u'TextField']
 }
 
-# step 1 of api communication: get information about what systems are available
-def get_systems(request):
+def systems_dict():
 	"""construct and return a json object describing the different systems with available timeseries data. Note that no actual data is returned.
 	A 'system' is something like 'HVAC' or 'Electric', and a subsystem is, for example, VRF within HVAC
 
@@ -24,6 +24,10 @@ def get_systems(request):
 				id : 'CamelCaseId',
 				description : 'this is a really fancy and efficient subsystem',
 				numeric : ['ColumnName1', 'ColumnName2'],
+				selection : {
+					'header1' : ['unique_value1', 'unique_value2'],
+					...
+				}
 				units : {
 					'ColumnName1' : 'in',
 					'ColumnName2' : 'kWh'
@@ -39,16 +43,28 @@ def get_systems(request):
 		if registry.system not in systems:
 			systems[registry.system] = {}
 		model = get_registered_model(registry.model_class)
+		# construct 'selection' based on unique headers
+		header_selections = {}
+		all_headers = model.get_header_names()
+		all_headers.remove('Time')
+		for h in all_headers:
+			header_selections[h] = [str(val) for val in model.objects.values_list(h, flat=True).distinct()]
 		systems[registry.system][registry.short_name] = {
 			'description' : registry.description,
 			'numeric' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['numeric']],
 			'string' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['string']],
+			'selection' : header_selections,
 			'id' : registry.make_id(),
 			'units' : {} # TODO
 		}
-	# construct response
-	return HttpResponse(content_type='application/json', content=json.dumps(systems))
+	return systems
 
+# step 1 of api communication: get information about what systems are available
+def get_systems(request):
+	# construct response
+	return HttpResponse(content_type='application/json', content=json.dumps(systems_dict()))
+
+@csrf_exempt
 def query(request):
 	"""construct and resturn a json object containing arrays of data corresponding to the requested fields
 	
@@ -57,32 +73,44 @@ def query(request):
 		'system name:subsystem name' : {
 			from : ISO String,
 			to : ISO String,
+			series : ['header1=val1&header2=valx', 'header1=val2&header2=valx'], // [] is interpreted as 'all series'
 			columns : ['ColumnName1', 'ColumnName2']
 		}, ...
 	}
 
-	{
-		'HVAC:VRF' : {
-			from : '2014-04-01T00:00:00-0400',
-			to : '2014-04-02T00:00:00-0400',
-			columns : ['SetTemp', 'InletTemp']
-		}
-	}
-
 	RESPONSE structure is as follows:
 	{
-		'system name:subsystem name' : {
+		'series name' : {
 			Time : [time0 (isostring), time1 (isostring), ..., timeN (isostring)],
-			SetTemp : [val0, val1, ..., valN],
-			InletTemp : [val0, val1, ..., valN]
+			ColumnName1 : [val0, val1, ..., valN],
+			ColumnName2 : [val0, val1, ..., valN]
+		}, ...
+	}
+	
+	REAL EXAMPLE: REQUEST
+	{
+		'electric:Electric Overview' : {
+			from : '2014-04-01T00:00:00-0400',
+			to : '2014-04-02T00:00:00-0400',
+			series : ['Panel=Panel 2&Channel=Channel #17'],
+			columns : ['TotalPower', 'MaxPower']
+		}
+	}
+	REAL EXAMPLE: RESPONSE
+	{
+		'Panel 2: Channel #17' : {
+			Time : ['2014-04-08T08:00:00-0400', '2014-04-08T08:20:00-0400', '2014-04-08T08:40:00-0400', ...]
+			TotalPower : [10.4, 10.1, 8.0, ...],
+			MaxPower : [11.0, 10.5, 8.2]
 		}, ...
 	}
 	"""
 	if request.method == 'GET':
-		return render(request, "timeseries/chart.html", {})
+		return render(request, "timeseries/chart.html", {'systems' : systems_dict()})
 	elif request.method == 'POST' and request.is_ajax():
 		post = json.loads(request.body)
 		data = {}
+		multi_system = len(post) > 1
 		for full_name, spec in post.iteritems():
 			sys_name = full_name.split(':')[0]
 			sub_name = full_name.split(':')[1]
@@ -100,18 +128,47 @@ def query(request):
 			cols = spec.get('columns')
 			if 'Time' not in cols:
 				cols.append('Time')
-			# prepare data dict result
-			data[full_name] = {}
-			for c in cols:
-				data[full_name][c] = []
-			# perform the query on the database
-			objects = model.objects.filter(Time__gte=t_start, Time__lt=t_end).values(*cols)
-			# fun fact: values() causes the return value to be a dict rather than a Model object
-			for obj in objects:
-				for col, val in obj.iteritems():
-					if col == 'Time':
-						val = val.isoformat()
-					data[full_name][col].append(val)
+			if spec['series'] == []:
+				spec['series'] = ['']
+			for series in spec['series']:
+				# parsing series is sort of tricky. Given a filter that doesn't uniquely identify
+				# a series, we return _all_ matching series. (for example, 'Panel=Panel 2' will
+				# return all 42 channels)
+				# header_permutations will be a list of all unique {name:value, name2:value2} groups
+				header_permutations = model.get_series_identifiers()
+				# now we use the filter function to narrow down to just the selected headers
+				filtered_headers = header_permutations
+				if series != '':
+					for series_filter in series.split('&'):
+						filter_col_name = series_filter.split('=')[0]
+						filter_val      = series_filter.split('=')[1]
+						filtered_headers = filter(lambda d: d[filter_col_name] == filter_val, filtered_headers)
+				print "HEADER FILTER"
+				print filtered_headers
+				for unique_header_permutation in filtered_headers:
+					series_name = ': '.join(unique_header_permutation.values())
+					if multi_system:
+						series_name = sub_name + ': ' + series_name
+					# prepare data dict result
+					data[series_name] = {}
+					for col in cols:
+						data[series_name][col] = []
+					# perform the query on the database
+					#keys = unique_header_permutation.keys()
+					# convert this:
+					# {name: val, name2: val2}
+					# into this:
+					# {name__eq: val, name2__eq: val2}
+					#header_kwarg_filter = dict([(k+"__eq", str(unique_header_permutation[k])) for k in keys])
+					#print header_kwarg_filter
+					# query the database on the given time interval and selecting for the given headers
+					objects = model.objects.filter(Time__gte=t_start, Time__lt=t_end, **unique_header_permutation).values(*cols)
+					# fun fact: values() causes the return value to be a dict rather than a Model object
+					for obj in objects:
+						for col, val in obj.iteritems():
+							if col == 'Time':
+								val = val.isoformat()
+							data[series_name][col].append(val)
 		return HttpResponse(content_type='application/json', content=json.dumps(data))
 	else:
 		return HttpResponseBadRequest()
