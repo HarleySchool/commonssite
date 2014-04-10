@@ -1,4 +1,5 @@
 from django.db import models
+import re
 
 class TimeseriesBase(models.Model):
 	'''The minimum structure of a timeseries model. Other time-logging models should inherit from this class.
@@ -30,6 +31,14 @@ class TimeseriesBase(models.Model):
 					return list(cls._meta.unique_together[0])
 		return ['Time']
 
+	@classmethod
+	def get_series_identifiers(cls):
+		"""Return a list of dicts, where each is a unique combination of header:value for all of the headers
+		"""
+		all_headers = cls.get_header_names()
+		all_headers.remove('Time')
+		return list(cls.objects.values(*all_headers).distinct())
+
 	class Meta:
 		abstract = True
 
@@ -42,6 +51,8 @@ def my_import(name):
     return mod
 """	
 
+regex_non_char = re.compile(r'[^a-zA-Z]+')
+
 class ModelRegistry(models.Model):
 	'''This table keeps track of registered timeseries models and related information'''
 	system = models.CharField(max_length=16)
@@ -52,3 +63,11 @@ class ModelRegistry(models.Model):
 
 	def __unicode__(self):
 		return unicode(self.short_name)
+
+	def make_id(self):
+		"""Convert the short_name into an HTML-usable id (no spaces or special characters)
+		"""
+		# a regualar expression to capture a sequence of non-letter characters
+		words = regex_non_char.split(self.short_name)
+		caps = [w.capitalize() for w in words]
+		return ''.join(caps)

@@ -1,0 +1,30 @@
+<div class="well">
+	<form class="form-horizontal">
+		<fieldset>
+			<div class="control-group">
+				<label class="control-label" for="datarangetime">Choose start and end times</label>
+				<div class="controls">
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 400px" name="datarange" id="datarangetime" class="form-control"  class="span4"/>
+					</div>
+				</div>
+			</div>
+		</fieldset>
+	</form>
+</div>
+<script>
+var daterange = {
+	start : null,
+	end : null,
+}
+$('#datarangetime').daterangepicker({
+	timePicker: true,
+	timePickerIncrement: 30,
+	format: 'MM/DD/YYYY h:mm A'
+}, function(start, end, label) {
+	daterange['start'] = start;
+	daterange['end'] = end;
+});
+
+</script>

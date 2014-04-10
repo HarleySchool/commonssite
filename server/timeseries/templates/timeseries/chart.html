@@ -4,40 +4,81 @@
 {% block title %}Graphs{% endblock title %}
 
 {% block scripts %}
-<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-<script src="{% static "js/jquery.timepicker.js" %}"></script>
-<script src="{% static "timeseries/js/downloads.js" %}"></script>
-<script>
-	$(function(){
-		$("#testbtn").click(function(){
-			console.log("TESTING");
-			$.ajax({
-				type: 'POST',
-				contentType: 'json',
-				data: JSON.stringify({
-					'HVAC:VRF' : {
-						'from' : 1396898373-31*7*24*60*60,
-						'to' : 1396898373,
-						'columns' : ['SetTemp', 'InletTemp']
-					}
-				}),
-				beforeSend: function(xhr, settings) {
-					if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
-						// Send the token to same-origin, relative URLs only.
-						// Send the token only if the method warrants CSRF protection
-						// Using the CSRFToken value acquired earlier
-						xhr.setRequestHeader("X-CSRFToken", Commons.csrf());
-					}
-				}
-			}).done(function(data){
-				console.log(data);
-			});
-		});
-	});
-</script>
+	<script src="{% static "js/highcharts/highcharts.js" %}"></script>
+	<script src="{% static "timeseries/js/makechart.js" %}"></script>
+<script src="{% static "timeseries/js/moment.min.js" %}"></script>
+<script src="{% static "timeseries/js/daterangepicker.js" %}"></script>
 {% endblock scripts %}
 
+{% block styles %}
+<link rel="stylesheet" href="{% static "timeseries/css/daterangepicker-bs3.css " %}" />
+<style type="text/css">
+	.header_options{
+		width:auto;
+		float:left;
+		margin-right:10px;
+	}
+	
+	/* initially hide things */
+	div.params_wrapper{
+		display:none;
+	}
+
+	.dynamic-highchart{
+		width:70%;
+	}
+
+	.check_label{
+		cursor:pointer;
+	}
+</style>
+{% endblock styles %}
 
 {% block content %}
-<input type="button" value="test post" id="testbtn" />
+	<div id="query_builder">
+		<!-- DATETIME RANGE PICKER -->
+		{% include "timeseries/daterange.html" %}
+		<!-- SYSTEM DROP-DOWN MENU -->
+		<div class="system_select">
+			<h3>Select System</h3>
+			<select class="system_select"><!-- drop down menu -->
+				{% for sys, subs in systems.iteritems %}
+				{% for subsys, specs in subs.iteritems %}
+				<option data-subsysid="{{ specs.id }}_params" data-sys="{{ sys }}" data-sub="{{ subsys }}">{{ sys }} - {{ subsys }}</option>
+				{% endfor %}
+				{% endfor %}
+			</select>
+		</div>
+		{% for sys, subs in systems.iteritems %}
+		{% for subsys, specs in subs.iteritems %}
+		<!-- EACH OF THE SUBSYSTEMS' PARAMETERS (CHECKBOXES) -->
+		<div class="params_wrapper" id="{{ specs.id }}_params">
+		{% if specs.selection|length > 0 %}
+			<div class="header_select">
+				<h3>Select Series</h3>
+			{% for name, options in specs.selection.iteritems %}
+				<div class="header_options">
+					<h4>{{ name }}</h4>
+					<label class="check_label"><input type="checkbox" class="check_all" />&nbsp;(select all)</label><br />
+				{% for opt in options %}
+					<label class="check_label"><input type="checkbox" class="check_option" data-headername="{{ name }}" data-colname="{{ opt }}" />&nbsp;{{ opt }}</label><br />
+				{% endfor %}
+				</div>
+			{% endfor %}
+			</div>
+		{% endif %}
+			<div class="column_select" id="columns_{{ specs.id }}">
+				<h3>Select Columns</h3>
+				<label class="check_label"><input type="checkbox" class="check_all" id="{{ specs.id }}_col_check_all" />&nbsp;(select all)</label><br />
+			{% for col in specs.numeric %}
+				<label class="check_label"><input type="checkbox" class="check_option" data-colname="{{ col }}" id="check_{{ col }}" />&nbsp;{{ col }}</label><br />
+			{% endfor %}
+			</div>
+		</div>
+		{% endfor %}
+		{% endfor %}
+		<br />
+		<input type="button" value="Make Graph" id="makegraph_btn" />
+	</div>
+	<div id="charts-container" style="width:100%"></div>
 {% endblock content %}

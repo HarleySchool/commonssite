@@ -33,7 +33,7 @@ class Monitor:
 			'Device 3' : [],
 			'Device 4' : []
 		}
-		print "getting update #%d" % self.nupdates, datetime.datetime.now()
+		print "getting update #%d" % self.nupdates, datetime.datetime.utcnow()
 		# get latest
 		d2, d3, d4 = veris2.get_data()
 		# compare to last_data

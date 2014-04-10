@@ -6,7 +6,7 @@
 from peewee import *
 import csv, re, datetime
 from commonssite.server.hvac.models import *
-from commonssite.scrapers.hvac import group_id_to_name
+from commonssite.server.hvac.scrapers import group_id_to_name
 
 SEP = '\t'
 date_re = re.compile(r'(\d+)-(\d+)-(\d+)\ (\d+):(\d+)')
