@@ -100,8 +100,7 @@ class ScraperCircuits(VerisScraperBase):
 
 	def get_data(self):
 		esi = ElectricServerInterface()
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		retlist = []
 		for d in self.devices:
 			xml_tree = esi.get_xml_data(d)
@@ -128,8 +127,7 @@ class ScraperPowerSummary(VerisScraperBase):
 
 	def get_data(self):
 		esi = ElectricServerInterface()
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		retlist = []
 		for d in self.devices:
 			xml_tree = esi.get_xml_data(d)

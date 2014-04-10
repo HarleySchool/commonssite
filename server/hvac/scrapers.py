@@ -379,8 +379,7 @@ class ScraperERV(object):
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
 
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		models = []
 		dict_data = hsi.status_dict(groups=groups, units=units)
 		for (name, data) in dict_data.iteritems():
@@ -397,8 +396,7 @@ class ScraperVRF(object):
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
 
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		models = []
 		dict_data = hsi.status_dict(groups=groups, units=units)
 		for (name, data) in dict_data.iteritems():

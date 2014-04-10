@@ -1,6 +1,5 @@
 import json
-import datetime
-import pytz
+from timeseries import parse_time
 from django.shortcuts import render
 from timeseries.models import ModelRegistry
 from timeseries import get_registered_model
@@ -12,9 +11,6 @@ model_types = {
 	'numeric' : [u'FloatField', u'IntegerField', u'BigIntegerField', u'DecimalField', u'PositiveIntegerField', u'PositiveSmallIntegerField', u'SmallIntegerField' ],
 	'string' : [u'CharField', u'BooleanField', u'TextField']
 }
-
-_epoch = datetime.datetime(1970,1,1)
-_epoch = pytz.UTC.localize(_epoch)
 
 # step 1 of api communication: get information about what systems are available
 def get_systems(request):
@@ -59,16 +55,16 @@ def query(request):
 	REQUEST structure is as follows:
 	{
 		'system name:subsystem name' : {
-			from : epoch-time-start,
-			to : epoch-time-end,
+			from : ISO String,
+			to : ISO String,
 			columns : ['ColumnName1', 'ColumnName2']
 		}, ...
 	}
 
 	{
 		'HVAC:VRF' : {
-			from : Date.UTC(2014, 4, 1),
-			to : Date.UTC(2014, 4, 8),
+			from : '2014-04-01T00:00:00-0400',
+			to : '2014-04-02T00:00:00-0400',
 			columns : ['SetTemp', 'InletTemp']
 		}
 	}
@@ -76,7 +72,7 @@ def query(request):
 	RESPONSE structure is as follows:
 	{
 		'system name:subsystem name' : {
-			Time : [time0, time1, ..., timeN],
+			Time : [time0 (isostring), time1 (isostring), ..., timeN (isostring)],
 			SetTemp : [val0, val1, ..., valN],
 			InletTemp : [val0, val1, ..., valN]
 		}, ...
@@ -99,10 +95,8 @@ def query(request):
 			# using registry, get the actual model
 			model = get_registered_model(registry.model_class)
 			# prepare the query on the database
-			t_start = datetime.datetime.utcfromtimestamp(spec.get('from'))
-			t_start = pytz.UTC.localize(t_start)
-			t_end = datetime.datetime.utcfromtimestamp(spec.get('to'))
-			t_end = pytz.UTC.localize(t_end)
+			t_start = parse_time(spec.get('from'))
+			t_end = parse_time(spec.get('to'))
 			cols = spec.get('columns')
 			if 'Time' not in cols:
 				cols.append('Time')
@@ -116,8 +110,7 @@ def query(request):
 			for obj in objects:
 				for col, val in obj.iteritems():
 					if col == 'Time':
-						# a silly way to convert from a DateTime object into epoch time
-						val = (val - _epoch).total_seconds()
+						val = val.isoformat()
 					data[full_name][col].append(val)
 		return HttpResponse(content_type='application/json', content=json.dumps(data))
 	else:

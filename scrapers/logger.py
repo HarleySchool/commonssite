@@ -25,7 +25,7 @@ class Logger(Thread):
 		tend = tstart + self.span
 
 		def do_log():
-			now = datetime.datetime.now()
+			now = datetime.datetime.utcnow()
 			updates = self.scraper.get_data()
 			print "------------------------\n%s\tgetting log at" % self.scraper.__class__.__name__, now, ": %d UPDATES" % len(updates)
 			for entry in updates:
