@@ -1,18 +1,15 @@
 <html>
-	<head>
-		<title>Harley Commons Data Download</title>
-		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-		<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-		{% load staticfiles %}
-		<script src="{% static "js/jquery.timepicker.js" %}"></script>
-		<script src="{% static "js/jquery.datepair.js" %}"></script>
-		<link rel="stylesheet" href="//jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
-		<script type="text/javascript">
+<head>
+	<title>Harley Commons Data Download</title>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	{% load staticfiles %}
+	<script type="text/javascript">
 			// thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
 			var downloadURL = function downloadURL(url) {
 				var hiddenIFrameID = 'hiddenDownloader',
-					iframe = document.getElementById(hiddenIFrameID);
+				iframe = document.getElementById(hiddenIFrameID);
 				if (iframe === null) {
 					iframe = document.createElement('iframe');
 					iframe.id = hiddenIFrameID;
@@ -87,50 +84,50 @@
 				});
 			});
 
-		</script>
-		<style type="text/css">
-			*{
-				margin:0px;
-				padding:0px;
-			}
+</script>
+<style type="text/css">
+	*{
+		margin:0px;
+		padding:0px;
+	}
 
-			.wrapper{
-				width:900px;
-				margin:0px auto;
-				background-color: #888;
-				font-family: arial, helvetica, sans-serif;
-				height:100%;
-			}
+	.wrapper{
+		width:900px;
+		margin:0px auto;
+		background-color: #888;
+		font-family: arial, helvetica, sans-serif;
+		height:100%;
+	}
 
-			#datepairExample{
-				border-radius:10px;
-				border:2px solid;
-				padding:11px;
-				margin:30px 10px;
-			}
+	#datepairExample{
+		border-radius:10px;
+		border:2px solid;
+		padding:11px;
+		margin:30px 10px;
+	}
 
-			#headline {
-				padding-top:20px;
-				text-align: center;
-			}
+	#headline {
+		padding-top:20px;
+		text-align: center;
+	}
 
-		</style>
-	</head>
-	<body>
-		<div class="wrapper">
-			<h2 id="headline">Download CSV for HVAC data</h2>
-			<div id="datepairExample">
-				<input type="text" class="date start" />
-				<input type="text" class="time start" />
-				<br />to
-				<br />
-				<input type="text" class="date end" />
-				<input type="text" class="time end" />
-				<br />
-				<br />
-				<input type="button" id="submiterv" value="Get ERV" />
-				<input type="button" id="submitvrf" value="Get VRF" />
-			</div>
+</style>
+</head>
+<body>
+	<div class="wrapper">
+		<h2 id="headline">Download CSV for HVAC data</h2>
+		<div id="datepairExample">
+			<input type="text" class="date start" />
+			<input type="text" class="time start" />
+			<br />to
+			<br />
+			<input type="text" class="date end" />
+			<input type="text" class="time end" />
+			<br />
+			<br />
+			<input type="button" id="submiterv" value="Get ERV" />
+			<input type="button" id="submitvrf" value="Get VRF" />
 		</div>
-	</body>
+	</div>
+</body>
 </html>

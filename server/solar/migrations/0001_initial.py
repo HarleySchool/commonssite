@@ -68,8 +68,7 @@ class Migration(SchemaMigration):
             ('ResidualCurrent', self.gf('django.db.models.fields.FloatField')()),
             ('FeedInTime', self.gf('django.db.models.fields.FloatField')()),
             ('OperatingTime', self.gf('django.db.models.fields.FloatField')()),
-            ('OperationHealth', self.gf('django.db.models.fields.CharField')(max_length=16)),
-            ('TotalACPower', self.gf('django.db.models.fields.FloatField')()),
+            ('OperationHealth', self.gf('django.db.models.fields.CharField')(max_length=16))
         ))
         db.send_create_signal(u'solar', ['SMAPanels'])
 
@@ -131,7 +130,6 @@ class Migration(SchemaMigration):
             'OperationHealth': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
             'ResidualCurrent': ('django.db.models.fields.FloatField', [], {}),
             'Time': ('django.db.models.fields.DateTimeField', [], {'db_column': "'time'"}),
-            'TotalACPower': ('django.db.models.fields.FloatField', [], {}),
             'TotalYield': ('django.db.models.fields.FloatField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },

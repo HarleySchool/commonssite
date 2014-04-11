@@ -232,7 +232,7 @@ def group_id_to_name(id):
 	}
 	return mapping.get(id, str(id))
 
-class ScraperHvac(object):
+class HvacServerInterface(object):
 
 	def parse_bulk(self, bulk, selection=[], units={}):
 		"""given bulk hex data describing a VRF group, this function returns a dict
@@ -366,28 +366,46 @@ class ScraperHvac(object):
 			group_status[group_id_to_name(group_id)] = self.parse_bulk(grp.get("Bulk"), selection=values, units=units)
 		return group_status
 
-	def __map_from_model(self, name):
+	@classmethod
+	def map_from_model(cls, name):
 		mapping = {
 			'Running' : 'Drive'
 		}
 		# get mapped name (or default to the given name)
 		return mapping.get(name, name)
 
+class ScraperERV(object):
+
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		hsi = HvacServerInterface()
+
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		models = []
-		dict_data = self.status_dict(groups=groups, units=units)
+		dict_data = hsi.status_dict(groups=groups, units=units)
+		for (name, data) in dict_data.iteritems():
+			# check if VRF or ERV
+			if name.find('ERV') > -1:
+				model_fields = ErvEntry.get_field_names()
+				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
+				model = ErvEntry(Time=now, Name=name, **kargs)
+				models.append(model)
+		return models
+
+class ScraperVRF(object):
+
+	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
+		hsi = HvacServerInterface()
+
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
+		models = []
+		dict_data = hsi.status_dict(groups=groups, units=units)
 		for (name, data) in dict_data.iteritems():
 			# check if VRF or ERV
 			if name.find('ERV') == -1:
-				cls = VrfEntry
-			else:
-				cls = ErvEntry
-			model_fields = cls.fields()
-			kargs = dict(zip(model_fields, [data[self.__map_from_model(f)] for f in model_fields]))
-			model = cls(Time=now, Name=name, **kargs)
-			models.append(model)
+				model_fields = VrfEntry.get_field_names()
+				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
+				model = VrfEntry(Time=now, Name=name, **kargs)
+				models.append(model)
 		return models
 
 if __name__ == '__main__':
@@ -396,7 +414,7 @@ if __name__ == '__main__':
 		'text': 'upper'
 	}
 
-	scraper = ScraperHvac()
+	scraper = ScraperERV()
 
 	from pprint import pprint
 	status = {}

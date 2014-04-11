@@ -1,3 +1,4 @@
 from django.contrib import admin
+from timeseries.models import ModelRegistry
 
-# no special models owned by timeseries.
+admin.site.register(ModelRegistry)

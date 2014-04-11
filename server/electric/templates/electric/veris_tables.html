@@ -24,24 +24,24 @@
 <div id="tables-wrapper">
 	<p><input type="button" value="refresh data" id="refreshbutton"/>{% if telapse > 0 %}&nbsp;Data below reflects changes in the last {{ telapse|floatformat:"0" }} seconds{% endif %}</p>
 	{% for device, updates in monitor.items %}
-		<h3 class="tabletitle">{{ device }}</h3>
-		<table class="update-table">
-			<thead>
-				<tr>
-					<th class="col1">Circuit</th>
-					<th class="col2">Previous value</th>
-					<th class="col3">Current value</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for name, prev, new in updates %}
-				<tr class="{% cycle "dark" "light"%}">
-					<td class="col1">{{ name }}</td>
-					<td class="col2">{{ prev }}</td>
-					<td class="col3">{{ new }}</td>
-				</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+	<h3 class="tabletitle">{{ device }}</h3>
+	<table class="update-table">
+		<thead>
+			<tr>
+				<th class="col1">Circuit</th>
+				<th class="col2">Previous value</th>
+				<th class="col3">Current value</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for name, prev, new in updates %}
+			<tr class="{% cycle "dark" "light"%}">
+				<td class="col1">{{ name }}</td>
+				<td class="col2">{{ prev }}</td>
+				<td class="col3">{{ new }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 	{% endfor %}
 </div>

@@ -1,6 +1,7 @@
 # at time of writing, commonscontrol.harleyschool.org has the IP address '208.99.242.111'
 import os
 from private import *
+from private import *
 
 ################
 ## SQL SERVER ##
@@ -22,7 +23,6 @@ scrapers_settings_sql_table = 'scraper-settings'
 
 hvac_host = "10.1.6.200"
 hvac_port = 80
-hvac_log_interval = 10*60 # 10 minutes
 hvac_sql_table_vrf = 'hvac-vrf'
 hvac_sql_table_erv = 'hvac-erv'
 
@@ -32,9 +32,6 @@ hvac_sql_table_erv = 'hvac-erv'
 
 sma_host = "commonscontrol.harleyschool.org"
 sma_port = 80
-# NOTE: According to the RPC manual, sma_log_interval cannot be
-# less than 30 seconds
-sma_log_interval = 10*60 # 10 minutes
 sma_sql_table_weather = 'sma-weather'
 sma_sql_table_panels = 'sma-panels'
 sma_sql_table_overview = 'sma-overview'
@@ -45,7 +42,6 @@ sma_sql_table_overview = 'sma-overview'
 
 veris_host = "10.1.6.202"
 veris_port = 80
-veris_uname = "user"
 veris_sql_table_channel = 'electric-channel'
 veris_sql_table_device = 'electric-summary'
 veris_sql_table_map = 'electic-channel-map'
