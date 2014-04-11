@@ -7,7 +7,7 @@ from commonssite.settings import datetime_out_format
 from timeseries.models import ModelRegistry
 
 def index(request):
-	return render(request, 'timeseries/download.html', {})
+	return render(request, 'timeseries/download.html', {'systems' : h.systems_dict()})
 
 def __csv_range(request, cls, tstart, tend):
 	response = HttpResponse(content_type='text/csv')

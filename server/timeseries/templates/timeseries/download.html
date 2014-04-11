@@ -17,5 +17,12 @@
 
 {% block content %}
 {% include "timeseries/daterange.html" %}
-<div class="buttons-container"></div>
+{% for sys, subs in systems.iteritems %}
+<div class="buttons-{{ sys|lower }}">
+	<h3>{{ sys }}</h3>
+	{% for subsys, specs in subs.iteritems %}
+	<button type='button' class='btn btn-sm btn-primary get_data_btn' data-type='{{ subsys }}'>Get {{ subsys }}</button>
+	{% endfor %}
+</div>
+{% endfor %}
 {% endblock content %}

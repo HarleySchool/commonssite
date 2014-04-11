@@ -17,7 +17,7 @@ $(document).ready(function(){
 
 	// callback for actually making the graph
 	$("#makegraph_btn").click(function(){
-		if(daterange['start'] == null || daterange['end'] == null){
+		if(daterange.startDate == null || daterange.endDate == null){
 			console.log('BAD FORM: cannot deal with null datetime');
 			return;
 		}
@@ -36,8 +36,8 @@ $(document).ready(function(){
 
 		var chart_options = {
 			'container' : "#charts-container",
-			'from' : daterange['start'].toISOString(),
-			'to' : daterange['end'].toISOString(),
+			'from' : daterange.startDate.toISOString(),
+			'to' : daterange.endDate.toISOString(),
 			'system' : $("select.system_select").find(":selected").data("sys"),
 			'subsystem' : $("select.system_select").find(":selected").data("sub"),
 			'headers' : headers,

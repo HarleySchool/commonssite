@@ -14,17 +14,13 @@
 	</form>
 </div>
 <script>
-var daterange = {
-	start : null,
-	end : null,
-}
 $('#datarangetime').daterangepicker({
+	forceParse: true,
 	timePicker: true,
-	timePickerIncrement: 30,
-	format: 'MM/DD/YYYY h:mm A'
-}, function(start, end, label) {
-	daterange['start'] = start;
-	daterange['end'] = end;
+	timePickerIncrement: 15,
+	format: 'MM/DD/YYYY h:mm A',
 });
+var daterange = $('#datarangetime').eq(0).data('daterangepicker');
+daterange.updateInputText();
 
 </script>
