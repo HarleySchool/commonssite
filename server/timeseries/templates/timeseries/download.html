@@ -4,27 +4,25 @@
 {% block title %}Download Data{% endblock title %}
 
 {% block scripts %}
-	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-	<script src="{% static "js/jquery.timepicker.js" %}"></script>
-	<script src="{% static "js/jquery.datepair.js" %}"></script>
-	<script src="{% static "timeseries/js/downloads.js" %}"></script>
+<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="{% static "js/jquery.timepicker.js" %}"></script>
+<script src="{% static "timeseries/js/downloads.js" %}"></script>
+<script src="{% static "timeseries/js/moment.min.js" %}"></script>
+<script src="{% static "timeseries/js/daterangepicker.js" %}"></script>
 {% endblock scripts %}
 
 {% block styles %}
-<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" href="//jonthornton.github.io/jquery-timepicker/jquery.timepicker.css" />
+<link rel="stylesheet" href="{% static "timeseries/css/daterangepicker-bs3.css " %}" />
 {% endblock styles %}
 
 {% block content %}
-	<div id="datepairExample">
-		<input type="text" class="date start" />
-		<input type="text" class="time start" />
-		<br />to
-		<br />
-		<input type="text" class="date end" />
-		<input type="text" class="time end" />
-		<br />
-		<br />
-		<div class="buttons-container"></div>
-	</div>
+{% include "timeseries/daterange.html" %}
+{% for sys, subs in systems.iteritems %}
+<div class="buttons-{{ sys|lower }}">
+	<h3>{{ sys }}</h3>
+	{% for subsys, specs in subs.iteritems %}
+	<button type='button' class='btn btn-sm btn-primary get_data_btn' data-type='{{ subsys }}'>Get {{ subsys }}</button>
+	{% endfor %}
+</div>
+{% endfor %}
 {% endblock content %}

@@ -197,8 +197,7 @@ class ScraperSolarPanels(SMAScraperBase):
 	def get_data(self):
 		# TODO convert given units to default units
 		ssi = SMAServerInterface()
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		objects = []
 		# GET DEVICE DATA
 		data_dict = ssi.doGetData()
@@ -225,8 +224,7 @@ class ScraperSolarWeather(SMAScraperBase):
 	def get_data(self):
 		# TODO convert given units to default units
 		ssi = SMAServerInterface()
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		objects = []
 		# GET DEVICE DATA
 		data_dict = ssi.doGetData()
@@ -253,8 +251,7 @@ class ScraperSolarOverview(SMAScraperBase):
 	def get_data(self):
 		# TODO convert given units to default units
 		ssi = SMAServerInterface()
-		now = datetime.datetime.now()
-		now = pytz.UTC.localize(now)
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		objects = []
 		# GET OVERVIEW DATA
 		over_dict = ssi.doGetPlantOverview()

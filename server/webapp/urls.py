@@ -4,7 +4,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 class IndexView(TemplateView):
-	template_name = "base.html"
+	template_name = "Main.html"
 
 urlpatterns = patterns('',
 	# Examples:

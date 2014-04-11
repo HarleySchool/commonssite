@@ -67,25 +67,25 @@
 
 {% block content %}
 {% for dev, map in name_map.items %}
-	<div class="table-wrapper">
+<div class="table-wrapper">
 	<h3>{{ dev }}</h3>
 	<table>
-	<thead>
-		<tr>
-			<th>Channel</th>
-			<th>Given Name</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for ch, nm in map %}
+		<thead>
+			<tr>
+				<th>Channel</th>
+				<th>Given Name</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for ch, nm in map %}
 			<tr class="{% cycle "dark" "light"%}">
 				<td>{{ ch }}</td>
 				<td><div data-channel="{{ ch }}" class="given-name">{{ nm }}</div></td>
 			</tr>
-		{% endfor %}
-	</tbody>
+			{% endfor %}
+		</tbody>
 	</table>
-	</div>
+</div>
 {% endfor %}
 <input type="button" id="submitbtn" value="update names" />
 {% endblock content %}
