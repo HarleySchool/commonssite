@@ -1,6 +1,5 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.http import HttpResponse
-from django.template import RequestContext
 from commonssite.miscellaneous import VerisMonitor
 from electric.models import ChannelNameMap
 
@@ -17,7 +16,7 @@ def diff_init(request):
 	update_dict, telapse = update_time_tuple(m)
 	request.session['monitor'] = m.serialize()
 	settings = m.get_settings()
-	return render_to_response('electric/monitor_wrapper.html', {'monitor' : update_dict, 'settings' : settings, 'telapse' : telapse}, context_instance=RequestContext(request))
+	return render(request, 'electric/monitor_wrapper.html', {'monitor' : update_dict, 'settings' : settings, 'telapse' : telapse})
 
 def diff_refresh(request):
 	# get monitor from session
@@ -41,7 +40,7 @@ def diff_refresh(request):
 	# return rendered inner-page (just tables)
 	request.session['monitor'] = m.serialize()
 	settings = m.get_settings()
-	return render_to_response('electric/veris_tables.html', {'monitor' : update_dict, 'settings' : settings, 'telapse' : telapse}, context_instance=RequestContext(request))
+	return render(request, 'electric/veris_tables.html', {'monitor' : update_dict, 'settings' : settings, 'telapse' : telapse})
 
 def name_map(request):
 	devices = ['Panel %d' % p for p in [2,3,4]]
@@ -50,7 +49,7 @@ def name_map(request):
 		map_dict[dev] = []
 		for obj in ChannelNameMap.objects.filter(Panel__exact=dev):
 			map_dict[dev].append((obj.Channel, obj.Name))
-	return render_to_response('electric/channel_names.html', {'name_map' : map_dict}, context_instance=RequestContext(request))
+	return render(request, 'electric/channel_names.html', {'name_map' : map_dict})
 
 def update_names(request):
 	print request.GET
