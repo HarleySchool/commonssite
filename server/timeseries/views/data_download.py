@@ -1,11 +1,10 @@
 import csv
 import datetime
-from timeseries import parse_time
+import timeseries.helpers as h
 from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import render
 from commonssite.settings import datetime_out_format
 from timeseries.models import ModelRegistry
-from timeseries import get_registered_model
 
 def index(request):
 	return render(request, 'timeseries/download.html', {})
@@ -32,21 +31,19 @@ def __csv_range(request, cls, tstart, tend):
 
 def generic_csv(request, model_name):
 	try:
-		tstart = parse_time(request.GET.get('tstart'))
+		tstart = h.parse_time(request.GET.get('tstart'))
 	except Exception as e:
 		print e
 		tstart = datetime.datetime.utcfromtimestamp(0) # default to beginning of time
 	try:
-		tend = parse_time(request.GET.get('tend'))
+		tend = h.parse_time(request.GET.get('tend'))
 	except Exception as e:
 		print e
 		tend = datetime.datetime.utcnow() # default to now
 	# find the specified model class
-	for m in ModelRegistry.objects.all():
-		if m.short_name == model_name:
-			break
+	m = ModelRegistry.objects.get(short_name=model_name)
 	# retrieve model class from cache, or import it
 	try:
-		return __csv_range(request, get_registered_model(m.model_class), tstart, tend)
+		return __csv_range(request, h.get_registered_model(m.model_class), tstart, tend)
 	except ImportError:
 		return HttpResponseServerError("Could not locate database table for type %s" % model_name)

@@ -1,68 +1,15 @@
 import json
-from timeseries import parse_time
+import timeseries.helpers as h
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from timeseries.models import ModelRegistry
-from timeseries import get_registered_model
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
-
-# refer to https://docs.djangoproject.com/en/dev/ref/models/fields/#field-types
-model_types = {
-	'numeric' : [u'FloatField', u'IntegerField', u'BigIntegerField', u'DecimalField', u'PositiveIntegerField', u'PositiveSmallIntegerField', u'SmallIntegerField' ],
-	'string' : [u'CharField', u'BooleanField', u'TextField']
-}
-
-def systems_dict():
-	"""construct and return a json object describing the different systems with available timeseries data. Note that no actual data is returned.
-	A 'system' is something like 'HVAC' or 'Electric', and a subsystem is, for example, VRF within HVAC
-
-	structure is as follows:
-	{
-		'system name' : {
-			'subsystem name' : {
-				id : 'CamelCaseId',
-				description : 'this is a really fancy and efficient subsystem',
-				numeric : ['ColumnName1', 'ColumnName2'],
-				selection : {
-					'header1' : ['unique_value1', 'unique_value2'],
-					...
-				}
-				units : {
-					'ColumnName1' : 'in',
-					'ColumnName2' : 'kWh'
-				}
-				string : ['ColumnNameA', 'ColumnNameB'],
-			}, ...
-		}, ...
-	}
-	"""
-	systems = {}
-	# start with the ModelRegistry - that's where we keep track of models and scrapers
-	for registry in ModelRegistry.objects.all():
-		if registry.system not in systems:
-			systems[registry.system] = {}
-		model = get_registered_model(registry.model_class)
-		# construct 'selection' based on unique headers
-		header_selections = {}
-		all_headers = model.get_header_names()
-		all_headers.remove('Time')
-		for h in all_headers:
-			header_selections[h] = [str(val) for val in model.objects.values_list(h, flat=True).distinct()]
-		systems[registry.system][registry.short_name] = {
-			'description' : registry.description,
-			'numeric' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['numeric']],
-			'string' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['string']],
-			'selection' : header_selections,
-			'id' : registry.make_id(),
-			'units' : {} # TODO
-		}
-	return systems
 
 # step 1 of api communication: get information about what systems are available
 def get_systems(request):
 	# construct response
-	return HttpResponse(content_type='application/json', content=json.dumps(systems_dict()))
+	return HttpResponse(content_type='application/json', content=json.dumps(h.systems_dict()))
 
 @csrf_exempt
 def query(request):
@@ -106,7 +53,7 @@ def query(request):
 	}
 	"""
 	if request.method == 'GET':
-		return render(request, "timeseries/chart.html", {'systems' : systems_dict()})
+		return render(request, "timeseries/chart.html", {'systems' : h.systems_dict()})
 	elif request.method == 'POST' and request.is_ajax():
 		post = json.loads(request.body)
 		data = {}
@@ -121,10 +68,10 @@ def query(request):
 				print "bad query for system %s and subsystem %s" % (sys_name, sub_name)
 				continue
 			# using registry, get the actual model
-			model = get_registered_model(registry.model_class)
+			model = h.get_registered_model(registry.model_class)
 			# prepare the query on the database
-			t_start = parse_time(spec.get('from'))
-			t_end = parse_time(spec.get('to'))
+			t_start = h.parse_time(spec.get('from'))
+			t_end = h.parse_time(spec.get('to'))
 			cols = spec.get('columns')
 			if 'Time' not in cols:
 				cols.append('Time')

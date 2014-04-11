@@ -3,7 +3,7 @@ import time
 import threading
 import heapq
 from commonssite.server.timeseries.models import ModelRegistry
-from commonssite.server.timeseries import get_registered_scraper
+from commonssite.server.timeseries.helpers import get_registered_scraper
 
 # Converts seconds to minutes
 def minutes(seconds):
