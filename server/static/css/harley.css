@@ -1,6 +1,6 @@
 
 .text-muted {
-  color: #00B318;
+  color: #66AD85;
 }
 
 .buttons-container button {
@@ -45,17 +45,6 @@ body {
   border-top: 1px solid #8C8C8C;
 }
 
-/* Customize container */
-@media (min-width: 768px) {
-  .container {
-    max-width: 730px;
-  }
-}
-.container-narrow > hr {
-  margin: 30px 0;
-}
-
-
 /* Supporting marketing content */
 .marketing {
   margin: 40px 0;
@@ -89,5 +78,4 @@ body {
   .header {
     margin-bottom: 30px;
   }
-  /* Remove the bottom border on the jumbotron for visual effect */
  
