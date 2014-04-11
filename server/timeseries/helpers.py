@@ -87,3 +87,53 @@ def parse_time(isostring):
 	if dt.tzinfo == None: # if it's a naive datetime
 		dt = dt.replace(tzinfo=tzlocal())
 	return dt
+
+def system_filter(filter_list):
+	"""
+	Takes a definition of one or more series and returns a list of QuerySets which, taken together (union), represent all of the requested data
+
+	filter definition is as follows:
+	[{
+		'system name' : {
+			'subsystem name' : {
+				filter : {
+					'header1' : ['value1', 'value2', ...],
+					'header2' : ['valueX', 'valueY', ...]
+				},
+				columns : ['ColumnName1', 'ColumnName2']
+			}, ...
+		}, ...
+	}, ...]
+
+	Note that setting columns to '[]' is interpreted as all columns. 
+	Also note that filters are additive, not restrictive. More filters means more series. 
+	For example, specifying two columns and two values for header1 will result in 4 series of data
+	"""
+	query_sets = []
+	for filter_obj in filter_list:
+		for sys, subs in filter_obj.iteritems():
+			for subsys, specs in subs.iteritems():
+				# look up the requested system in our registry
+				m = ModelRegistry.objects.get(system=sys, short_name=subsys)
+				# if it doesn't exist, skip this one
+				if not m:
+					continue
+				# get the corresponding model class
+				model = get_registered_model(m.model_class)
+				# start the queryset as empty (will be built up by filters)
+				Q = model.objects.none()
+				# filter by header and value
+				for h, vals in specs.get('filter'):
+					for v in vals:
+						# QuerySets are lazy, so it's actually not bad to "OR" them together into a union.
+						# The database will still only be hit once.
+						Q |= model.objects.filter(**{h : v})
+				# filter for only the selected columns
+				# note that if 'columns' is None or [], no filtering is performed and all columns are returned
+				columns = specs.get('columns')
+				if columns:
+					if 'Time' not in columns:
+						columns.append('Time')
+					Q = Q.values(*columns)
+				query_sets.append(Q)
+	return query_sets

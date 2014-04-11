@@ -36,22 +36,26 @@ function getCookie(name) {
 }
 
 var Commons = {
+
+	csrf : function(){
+		return getCookie('csrftoken');
+	},
 	
 	// request systems' information from the api. see timeseries/views/data_api
-	getSystems : function(onsuccess){
+	get_systems : function(onsuccess){
 		return $.ajax({
 			url : '/data/api/systems/',
 			contentType : 'json'
 		}).done(onsuccess);
 	},
 
-	csrf : function(){
-		return getCookie('csrftoken');
+	get_series : function(series_id){
+
 	},
 
-	create_chart : function(params){
+	create_chart : function(series, tstart, tend, chart_options){
 		// set up default options
-		chart_options = {
+		chart_options = char_options || {
 			chart: {
 				type: 'spline' // http://api.highcharts.com/highcharts#plotOptions
 			},
@@ -69,7 +73,7 @@ var Commons = {
 						return '<b>'+ this.series.name +'</b><br/>'+
 						Highcharts.dateFormat('%m/%d %H:%M', this.x) +': '+ this.y;
 				}
-			}
+			},
 		}
 		// override default options with anything specified by params.chart
 		if(params.hasOwnProperty('chart'))
@@ -92,7 +96,7 @@ var Commons = {
 		};
 		// query server for data
 		$.ajax({
-			url : '/data/api/query/',
+			url : '/data/api/series/',
 			type : 'POST',
 			contentType : 'json',
 			data : JSON.stringify(query)
@@ -107,7 +111,7 @@ var Commons = {
 					if(ser !== 'Time'){
 						points = [];
 						for(var i=0; i<npts; i++){
-							points.push([1000*data[group]['Time'][i], data[group][ser][i]]);
+							points.push([new Date(data[group]['Time'][i]), data[group][ser][i]]);
 						}
 						series.push({
 							name: group+": "+ser,
@@ -124,5 +128,10 @@ var Commons = {
 			container.append(newdiv);
 			newdiv.highcharts(chart_options);
 		});
+	}
+
+	live_chart : function(series, timespan_mins, chart_options){
+		// default arguments
+		timespan_mins = timespan_mins || 60*24*7; // default to one week
 	}
 };

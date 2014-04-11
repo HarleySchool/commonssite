@@ -1,28 +1,38 @@
-{% extends "base.html" %}
-{% load static %}
+{% extends "timeseries/seriespicker.html" %}
 
 {% block title %}Download Data{% endblock title %}
 
-{% block scripts %}
-<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-<script src="{% static "js/jquery.timepicker.js" %}"></script>
-<script src="{% static "timeseries/js/downloads.js" %}"></script>
-<script src="{% static "timeseries/js/moment.min.js" %}"></script>
-<script src="{% static "timeseries/js/daterangepicker.js" %}"></script>
-{% endblock scripts %}
+{% block ui %}
+<button class="btn btn-tm" id="downloadBtn">Download CSV</button>
+<script>
+// thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
+var downloadURL = function downloadURL(url) {
+	var hiddenIFrameID = 'hiddenDownloader',
+		iframe = document.getElementById(hiddenIFrameID);
+	if (iframe === null) {
+		iframe = document.createElement('iframe');
+		iframe.id = hiddenIFrameID;
+		iframe.style.display = 'none';
+		document.body.appendChild(iframe);
+	}
+	iframe.src = url;
+};
 
-{% block styles %}
-<link rel="stylesheet" href="{% static "timeseries/css/daterangepicker-bs3.css " %}" />
-{% endblock styles %}
-
-{% block content %}
-{% include "timeseries/daterange.html" %}
-{% for sys, subs in systems.iteritems %}
-<div class="buttons-{{ sys|lower }}">
-	<h3>{{ sys }}</h3>
-	{% for subsys, specs in subs.iteritems %}
-	<button type='button' class='btn btn-sm btn-primary get_data_btn' data-type='{{ subsys }}'>Get {{ subsys }}</button>
-	{% endfor %}
-</div>
-{% endfor %}
-{% endblock content %}
+$(document).ready(function(){
+	// callback
+	function download_csv(series_obj){
+		if(daterange.startDate == null || daterange.endDate == null){
+			console.log('BAD FORM: cannot deal with null datetime');
+			return;
+		}
+		series_obj['tstart'] = daterange.startDate.toISOString();
+		series_obj['tend'] = daterange.endDate.toISOString();
+		var url = '/data/api/csv/?' + $.params(series_obj);
+		downloadURL(url);
+	}
+	$("#downloadBtn").click(function(){
+		download_csv(make_series_obj());
+	});
+});
+</script>
+{% endblock ui %}

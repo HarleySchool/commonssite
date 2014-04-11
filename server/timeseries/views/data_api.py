@@ -1,29 +1,20 @@
 import json
 import timeseries.helpers as h
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
 from timeseries.models import ModelRegistry
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.core.exceptions import ObjectDoesNotExist
 
 # step 1 of api communication: get information about what systems are available
-def get_systems(request):
+def systems(request):
 	# construct response
 	return HttpResponse(content_type='application/json', content=json.dumps(h.systems_dict()))
 
 @csrf_exempt
-def query(request):
+def series(request):
 	"""construct and resturn a json object containing arrays of data corresponding to the requested fields
 	
-	REQUEST structure is as follows:
-	{
-		'system name:subsystem name' : {
-			from : ISO String,
-			to : ISO String,
-			series : ['header1=val1&header2=valx', 'header1=val2&header2=valx'], // [] is interpreted as 'all series'
-			columns : ['ColumnName1', 'ColumnName2']
-		}, ...
-	}
+	REQUEST structure is as specified in timeseries.helpers.system_filter
 
 	RESPONSE structure is as follows:
 	{
@@ -52,9 +43,7 @@ def query(request):
 		}, ...
 	}
 	"""
-	if request.method == 'GET':
-		return render(request, "timeseries/chart.html", {'systems' : h.systems_dict()})
-	elif request.method == 'POST' and request.is_ajax():
+	if request.method == 'POST' and request.is_ajax():
 		post = json.loads(request.body)
 		data = {}
 		multi_system = len(post) > 1
@@ -119,3 +108,8 @@ def query(request):
 		return HttpResponse(content_type='application/json', content=json.dumps(data))
 	else:
 		return HttpResponseBadRequest()
+
+@csrf_exempt
+def single(request):
+	"""using a scraper, return a single live data point"""
+	pass
