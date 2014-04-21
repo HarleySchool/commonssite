@@ -134,8 +134,9 @@ def system_filter(filter_list, tstart, tend):
 				# note that if 'columns' is None or [], no filtering is performed and all columns are returned
 				columns = specs.get('columns')
 				if columns:
-					if 'Time' not in columns:
-						columns.append('Time')
+					for head in model.get_header_names():
+						if head not in columns:
+							columns.append(head)
 				else:
 					columns = model.get_header_names() + model.get_field_names()
 				Q = Q.values(*columns)

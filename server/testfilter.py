@@ -2,7 +2,7 @@ import datetime, pytz
 from pprint import pprint
 from timeseries.helpers import system_filter
 
-f = [{'HVAC' : {'VRF' : { 'filter' : { 'Name' : ['Mezzanine', 'Control Room'] }}}}, {'Electric' : {'Circuits' : { 'filter' : { 'Channel' : 'Channel #1' }, 'columns' : ['Current', 'Energy']}}}]
+f = [{'HVAC' : {'VRF' : { 'filter' : { 'Name' : ['Mezzanine', 'Control Room'] }}}}, {'Electric' : {'Circuits' : { 'filter' : { 'Channel' : ['Channel #1'] }, 'columns' : ['Current', 'Energy']}}}]
 pprint(f)
 
 now = pytz.UTC.localize(datetime.datetime.utcnow())
