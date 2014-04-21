@@ -60,9 +60,11 @@
 		<input type="button" value="Make Graph" id="makegraph_btn" />
 	</div>
 	<script>
-	function make_series_obj(){
-		
-	}
+		jQuery.fn.extend({
+			seriespicker: function(btnid, callback) {
+				/* set up a trigger for $("#"+btnid) to give a series-object to the callback function */
+			}
+		});
 	</script>
 {% endblock content %}
 

@@ -20,10 +20,8 @@ def download_csv(request):
 	except Exception as e:
 		print e
 		return HttpResponseServerError("To download data, an end time must be specified")
-	# get the QuerySets for the specified series (where the GET itself is treated as the filter object, and we don't allow multiple systems)
-	qs = h.series_filter([request.GET])
-	if len(qs) > 0:
-		queryset = qs[0]
+	objects = h.series_filter([request.GET])
+	if len(objects) > 0:
 		# set up the CSV writer
 		response = HttpResponse(content_type='text/csv')
 		response['Content-Disposition'] = 'attachment; filename="%s.csv"' % queryset.model.__name__
