@@ -88,9 +88,6 @@ def parse_time(isostring):
 		dt = dt.replace(tzinfo=tzlocal())
 	return dt
 
-def live_filter(filter_list):
-	pass
-
 def system_filter(filter_list, tstart, tend):
 	"""
 	Takes a definition of one or more series and returns a list of dicts which represent the objects. Time will always be returned.
@@ -141,4 +138,40 @@ def system_filter(filter_list, tstart, tend):
 					columns = model.get_header_names() + model.get_field_names()
 				Q = Q.values(*columns)
 				retlist.extend(list(Q))
+	return retlist
+
+def live_filter(filter_list):
+	"""see system_filter for api (identical)"""
+	retlist = []
+	for filter_obj in filter_list:
+		for sys, subs in filter_obj.iteritems():
+			for subsys, specs in subs.iteritems():
+				# look up the requested system in our registry
+				m = ModelRegistry.objects.get(system=sys, short_name=subsys)
+				# if it doesn't exist, skip this one
+				if not m:
+					continue
+				# get the corresponding model class
+				model = get_registered_model(m.model_class)
+				scraper_class = get_registered_scraper(m.scraper_class)
+				scraper = scraper_class()
+				# perform a scrape!
+				new_data = scraper.get_data()
+				# use the filters
+				for h, vals in specs.get('filter').iteritems():
+					new_data = filter(lambda obj: obj.__dict__.get(h) in vals, new_data)
+				# filter for only the selected columns
+				# note that if 'columns' is None or [], no filtering is performed and all columns are returned
+				columns = specs.get('columns')
+				if columns:
+					for head in model.get_header_names():
+						if head not in columns:
+							columns.append(head)
+				else:
+					columns = model.get_header_names() + model.get_field_names()
+				for obj in new_data:
+					obj_dict = {}
+					for col in columns:
+						obj_dict[col] = obj.__dict__[col]
+					retlist.append(obj_dict)
 	return retlist
