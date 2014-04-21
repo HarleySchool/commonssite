@@ -34,6 +34,10 @@ $(document).ready(function(){
 			}
 		});
 
+		var series = {
+
+		};
+
 		var chart_options = {
 			'container' : "#charts-container",
 			'from' : daterange.startDate.toISOString(),
@@ -44,7 +48,7 @@ $(document).ready(function(){
 			'columns' : columns
 		};
 
-		Commons.create_chart(chart_options);
+		Commons.create_chart();
 	});
 });
 

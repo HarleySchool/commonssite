@@ -88,6 +88,19 @@ def parse_time(isostring):
 		dt = dt.replace(tzinfo=tzlocal())
 	return dt
 
+def __obj_list_to_hd_dict(obj_list, model, columns):
+	retlist = []
+	for obj in obj_list:
+		hd_dict = {'H' : {}, 'D' : {}}
+		for head in model.get_header_names():
+			if head != 'Time':
+				hd_dict['H'][head] = obj[head]
+		for point in columns:
+			hd_dict['D'][point] = obj[point]
+		hd_dict['Time'] = obj['Time']
+		retlist.append(hd_dict)
+	return retlist
+
 def series_filter(filter_obj, tstart, tend):
 	"""
 	Takes a definition of one or more series and returns a list of dicts with 'H' and 'D' fields for Headers and Data respectively.
@@ -130,23 +143,16 @@ def series_filter(filter_obj, tstart, tend):
 			# filter for only the selected columns
 			# note that if 'columns' is None or [], no filtering is performed and all columns are returned
 			data_columns = specs.get('columns')
-			all_columns = data_columns[:]
-			if all_columns:
+			if data_columns:
+				all_columns = data_columns[:]
 				for head in model.get_header_names():
 					if head not in all_columns:
 						all_columns.append(head)
 			else:
+				data_columns = model.get_field_names()
 				all_columns = model.get_header_names() + model.get_field_names()
 			Q = Q.values(*all_columns)
-			for obj in Q:
-				hd_dict = {'H' : {}, 'D' : {}}
-				for head in model.get_header_names():
-					if head != 'Time':
-						hd_dict['H'][head] = obj.__dict__[head]
-				for point in data_columns:
-					hd_dict['D'][point] = obj.__dict__[point]
-				hd_dict['Time'] = obj.__dict__['Time']
-				retlist.append(hd_dict)
+			retlist.extend(__obj_list_to_hd_dict(Q, model, data_columns))
 	return retlist
 
 def live_filter(filter_obj):
@@ -168,23 +174,8 @@ def live_filter(filter_obj):
 			# use the series filters
 			for h, vals in specs.get('series').iteritems():
 				new_data = filter(lambda obj: obj.__dict__.get(h) in vals, new_data)
-			# filter for only the selected columns
-			# note that if 'columns' is None or [], no filtering is performed and all columns are returned
 			data_columns = specs.get('columns')
-			all_columns = data_columns[:]
-			if all_columns:
-				for head in model.get_header_names():
-					if head not in all_columns:
-						all_columns.append(head)
-			else:
-				all_columns = model.get_header_names() + model.get_field_names()
-			for obj in new_data:
-				hd_dict = {'H' : {}, 'D' : {}}
-				for head in model.get_header_names():
-					if head != 'Time':
-						hd_dict['H'][head] = obj.__dict__[head]
-				for point in data_columns:
-					hd_dict['D'][point] = obj.__dict__[point]
-				hd_dict['Time'] = obj.__dict__['Time']
-				retlist.append(hd_dict)
+			if not data_columns:
+				data_columns = model.get_field_names()
+			retlist.extend(__obj_list_to_hd_dict(new_data, model, data_columns))
 	return retlist

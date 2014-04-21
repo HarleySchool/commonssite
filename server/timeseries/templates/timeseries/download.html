@@ -1,9 +1,14 @@
-{% extends "timeseries/seriespicker.html" %}
+{% extends "base.html" %}
 
 {% block title %}Download Data{% endblock title %}
 
-{% block ui %}
-<button class="btn btn-tm" id="downloadBtn">Download CSV</button>
+{% block content %}
+{# drop in the daterange UI #}
+{% include "timeseries/daterange.html" %}
+{# drop in the series picker UI #}
+{% include "timeseries/seriespicker.html" %}
+
+<button class="btn" id="downloadBtn">Download CSV</button>
 <script>
 // thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
 var downloadURL = function downloadURL(url) {
@@ -21,18 +26,24 @@ var downloadURL = function downloadURL(url) {
 $(document).ready(function(){
 	// callback
 	function download_csv(series_obj){
-		if(daterange.startDate == null || daterange.endDate == null){
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+		if(start == null || end == null){
 			console.log('BAD FORM: cannot deal with null datetime');
 			return;
 		}
-		series_obj['tstart'] = daterange.startDate.toISOString();
-		series_obj['tend'] = daterange.endDate.toISOString();
-		var url = '/data/api/csv/?' + $.params(series_obj);
+
+		var url = '/data/api/csv/?' + $.param({
+			'series' : series_obj,
+			'tstart' : start.toISOString(),
+			'tend' : end.toISOString()
+		});
 		downloadURL(url);
 	}
+
 	$("#downloadBtn").click(function(){
-		download_csv(make_series_obj());
+		download_csv(JSON.stringify(Commons.seriespicker()));
 	});
 });
 </script>
-{% endblock ui %}
+{% endblock content %}

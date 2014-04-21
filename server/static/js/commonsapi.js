@@ -35,12 +35,6 @@ function getCookie(name) {
 	return cookieValue;
 }
 
-function product() {
-	return Array.prototype.reduce.call(arguments, function(as, bs) {
-		return [a.concat(b) for each (a in as) for each (b in bs)]
-	}, [[]]);
-}
-
 var Commons = {
 
 	csrf : function(){
@@ -132,7 +126,7 @@ var Commons = {
 			container.innerHTML(newdiv);
 			newdiv.highcharts(chart_options);
 		});
-	}
+	},
 
 	live_chart : function(series, timespan_mins, chart_options){
 		// default arguments
