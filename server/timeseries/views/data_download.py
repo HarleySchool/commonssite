@@ -21,7 +21,7 @@ def download_csv(request):
 		print e
 		return HttpResponseServerError("To download data, an end time must be specified")
 	# get the QuerySets for the specified series (where the GET itself is treated as the filter object, and we don't allow multiple systems)
-	qs = h.system_filter([request.GET])
+	qs = h.series_filter([request.GET])
 	if len(qs) > 0:
 		queryset = qs[0]
 		# set up the CSV writer
@@ -29,7 +29,7 @@ def download_csv(request):
 		response['Content-Disposition'] = 'attachment; filename="%s.csv"' % queryset.model.__name__
 		writer = csv.writer(response)
 
-		# if columns were filtered (again, see timeseries.helpers.system_filter), then the result is not a QuerySet
+		# if columns were filtered (again, see timeseries.helpers.series_filter), then the result is not a QuerySet
 		# but a ValuesQuerySet. A ValuesQuerySet has a '_fields' tuple of the relevant columns.
 		if hasattr(queryset, '_fields'):
 			headers = list(queryset._fields)

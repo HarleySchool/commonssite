@@ -1,20 +1,20 @@
 function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	// these HTTP methods do not require CSRF protection
+	return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
 function sameOrigin(url) {
-    // test that a given url is a same-origin URL
-    // url could be relative or scheme relative or absolute
-    var host = document.location.host; // host + port
-    var protocol = document.location.protocol;
-    var sr_origin = '//' + host;
-    var origin = protocol + sr_origin;
-    // Allow absolute or scheme relative URLs to same origin
-    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
-        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
-        // or any other URL that isn't scheme relative or absolute i.e relative.
-        !(/^(\/\/|http:|https:).*/.test(url));
+	// test that a given url is a same-origin URL
+	// url could be relative or scheme relative or absolute
+	var host = document.location.host; // host + port
+	var protocol = document.location.protocol;
+	var sr_origin = '//' + host;
+	var origin = protocol + sr_origin;
+	// Allow absolute or scheme relative URLs to same origin
+	return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+		(url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+		// or any other URL that isn't scheme relative or absolute i.e relative.
+		!(/^(\/\/|http:|https:).*/.test(url));
 }
 
 // thanks to django docs
@@ -35,6 +35,12 @@ function getCookie(name) {
 	return cookieValue;
 }
 
+function product() {
+	return Array.prototype.reduce.call(arguments, function(as, bs) {
+		return [a.concat(b) for each (a in as) for each (b in bs)]
+	}, [[]]);
+}
+
 var Commons = {
 
 	csrf : function(){
@@ -47,10 +53,6 @@ var Commons = {
 			url : '/data/api/systems/',
 			contentType : 'json'
 		}).done(onsuccess);
-	},
-
-	get_series : function(series_id){
-
 	},
 
 	create_chart : function(series, tstart, tend, chart_options){
@@ -79,20 +81,11 @@ var Commons = {
 		if(params.hasOwnProperty('chart'))
 			for (var prop in chart_options)
 				chart_options[prop] = params['chart'][prop] || chart_options[prop];
-		// create query object
-		var filter_list = [];
-		for(var header_filter in params['headers']){
-			// convert a dict of {header : value, ...}
-			// to the get notation: header1=value1&header2=value2
-			filter_list.push($.param(header_filter));
-		}
-		var composite_name = params.system + ":" + params.subsystem;
-		query = {};
-		query[composite_name] = {
-				'from' : params.from,
-				'to' : params.to,
-				'series' : filter_list,
-				'columns' : params.columns
+		// create query object from series
+		query = {
+			"from" : tstart,
+			"to" : tend,
+			"series" : series
 		};
 		// query server for data
 		$.ajax({
@@ -100,32 +93,43 @@ var Commons = {
 			type : 'POST',
 			contentType : 'json',
 			data : JSON.stringify(query)
-		}).done(function(data){
+		}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
 			console.log(data);
-			var series = [];
-			for(var group in data){
-				if(!data.hasOwnProperty(group)) continue;
-				var npts = data[group]['Time'].length;
-				// each 'group' is a header section
-				for(var ser in data[group]){
-					if(ser !== 'Time'){
-						points = [];
-						for(var i=0; i<npts; i++){
-							points.push([new Date(data[group]['Time'][i]), data[group][ser][i]]);
-						}
-						series.push({
-							name: group+": "+ser,
-							data: points
-						});
-					}
+			var highcharts_construction = {}; // temporary, under-construction, series of data
+			// for each of the series that was initially requested, add it to the highcharts series...
+			for (var i = data.length - 1; i >= 0; i--) {
+				var t = data[i].Time;
+				var h = data[i].H; // dict of headers
+				var d = data[i].D; // dict of datums
+				
+				var headers_name = ""; // e.g. "Panel 1: Channel #4"
+				for(var head in h){
+					if(headers_name !== "")
+						headers_name += ": ";
+					headers_name += h[head];
 				}
+
+				for(var col in d){
+					var full_name = headers_name + ": " + col; // e.g. "Panel 1: Channel #4: MaxPower"
+					// create new series if not already exists
+					if(!highcharts_construction.hasOwnProperty(full_name))
+						highcharts_construction[full_name] = {'name' : full_name, 'data' : []}
+					// add data point
+					highcharts_construction[full_name].data.push([new Date(t), d[col]]);
+				}
+			};
+
+			// done constructing series. now just the values of highcharts_construction are relevant
+			var highcharts_series = [];
+			for(var name in highcharts_construction){
+				highcharts_series.push(highcharts_construction[name]);
 			}
 
-			chart_options.series = series;
+			chart_options.series = highcharts_series;
 			// create chart
 			var newdiv = $("<div style='width:600px'></div>");
 			var container = $(params.container) || $("section#content");
-			container.append(newdiv);
+			container.innerHTML(newdiv);
 			newdiv.highcharts(chart_options);
 		});
 	}
