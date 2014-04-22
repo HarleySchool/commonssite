@@ -13,7 +13,7 @@ import os, sys
 from commonssite.private import DJANGO_SECRET_KEY
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-sys.path.append(os.path.join(BASE_DIR, 'weather'))
+sys.path.insert(0,os.path.join(BASE_DIR, 'weather'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
