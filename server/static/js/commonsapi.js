@@ -50,7 +50,6 @@ function server_to_highcharts_series(data){
 	// for each of the series that was initially requested, add it to the highcharts series...
 	for (var i = data.length - 1; i >= 0; i--) {
 		var t = new Date(data[i].Time);
-		console.log(data[i].Time+" ==> "+t.toISOString());
 		var h = data[i].H; // dict of headers
 		var d = data[i].D; // dict of datums
 		
@@ -67,7 +66,7 @@ function server_to_highcharts_series(data){
 			if(!highcharts_construction.hasOwnProperty(full_name))
 				highcharts_construction[full_name] = {'name' : full_name, 'data' : []}
 			// add data point
-			highcharts_construction[full_name].data.push([ToLocalDate(t).valueOf(), d[col]]);
+			highcharts_construction[full_name].data.push({x: ToLocalDate(t).valueOf(), y: d[col]});
 		}
 	};
 
@@ -203,7 +202,6 @@ var Commons = {
 		// keep track of the chart itself
 		var thechart;
 		// query server for initial data
-		console.log("live data init: "+title);
 		$.ajax({
 			url : '/data/api/single/',
 			type : 'POST',
@@ -212,8 +210,6 @@ var Commons = {
 		}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
 			var highcharts_series = translator(data);
 			chart_options.series = highcharts_series;
-			console.log("constructed series: "+title);
-			console.log(highcharts_series);
 			// create chart
 			var container = $(container_selector);
 			if(container === undefined){
@@ -240,20 +236,14 @@ var Commons = {
 				} else{
 					// update each series
 					for (var i = new_data.length - 1; i >= 0; i--) {
-						var existing_series = thechart.series[i].options.data[0];
-						var update = new_data[i].data[0];
-						// remove old/expired points (each point is [Time, val0])
-						var span = update[0] - existing_series[0];
-						if(!(existing_series instanceof Array)){
-							span = update[0] - existing_series.x;
-						}
+						var existing_series = thechart.series[i].options.data;
+						var update = new_data[i].data;
+						// remove old/expired points (each point is {x: time, y: value})
+						var span = update[0].x - existing_series[0].x;
 						console.log("timespan of "+title+": "+span);
 						while(span > timespan_millis){
 							existing_series.shift(); // removes the first element
-							span = update[0] - existing_series[0];
-							if(!(existing_series instanceof Array)){
-								span = update[0] - existing_series.x;
-							}
+							span = update[0].x - existing_series[0].x;
 						}
 						// add new point
 						existing_series.push(update[0]);
