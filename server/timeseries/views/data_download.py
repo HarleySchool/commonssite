@@ -1,4 +1,5 @@
 import csv
+import json
 import timeseries.helpers as h
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -11,49 +12,49 @@ def makedownload(request):
 def download_csv(request):
 	# parse start and end times
 	try:
-		tstart = h.parse_time(request.GET.pop('tstart'))
+		tstart = h.parse_time(request.GET.get('tstart'))
 	except Exception as e:
-		print e
+		print "download_csv tstart error: ", e
 		return HttpResponseServerError("To download data, a start time must be specified")
 	try:
-		tend = h.parse_time(request.GET.pop('tend'))
+		tend = h.parse_time(request.GET.get('tend'))
 	except Exception as e:
-		print e
+		print "download_csv tend error: ", e
 		return HttpResponseServerError("To download data, an end time must be specified")
-	objects = h.series_filter([request.GET])
+	try:
+		series = json.loads(request.GET.get('series'))
+	except Exception as e:
+		print "download_csv series error: ", e
+		return HttpResponseServerError("To download data, a series must be specified")
+	objects = h.series_filter(series, tstart, tend)
 	if len(objects) > 0:
 		# set up the CSV writer
 		response = HttpResponse(content_type='text/csv')
-		response['Content-Disposition'] = 'attachment; filename="%s.csv"' % queryset.model.__name__
+		response['Content-Disposition'] = 'attachment; filename="commonsdata.csv"'
 		writer = csv.writer(response)
 
-		# if columns were filtered (again, see timeseries.helpers.series_filter), then the result is not a QuerySet
-		# but a ValuesQuerySet. A ValuesQuerySet has a '_fields' tuple of the relevant columns.
-		if hasattr(queryset, '_fields'):
-			headers = list(queryset._fields)
-		# if it's a plain old QuerySet, then no columns were filtered and we use all of them, using the
-		# get_header_names and get_field_names functions from timeseries.models.TimeseriesBase
-		else:
-			headers = queryset.model.get_header_names() + queryset.model.get_field_names()
-		
-		# first row of the CSV is headers
-		writer.writerow(headers)
+		csv_headers = set(['Time']) # a set only keeps unique values
+		for obj in objects:
+			csv_headers |= set(obj['H'].keys()) # this behaves like list.extend, but since it's a set it doesn't allow duplicates
+			csv_headers |= set(obj['D'].keys())
+		csv_headers = list(csv_headers) # convert from set back to list
+		# first row of the CSV is csv_headers
+		writer.writerow(csv_headers)
 
-		# Finally filter by the time interval (note that the database STILL has not actually been queried)
-		# Lazy queries are nice.
-		queryset = queryset.filter(Time__gte=tstart, Time__lt=tend)
+		# helper to get index of column header
+		def col(name):
+			return csv_headers.index(name)
 
+		tindex = col('Time')
 		# loop over all rows of queried data and write them
-		# (HERE we actually hit the database)
-		for obj in queryset:
-			# construct the next row in the file by mapping "get value" onto the list of column headers
-			# (note that map will preserve the order so that the columns stay lined up)
-			csv_values_row = map(lambda h: obj.__dict__.get(h, ''), headers)
-			# special formatting for datetime so it's readable by spreadsheet programs
-			tspot = headers.index('Time')
-			if tspot > -1:
-				csv_values_row[tspot] = csv_values_row[tspot].strftime(datetime_out_format)
-			writer.writerow(csv_values_row)
+		for obj in objects:
+			row = [None] * len(csv_headers) # begin with a blank row
+			for k, v in obj['H'].iteritems():
+				row[col(k)] = v
+			for k, v in obj['D'].iteritems():
+				row[col(k)] = v
+			row[tindex] = obj['Time'].strftime(datetime_out_format)
+			writer.writerow(row)
 		return response
 	else:
 		return HttpResponseServerError("unable to process series specification")
