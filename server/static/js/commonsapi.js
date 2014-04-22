@@ -40,6 +40,7 @@ function server_to_highcharts_series(data){
 	// for each of the series that was initially requested, add it to the highcharts series...
 	for (var i = data.length - 1; i >= 0; i--) {
 		var t = new Date(data[i].Time);
+		console.log(data[i].Time+" ==> "+t.toISOString());
 		var h = data[i].H; // dict of headers
 		var d = data[i].D; // dict of datums
 		
@@ -69,7 +70,7 @@ function server_to_highcharts_series(data){
 	return highcharts_series;
 }
 
-function live_pie(data){
+function live_pie(data, top_n = 20){
 	var pie_data = []; // temporary, under-construction, series of data
 	// for each of the series that was initially requested, add it to the highcharts series...
 	for (var i = data.length - 1; i >= 0; i--) {
@@ -90,7 +91,9 @@ function live_pie(data){
 		}
 	};
 
-	return pie_data;
+	pie_data.sort(function(a,b){return b[1]-a[1]});
+
+	return pie_data.slice(0,top_n);
 }
 
 var Commons = {
