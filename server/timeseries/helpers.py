@@ -177,5 +177,5 @@ def live_filter(filter_obj):
 			data_columns = specs.get('columns')
 			if not data_columns:
 				data_columns = model.get_field_names()
-			retlist.extend(__obj_list_to_hd_dict(new_data, model, data_columns))
+			retlist.extend(__obj_list_to_hd_dict([d.__dict__ for d in new_data], model, data_columns))
 	return retlist

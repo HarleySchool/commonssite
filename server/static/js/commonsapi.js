@@ -35,6 +35,40 @@ function getCookie(name) {
 	return cookieValue;
 }
 
+function server_to_highcharts_series(data){
+	var highcharts_construction = {}; // temporary, under-construction, series of data
+	// for each of the series that was initially requested, add it to the highcharts series...
+	for (var i = data.length - 1; i >= 0; i--) {
+		var t = data[i].Time;
+		var h = data[i].H; // dict of headers
+		var d = data[i].D; // dict of datums
+		
+		var headers_name = ""; // e.g. "Panel 1: Channel #4"
+		for(var head in h){
+			if(headers_name !== "")
+				headers_name += ": ";
+			headers_name += h[head];
+		}
+
+		for(var col in d){
+			var full_name = headers_name + ": " + col; // e.g. "Panel 1: Channel #4: MaxPower"
+			// create new series if not already exists
+			if(!highcharts_construction.hasOwnProperty(full_name))
+				highcharts_construction[full_name] = {'name' : full_name, 'data' : []}
+			// add data point
+			highcharts_construction[full_name].data.push([new Date(t), d[col]]);
+		}
+	};
+
+	// done constructing series. now just the values of highcharts_construction are relevant
+	var highcharts_series = [];
+	for(var name in highcharts_construction){
+		highcharts_series.push(highcharts_construction[name]);
+	}
+
+	return highcharts_series;
+}
+
 var Commons = {
 
 	csrf : function(){
@@ -84,48 +118,93 @@ var Commons = {
 			contentType : 'json',
 			data : JSON.stringify(query)
 		}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-			console.log(data);
-			var highcharts_construction = {}; // temporary, under-construction, series of data
-			// for each of the series that was initially requested, add it to the highcharts series...
-			for (var i = data.length - 1; i >= 0; i--) {
-				var t = data[i].Time;
-				var h = data[i].H; // dict of headers
-				var d = data[i].D; // dict of datums
-				
-				var headers_name = ""; // e.g. "Panel 1: Channel #4"
-				for(var head in h){
-					if(headers_name !== "")
-						headers_name += ": ";
-					headers_name += h[head];
-				}
-
-				for(var col in d){
-					var full_name = headers_name + ": " + col; // e.g. "Panel 1: Channel #4: MaxPower"
-					// create new series if not already exists
-					if(!highcharts_construction.hasOwnProperty(full_name))
-						highcharts_construction[full_name] = {'name' : full_name, 'data' : []}
-					// add data point
-					highcharts_construction[full_name].data.push([new Date(t), d[col]]);
-				}
-			};
-
-			// done constructing series. now just the values of highcharts_construction are relevant
-			var highcharts_series = [];
-			for(var name in highcharts_construction){
-				highcharts_series.push(highcharts_construction[name]);
-			}
-
+			var highcharts_series = server_to_highcharts_series(data);
 			chart_options.series = highcharts_series;
 			// create chart
-			var newdiv = $("<div style='width:600px;height:400px;'></div>");
-			var container = $(container_selector) || $("div.container");
-			container.append(newdiv);
-			newdiv.highcharts(chart_options);
+			var container = $(container_selector);
+			if(container === undefined){
+				container = $("<div style='width:600px'></div");
+				$("div.container").append(container);
+			}
+			container.highcharts(chart_options);
 		});
 	},
 
-	live_chart : function(series, timespan_mins, chart_options){
+	live_chart : function(series, title, container_selector, timespan_mins, chart_type){
 		// default arguments
 		timespan_mins = timespan_mins || 60*24*7; // default to one week
+		var timespan_millis = timespan_mins * 60 * 1000;
+		chart_type = chart_type || 'spline';
+		// set up default options
+		chart_options = {
+			chart: {
+				type: chart_type // http://api.highcharts.com/highcharts#plotOptions
+			},
+			title: {
+				text: title
+			},
+			xAxis: {
+				type: 'datetime', // 'linear' 'logarithmic' 'category'
+				title : {
+					text : 'Time'
+				}
+			},
+			tooltip: {
+				formatter: function() {
+						return '<b>'+ this.series.name +'</b><br/>'+
+						Highcharts.dateFormat('%m/%d %H:%M', this.x) +': '+ this.y;
+				}
+			},
+		}
+		// keep track of the chart itself
+		var thechart;
+		// query server for initial data
+		console.log("live data init: "+title);
+		$.ajax({
+			url : '/data/api/single/',
+			type : 'POST',
+			contentType : 'json',
+			data : JSON.stringify({'series' : series})
+		}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
+			console.log("live data response: "+title);
+			var highcharts_series = server_to_highcharts_series(data);
+			chart_options.series = highcharts_series;
+			// create chart
+			var container = $(container_selector);
+			if(container === undefined){
+				container = $("<div style='width:600px'></div");
+				$("div.container").append(container);
+			}
+			thechart = container.highcharts(chart_options);
+		});
+
+		// set up updater function (new data every 10 seconds)
+		setInterval(function(){
+			// query server for new data
+			$.ajax({
+				url : '/data/api/single/',
+				type : 'POST',
+				contentType : 'json',
+				data : JSON.stringify({'series' : series})
+			}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
+				var new_data = server_to_highcharts_series(data);
+
+				// update each series
+				for (var i = new_data.length - 1; i >= 0; i--) {
+					var existing_series = thechart.series[i];
+					var update = new_data[i];
+					// remove old/expired points (each point is [Time, val0])
+					var span = update.data[0][0] - existing_series.data[0][0];
+					while(span > timespan_millis){
+						existing_series.shift(); // removes the first element
+						span = update.data[0][0] - existing_series.data[0][0];
+					}
+					// add new point
+					existing_series.data.push(update.data[0]);
+				};
+				// redraw chart
+				thechart.redraw();
+			});
+		}, 10000);
 	}
 };
