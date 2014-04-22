@@ -240,14 +240,20 @@ var Commons = {
 				} else{
 					// update each series
 					for (var i = new_data.length - 1; i >= 0; i--) {
-						var existing_series = thechart.series[i].options.data;
-						var update = new_data[i].data;
+						var existing_series = thechart.series[i].options.data[0];
+						var update = new_data[i].data[0];
 						// remove old/expired points (each point is [Time, val0])
-						var span = update[0][0] - existing_series[0][0];
+						var span = update[0] - existing_series[0];
+						if(!(existing_series instanceof Array)){
+							span = update[0] - existing_series.x;
+						}
 						console.log("timespan of "+title+": "+span);
 						while(span > timespan_millis){
 							existing_series.shift(); // removes the first element
-							span = update[0][0] - existing_series[0][0];
+							span = update[0] - existing_series[0];
+							if(!(existing_series instanceof Array)){
+								span = update[0] - existing_series.x;
+							}
 						}
 						// add new point
 						existing_series.push(update[0]);
@@ -258,6 +264,6 @@ var Commons = {
 				thechart.redraw();
 			});
 			}
-		, 20000);
+		, 10000);
 	}
 };
