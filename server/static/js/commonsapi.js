@@ -175,11 +175,14 @@ var Commons = {
 				container = $("<div style='width:600px'></div");
 				$("div.container").append(container);
 			}
-			thechart = container.highcharts(chart_options);
+			container.highcharts(chart_options);
+			thechart = container.highcharts();
 		});
 
 		// set up updater function (new data every 10 seconds)
 		setInterval(function(){
+			console.log("live data update: "+title);
+			console.log(thechart);
 			// query server for new data
 			$.ajax({
 				url : '/data/api/single/',
@@ -191,20 +194,24 @@ var Commons = {
 
 				// update each series
 				for (var i = new_data.length - 1; i >= 0; i--) {
-					var existing_series = thechart.series[i];
-					var update = new_data[i];
+					var existing_series = thechart.series[i].options.data;
+					console.log(existing_series);
+					var update = new_data[i].data;
 					// remove old/expired points (each point is [Time, val0])
-					var span = update.data[0][0] - existing_series.data[0][0];
+					var span = update[0] - existing_series[0];
 					while(span > timespan_millis){
 						existing_series.shift(); // removes the first element
-						span = update.data[0][0] - existing_series.data[0][0];
+						span = update[0] - existing_series[0];
 					}
 					// add new point
-					existing_series.data.push(update.data[0]);
+					existing_series.push(update[0]);
+					thechart.series[i].setData(existing_series, false);
+					console.log(existing_series);
 				};
 				// redraw chart
 				thechart.redraw();
 			});
-		}, 10000);
+			}
+		, 10000);
 	}
 };
