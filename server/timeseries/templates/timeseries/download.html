@@ -8,7 +8,7 @@
 {# drop in the series picker UI #}
 {% include "timeseries/seriespicker.html" %}
 
-<button class="btn" id="downloadBtn">Download CSV</button>
+<button class="btn btn-primary" id="downloadBtn">Download CSV</button>
 <script>
 // thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
 var downloadURL = function downloadURL(url) {
@@ -28,10 +28,6 @@ $(document).ready(function(){
 	function download_csv(series_obj){
 		var start = Commons.daterange()[0];
 		var end = Commons.daterange()[1];
-		if(start == null || end == null){
-			console.log('BAD FORM: cannot deal with null datetime');
-			return;
-		}
 
 		var url = '/data/api/csv/?' + $.param({
 			'series' : series_obj,

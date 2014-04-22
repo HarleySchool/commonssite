@@ -49,14 +49,14 @@ var Commons = {
 		}).done(onsuccess);
 	},
 
-	create_chart : function(series, tstart, tend, chart_options){
+	create_chart : function(series, tstart, tend, container_selector){
 		// set up default options
-		chart_options = char_options || {
+		chart_options = {
 			chart: {
 				type: 'spline' // http://api.highcharts.com/highcharts#plotOptions
 			},
 			title: {
-				text: (params.system + ":" + params.subsystem)
+				text: 'Historical Data'
 			},
 			xAxis: {
 				type: 'datetime', // 'linear' 'logarithmic' 'category'
@@ -71,14 +71,10 @@ var Commons = {
 				}
 			},
 		}
-		// override default options with anything specified by params.chart
-		if(params.hasOwnProperty('chart'))
-			for (var prop in chart_options)
-				chart_options[prop] = params['chart'][prop] || chart_options[prop];
 		// create query object from series
 		query = {
-			"from" : tstart,
-			"to" : tend,
+			"from" : tstart.toISOString(),
+			"to" : tend.toISOString(),
 			"series" : series
 		};
 		// query server for data
@@ -121,9 +117,9 @@ var Commons = {
 
 			chart_options.series = highcharts_series;
 			// create chart
-			var newdiv = $("<div style='width:600px'></div>");
-			var container = $(params.container) || $("section#content");
-			container.innerHTML(newdiv);
+			var newdiv = $("<div style='width:600px;height:400px;'></div>");
+			var container = $(container_selector) || $("div.container");
+			container.append(newdiv);
 			newdiv.highcharts(chart_options);
 		});
 	},

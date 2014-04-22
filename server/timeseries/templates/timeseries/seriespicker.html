@@ -1,6 +1,26 @@
 <!-- SeriesPicker.html -->
 {# this is a drop-in file meant to be {% include %}ed, not extended! #}
-<div id="query_builder">
+<style type="text/css">
+	.header_options{
+		width:auto;
+		float:left;
+		margin-right:10px;
+	}
+	
+	/* initially hide things */
+	div.params_wrapper{
+		display:none;
+	}
+
+	.dynamic-highchart{
+		width:70%;
+	}
+
+	.check_label{
+		cursor:pointer;
+	}
+</style>
+<div id="query_builder" class="well">
 	<!-- SYSTEM DROP-DOWN MENU -->
 	<div class="system_select">
 		<h3>Select System</h3>

@@ -30,6 +30,11 @@ $(function(){
 	var daterange = $('#datarangetime').eq(0).data('daterangepicker');
 	// extending the Commons object with daterange functionality
 	Commons.daterange = function(){
+		if(daterange.startDate == null || daterange.endDate == null){
+			console.log('BAD FORM: cannot deal with null datetime');
+			return;
+		}
+
 		return [daterange.startDate, daterange.endDate];
 	}
 	daterange.updateInputText(); // force update of input text when page loads
