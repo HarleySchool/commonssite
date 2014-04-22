@@ -35,6 +35,16 @@ function getCookie(name) {
 	return cookieValue;
 }
 
+
+
+function ToLocalDate (inDate) {
+	var date = new Date();
+	date.setTime(inDate.valueOf() - 60000 * inDate.getTimezoneOffset());
+	return date;
+}
+
+
+
 function server_to_highcharts_series(data){
 	var highcharts_construction = {}; // temporary, under-construction, series of data
 	// for each of the series that was initially requested, add it to the highcharts series...
@@ -57,7 +67,7 @@ function server_to_highcharts_series(data){
 			if(!highcharts_construction.hasOwnProperty(full_name))
 				highcharts_construction[full_name] = {'name' : full_name, 'data' : []}
 			// add data point
-			highcharts_construction[full_name].data.push([t, d[col]]);
+			highcharts_construction[full_name].data.push([ToLocalDate(t).valueOf(), d[col]]);
 		}
 	};
 
@@ -124,6 +134,9 @@ var Commons = {
 				title : {
 					text : 'Time'
 				}
+			},
+			yAxis: {
+				title : null
 			},
 			tooltip: {
 				formatter: function() {
@@ -230,10 +243,11 @@ var Commons = {
 						var existing_series = thechart.series[i].options.data;
 						var update = new_data[i].data;
 						// remove old/expired points (each point is [Time, val0])
-						var span = update[0] - existing_series[0];
+						var span = update[0][0] - existing_series[0][0];
+						console.log("timespan of "+title+": "+span);
 						while(span > timespan_millis){
 							existing_series.shift(); // removes the first element
-							span = update[0] - existing_series[0];
+							span = update[0][0] - existing_series[0][0];
 						}
 						// add new point
 						existing_series.push(update[0]);
@@ -244,6 +258,6 @@ var Commons = {
 				thechart.redraw();
 			});
 			}
-		, 10000);
+		, 20000);
 	}
 };
