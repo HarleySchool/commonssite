@@ -85,7 +85,7 @@ var Commons = {
 
 	create_chart : function(series, tstart, tend, container_selector){
 		// set up default options
-		chart_options = {
+		var chart_options = {
 			chart: {
 				type: 'spline' // http://api.highcharts.com/highcharts#plotOptions
 			},
@@ -136,7 +136,7 @@ var Commons = {
 		var timespan_millis = timespan_mins * 60 * 1000;
 		chart_type = chart_type || 'spline';
 		// set up default options
-		chart_options = {
+		var chart_options = {
 			chart: {
 				type: chart_type // http://api.highcharts.com/highcharts#plotOptions
 			},
