@@ -17,17 +17,6 @@
 			}
 		};
 
-		var power_demand_series = {
-			'Electric' : {
-				'Electric Overview' : {
-					'columns' : ['Demand'],
-					'series' : {
-						'Panel' : ['Panel 2', 'Panel 3', 'Panel 4']
-					}
-				}
-			}
-		};
-
 		var solar_series = {
 			'Solar' : {
 				'Solar Overview' : {
@@ -37,12 +26,23 @@
 			}
 		};
 
+		var greenhouse_series = {
+			'HVAC' : {
+				'VRF' : {
+					'columns' : ['InletTemp'],
+					'series' : {
+						'Name' : 'Mezzanine'
+					}
+				}
+			}
+		}
+
 		var hour = 60;
 
-		Commons.live_chart(solar_series, "Solar Energy Production", "#solar", hour, "spline");
-		Commons.live_chart(power_series, "Power Consumers", "#power-consumers", 0, "pie");
-		Commons.live_chart(power_series, "Total Power Use", "#power", hour, "spline");
-		Commons.live_chart(power_demand_series, "Power Demand", "#power-demand", hour, "spline");
+		Commons.live_chart(solar_series, "Solar Energy Production (kW)", "#solar", hour, "spline");
+		Commons.live_chart(power_series, "Power Consumers (kW)", "#power-consumers", 0, "pie");
+		Commons.live_chart(power_series, "Total Power Use (kW)", "#power", hour, "spline");
+		Commons.live_chart(power_demand_series, "Greenhouse Temperature (F)", "#greenhouse-temp", 0,5, "spline");
 	});
 </script>
 {% endblock scripts %}
@@ -51,5 +51,5 @@
 <div id="solar" class="col-lg-6" style="height:300px;"></div>
 <div id="power-consumers" class="col-lg-6" style="height:300px;"></div>
 <div id="power" class="col-lg-6" style="height:300px;"></div>
-<div id="power-demand" class="col-lg-6" style="height:300px;"></div>
+<div id="greenhouse-temp" class="col-lg-6" style="height:300px;"></div>
 {% endblock content %}
