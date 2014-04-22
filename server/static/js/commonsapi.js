@@ -39,8 +39,7 @@ function server_to_highcharts_series(data){
 	var highcharts_construction = {}; // temporary, under-construction, series of data
 	// for each of the series that was initially requested, add it to the highcharts series...
 	for (var i = data.length - 1; i >= 0; i--) {
-		var t = data[i].Time;
-		console.log(t);
+		var t = new Date(data[i].Time);
 		var h = data[i].H; // dict of headers
 		var d = data[i].D; // dict of datums
 		
@@ -57,7 +56,7 @@ function server_to_highcharts_series(data){
 			if(!highcharts_construction.hasOwnProperty(full_name))
 				highcharts_construction[full_name] = {'name' : full_name, 'data' : []}
 			// add data point
-			highcharts_construction[full_name].data.push([new Date(t), d[col]]);
+			highcharts_construction[full_name].data.push([t, d[col]]);
 		}
 	};
 
