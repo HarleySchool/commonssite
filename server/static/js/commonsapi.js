@@ -40,6 +40,7 @@ function server_to_highcharts_series(data){
 	// for each of the series that was initially requested, add it to the highcharts series...
 	for (var i = data.length - 1; i >= 0; i--) {
 		var t = data[i].Time;
+		console.log(t);
 		var h = data[i].H; // dict of headers
 		var d = data[i].D; // dict of datums
 		
@@ -67,6 +68,30 @@ function server_to_highcharts_series(data){
 	}
 
 	return highcharts_series;
+}
+
+function live_pie(data){
+	var pie_data = []; // temporary, under-construction, series of data
+	// for each of the series that was initially requested, add it to the highcharts series...
+	for (var i = data.length - 1; i >= 0; i--) {
+		var h = data[i].H; // dict of headers
+		var d = data[i].D; // dict of datums
+		
+		var headers_name = ""; // e.g. "Panel 1: Channel #4"
+		for(var head in h){
+			if(headers_name !== "")
+				headers_name += ": ";
+			headers_name += h[head];
+		}
+
+		for(var col in d){
+			var full_name = headers_name + ": " + col; // e.g. "Panel 1: Channel #4: MaxPower"
+			// add data point
+			pie_data.push([full_name, d[col]]);
+		}
+	};
+
+	return pie_data;
 }
 
 var Commons = {
@@ -156,6 +181,10 @@ var Commons = {
 				}
 			},
 		}
+		var translator = server_to_highcharts_series;
+		if(chart_type === "pie"){
+			translator = live_pie;
+		}
 		// keep track of the chart itself
 		var thechart;
 		// query server for initial data
@@ -166,9 +195,10 @@ var Commons = {
 			contentType : 'json',
 			data : JSON.stringify({'series' : series})
 		}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-			console.log("live data response: "+title);
-			var highcharts_series = server_to_highcharts_series(data);
+			var highcharts_series = translator(data);
 			chart_options.series = highcharts_series;
+			console.log("constructed series: "+title);
+			console.log(highcharts_series);
 			// create chart
 			var container = $(container_selector);
 			if(container === undefined){
@@ -181,8 +211,6 @@ var Commons = {
 
 		// set up updater function (new data every 10 seconds)
 		setInterval(function(){
-			console.log("live data update: "+title);
-			console.log(thechart);
 			// query server for new data
 			$.ajax({
 				url : '/data/api/single/',
@@ -190,24 +218,26 @@ var Commons = {
 				contentType : 'json',
 				data : JSON.stringify({'series' : series})
 			}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-				var new_data = server_to_highcharts_series(data);
+				var new_data = translator(data);
 
-				// update each series
-				for (var i = new_data.length - 1; i >= 0; i--) {
-					var existing_series = thechart.series[i].options.data;
-					console.log(existing_series);
-					var update = new_data[i].data;
-					// remove old/expired points (each point is [Time, val0])
-					var span = update[0] - existing_series[0];
-					while(span > timespan_millis){
-						existing_series.shift(); // removes the first element
-						span = update[0] - existing_series[0];
-					}
-					// add new point
-					existing_series.push(update[0]);
-					thechart.series[i].setData(existing_series, false);
-					console.log(existing_series);
-				};
+				if(chart_type === "pie"){
+					thechart.series[0].setData(new_data);
+				} else{
+					// update each series
+					for (var i = new_data.length - 1; i >= 0; i--) {
+						var existing_series = thechart.series[i].options.data;
+						var update = new_data[i].data;
+						// remove old/expired points (each point is [Time, val0])
+						var span = update[0] - existing_series[0];
+						while(span > timespan_millis){
+							existing_series.shift(); // removes the first element
+							span = update[0] - existing_series[0];
+						}
+						// add new point
+						existing_series.push(update[0]);
+						thechart.series[i].setData(existing_series, false);
+					};
+				}
 				// redraw chart
 				thechart.redraw();
 			});
