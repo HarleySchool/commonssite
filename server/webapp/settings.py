@@ -9,9 +9,11 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
+import os, sys
 from commonssite.private import DJANGO_SECRET_KEY
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+sys.path.append(os.path.join(BASE_DIR, 'weather'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
@@ -44,7 +46,8 @@ INSTALLED_APPS = (
     'hvac',
     'electric',
     'solar',
-    'south'
+    'south',
+    'weather'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -77,20 +80,11 @@ WSGI_APPLICATION = 'webapp.wsgi.application'
 # Load User and Password from my custom location
 import commonssite.settings as s
 
-with open(s.sql_credentials, 'r') as f:
-    host = f.readline().strip()
-    un = f.readline().strip()
-    pw = f.readline().strip()
-    socket = f.readline().strip()
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST' : socket,
-        'NAME' : 'commons',
-        'USER' : un,
-        'PASSWORD' : pw
-    }
+'default': {
+'ENGINE': 'django.db.backends.sqlite3',
+'NAME': os.path.expanduser('~/code/commonssite/mydatabase'),
+}
 }
 
 # Internationalization
