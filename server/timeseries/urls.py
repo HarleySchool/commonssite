@@ -3,7 +3,8 @@ from django.conf.urls import patterns, url
 from timeseries import views
 
 urlpatterns = patterns('',
-	url(r'^$', views.makedownload, name='index'),
+	url(r'^$', views.makedownload, name='index-download'),
+	url(r'^download/', views.makedownload, name='download'),
 	url(r'^live/', views.live, name='live graphs'),
 	url(r'^makechart/', views.makechart, name='make chart'),
 	url(r'^api/systems/', views.systems, name='get systems'),
