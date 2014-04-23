@@ -4,7 +4,7 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0,os.path.join(BASE_DIR, 'weather'))
 from weewx.drivers.vantage import Vantage
-from commonssite.server.weather.models import weatherdata
+from commonssite.server.weather.models import WeatherData
 
 class Weather():
 	def __init__(self):
@@ -45,7 +45,7 @@ class Weather():
 		data = next(v.genDavisLoopPackets())
 		parsed = self.doParse(data)
 		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		model = weatherdata(Time=now, **parsed)
+		model = WeatherData(Time=now, **parsed)
 		return [model]
 
 if __name__ == '__main__':

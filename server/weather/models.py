@@ -1,9 +1,7 @@
 from django.db import models
 from commonssite.server.timeseries.models import TimeseriesBase
 
-# Create your models here.
-
-class weatherdata(TimeseriesBase):
+class WeatherData(TimeseriesBase):
 	uv = models.FloatField(null=True)
 	barometer = models.FloatField(null=True)
 	dayet = models.FloatField(null=True)

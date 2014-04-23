@@ -83,6 +83,6 @@ if __name__ == '__main__':
 		# Initialize all of them
 		scraperinst = scraper()
 		# Register with the scheduler
-		cron.register(dolog(scraperinst), 60)
+		cron.register(dolog(scraperinst), minutes(20))
 	# Run the Scheduler (forever)
 	cron.main()

@@ -215,42 +215,42 @@ var Commons = {
 			}
 			container.highcharts(chart_options);
 			thechart = container.highcharts();
-		});
 
-		// set up updater function (new data every 10 seconds)
-		setInterval(function(){
-			// query server for new data
-			$.ajax({
-				url : '/data/api/single/',
-				type : 'POST',
-				contentType : 'json',
-				data : JSON.stringify({'series' : series})
-			}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-				var new_data = translator(data);
+			// set up updater function (new data every 10 seconds)
+			setInterval(function(){
+				// query server for new data
+				$.ajax({
+					url : '/data/api/single/',
+					type : 'POST',
+					contentType : 'json',
+					data : JSON.stringify({'series' : series})
+				}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
+					var new_data = translator(data);
 
-				if(chart_type === "pie"){
-					thechart.series[0].setData(new_data);
-				} else{
-					// update each series
-					for (var i = new_data.length - 1; i >= 0; i--) {
-						var existing_series = thechart.series[i].options.data;
-						var update = new_data[i].data;
-						// remove old/expired points (each point is {x: time, y: value})
-						var span = update[0].x - existing_series[0].x;
-						console.log("timespan of "+title+": "+span);
-						while(span > timespan_millis){
-							existing_series.shift(); // removes the first element
-							span = update[0].x - existing_series[0].x;
-						}
-						// add new point
-						existing_series.push(update[0]);
-						thechart.series[i].setData(existing_series, false);
-					};
+					if(chart_type === "pie"){
+						thechart.series[0].setData(new_data);
+					} else{
+						// update each series
+						for (var i = new_data.length - 1; i >= 0; i--) {
+							var existing_series = thechart.series[i].options.data;
+							var update = new_data[i].data;
+							// remove old/expired points (each point is {x: time, y: value})
+							var span = update[0].x - existing_series[0].x;
+							console.log("timespan of "+title+": "+span);
+							while(span > timespan_millis){
+								existing_series.shift(); // removes the first element
+								span = update[0].x - existing_series[0].x;
+							}
+							// add new point
+							existing_series.push(update[0]);
+							thechart.series[i].setData(existing_series, false);
+						};
+					}
+					// redraw chart
+					thechart.redraw();
+				});
 				}
-				// redraw chart
-				thechart.redraw();
-			});
-			}
-		, 10000);
+			, 10000);
+		});
 	}
 };
