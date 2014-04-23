@@ -87,3 +87,95 @@ def parse_time(isostring):
 	if dt.tzinfo == None: # if it's a naive datetime
 		dt = dt.replace(tzinfo=tzlocal())
 	return dt
+
+def __obj_list_to_hd_dict(obj_list, model, columns):
+	retlist = []
+	for obj in obj_list:
+		hd_dict = {'H' : {}, 'D' : {}}
+		for head in model.get_header_names():
+			if head != 'Time':
+				hd_dict['H'][head] = obj[head]
+		for point in columns:
+			hd_dict['D'][point] = obj[point]
+		hd_dict['Time'] = obj['Time']
+		retlist.append(hd_dict)
+	return retlist
+
+def series_filter(filter_obj, tstart, tend):
+	"""
+	Takes a definition of one or more series and returns a list of dicts with 'H' and 'D' fields for Headers and Data respectively.
+	All headers (e.g. Time, Name) will always be returned.
+
+	filter definition is as follows:
+	{
+		'system name' : {
+			'subsystem name' : {
+				series : {
+					'header1' : ['value1', 'value2', ...],
+					'header2' : ['valueX', 'valueY', ...]
+				},
+				columns : ['ColumnName1', 'ColumnName2']
+			}, ...
+		}, ...
+	}
+
+	Note that setting columns to '[]' is interpreted as all columns.
+	"""
+	retlist = []
+	for sys, subs in filter_obj.iteritems():
+		for subsys, specs in subs.iteritems():
+			# look up the requested system in our registry
+			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
+			# if it doesn't exist, skip this one
+			if not m:
+				continue
+			# get the corresponding model class
+			model = get_registered_model(m.model_class)
+			filter_kwargs = {}
+			# filter by header and value
+			for h, vals in specs.get('series').iteritems():
+				param = h + '__in' # django syntax for "all values in a list"
+				filter_kwargs[param] = []
+				for v in vals:
+					filter_kwargs[param].append(v)
+			# start the queryset as empty (will be built up by filters)
+			Q = model.objects.filter(Time__gte=tstart, Time__lt=tend, **filter_kwargs)
+			# filter for only the selected columns
+			# note that if 'columns' is None or [], no filtering is performed and all columns are returned
+			data_columns = specs.get('columns')
+			if data_columns:
+				all_columns = data_columns[:]
+				for head in model.get_header_names():
+					if head not in all_columns:
+						all_columns.append(head)
+			else:
+				data_columns = model.get_field_names()
+				all_columns = model.get_header_names() + model.get_field_names()
+			Q = Q.values(*all_columns)
+			retlist.extend(__obj_list_to_hd_dict(Q, model, data_columns))
+	return retlist
+
+def live_filter(filter_obj):
+	"""see series_filter for api (identical)"""
+	retlist = []
+	for sys, subs in filter_obj.iteritems():
+		for subsys, specs in subs.iteritems():
+			# look up the requested system in our registry
+			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
+			# if it doesn't exist, skip this one
+			if not m:
+				continue
+			# get the corresponding model class
+			model = get_registered_model(m.model_class)
+			scraper_class = get_registered_scraper(m.scraper_class)
+			scraper = scraper_class()
+			# perform a scrape!
+			new_data = scraper.get_data()
+			# use the series filters
+			for h, vals in specs.get('series').iteritems():
+				new_data = filter(lambda obj: obj.__dict__.get(h) in vals, new_data)
+			data_columns = specs.get('columns')
+			if not data_columns:
+				data_columns = model.get_field_names()
+			retlist.extend(__obj_list_to_hd_dict([d.__dict__ for d in new_data], model, data_columns))
+	return retlist

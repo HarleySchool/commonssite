@@ -42,15 +42,6 @@ class TimeseriesBase(models.Model):
 	class Meta:
 		abstract = True
 
-""" RUNTIME MODULE LOADER
-def my_import(name):
-    mod = __import__(name)
-    components = name.split('.')
-    for comp in components[1:]:
-        mod = getattr(mod, comp)
-    return mod
-"""	
-
 regex_non_char = re.compile(r'[^a-zA-Z]+')
 
 class ModelRegistry(models.Model):

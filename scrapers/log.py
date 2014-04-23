@@ -34,14 +34,13 @@ class scheduler():
 		# All function run on startup
 		t = time.time()
 		for func, interval in self.taskdict.iteritems():
-			nextgo = t
-			heapq.heappush(self.heap, (nextgo, func))
+			heapq.heappush(self.heap, (t, func))
 	def main(self):
 		# main loop
 		self.startheap()
 		try:
 			while True:
-				## Insert thing to do here ##
+				# Insert thing to do here
 				# should not take over the time speced in interval
 				# don't even cut it close
 				# use run_theaded to clear the main thread
@@ -52,7 +51,7 @@ class scheduler():
 				# Calculate the time that we should sleep
 				sleeptime = nexttime - time.time()
 				# Print some things
-				print "I done did it at %s, I'm gon do it again in %s seconds" % (time.time(), sleeptime)
+				print "I done did a %s at %s.\nI'm gon do another log again in %s seconds" % (func.name, time.time(), sleeptime)
 				# Gets around a negative sleep time error by using pass
 				if sleeptime < 1 and sleeptime > -3:
 					pass
@@ -64,13 +63,16 @@ class scheduler():
 					# If there is more than 1 second between functions, sleep the remainder of the time
 					time.sleep(sleeptime)
 		except KeyboardInterrupt:
-			break
+			pass
 def dolog(scraper):
-	# Returns a function that logs data in the database
+	# Returns a function that logs data in the database to be registered with the scheduler
 	def getandsave():
 		data = scraper.get_data()
 		for item in data:
 			item.save(force_insert=True)
+		print '=================='
+		print '%s done at %s' % (scraper.__class__.__name__, time.time())
+	getandsave.name = scraper.__class__.__name__
 	return getandsave
 
 if __name__ == '__main__':
@@ -81,6 +83,6 @@ if __name__ == '__main__':
 		# Initialize all of them
 		scraperinst = scraper()
 		# Register with the scheduler
-		cron.register(dolog(scraperinst), 20)
+		cron.register(dolog(scraperinst), minutes(20))
 	# Run the Scheduler (forever)
 	cron.main()
