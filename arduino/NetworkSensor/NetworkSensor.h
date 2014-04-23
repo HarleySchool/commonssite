@@ -1,6 +1,9 @@
 /* 
   NetworkSensor.h Library for creating a data logging sensor which serves its data over Ethernet
-  Written by Richard Lange, March 2014
+  Written by Richard Lange, April 2014
+
+  We are not using the SD library because of its large memory footprint and because we serve only the most recent data
+  (the data is permanently stored elsewhere)
 */
 #ifndef NETWORK_SENSOR_H
 #define NETWORK_SENSOR_H
@@ -8,20 +11,63 @@
 #include "Arduino.h"
 #include <SPI.h>
 #include <Ethernet.h>
-#include <SD.h>
-#include <EthernetUdp.h> // used to sync time with NTP
 #include <Time.h>
 
-#define LOGFILE  "DATA.LOG"
-// Default pins for Ethernet shield with an SD card slot
-const int SDSS = 4; // NOTE that pins 11, 12, and 13 are also reserved for SD communication. see here: http://arduino.cc/en/Reference/SDCardNotes
+// Default pins for Ethernet shield
 const int ETHSS = 10;
+const int SDSS = 4;
 const int SERVERPORT = 80;
-const int NTP_SYNC_MINUTES = 12*60; // sync every 12 hours
+const int BUFFER_SIZE = 8; // size of initial TupleArrays (no realloc for up to 8 floats/ints/strings)
 
-/*
- * BIG TODO: better file format on SD. overwriting every line is not an efficient use of space.
- */
+template <typename T>
+struct TimestampValueArray{
+  time_t* times; // array of epoch times
+  String* names; // array of names
+  T* values; // parallel array of values (times[i], names[i], and values[i] are a single point)
+  time_t offset_millis;
+  int size, capacity; // dynamically growing array stuff
+
+  TimestampValueArray(): offset_millis(0), size(0), capacity(BUFFER_SIZE)
+  {
+    times = (time_t*) malloc(sizeof(time_t) * capacity);
+    names = (String*) malloc(sizeof(String) * capacity);
+    values = (T*) malloc(sizeof(T) * capacity);
+  }
+
+  ~TimestampValueArray()
+  {
+    free(times);
+    free(names);
+    free(values);
+  }
+
+  void set(String name, T value)
+  {
+    // search for existing name
+    for(int i=0; i<size; ++i){
+      if(name.equals(names[i])){
+        // update existing value and be done
+        times[i] = millis() + offset_millis;
+        values[i] = value;
+        return;
+      }
+    }
+    // if we made it this far, then 'name' wasn't found and we need to create a new pair.
+    // Before jumping into that, we should check if the arrays need to be expanded
+    if(size == capacity){
+      // double the capacity (it's more efficient this way than simply adding an additional slot)
+      capacity *= 2;
+      times = (time_t*) realloc(times, sizeof(time_t) * capacity);
+      names = (String*) realloc(names, sizeof(String) * capacity);
+      values = (T*) realloc(values, sizeof(T) * capacity);
+    }
+    // add the new value
+    times[size] = millis() + offset_millis;
+    names[size] = name;
+    values[size] = value;
+    size++;
+  }
+};
 
 /////////////////////////
 // NetworkSensor Class //
@@ -37,37 +83,31 @@ public:
   // responsible for initializing variables
   void begin(uint8_t mac[], uint8_t ip[]);
 
-  // function to serve data
-  void serve();
+  // the do-all function that is called every loop(). it handles serving data over ethernet.
+  void input_output();
 
   // logging functions
-  void logf(String name, float value, unsigned int precision);
+  void logf(String name, float value);
   void logi(String name, int value);
   void logs(String name, String value);
 private:
-  // the initialized variable is a bit of a hack to get around the problem of needing a generic constructor.
+  // the initialized variable is a bit of a hack to get around the problem of needing begin() to be called.
   // surely there is a better way, but this works!
   bool initialized;
   
   // Reference to the server object
   EthernetServer server;
 
-  // initialization helpers
-  void initSD();
+  // Arrays of each of the data types
+  TimestampValueArray<float>  f_values;
+  TimestampValueArray<int>    i_values;
+  TimestampValueArray<String> s_values;
+
+  // initialization helper
   void initEthernet(uint8_t mac[], uint8_t ip[]);
 
-  // Write given name:value pair to the log
-  void log(String name, String stringifiedValue);
-
-  // Set Slave-Select pins enabling ethernet usage
-  inline void ethernetMode()  { digitalWrite(SDSS, HIGH); digitalWrite(ETHSS, LOW); }
-  // Set Slave-Select pins enabling SD card usage
-  inline void SDMode()    { digitalWrite(ETHSS, HIGH); digitalWrite(SDSS, LOW); }
-
-  // Time is synchronized with an NTP server
-  void syncTimeNTP();
-  inline bool isTimeSynced() { return last_time_sync != 0UL; }
-  unsigned long last_time_sync, time_sync_interval;
+  // update time offset
+  void remoteSetTime(time_t epoch);
 
   // returns string of val with number of decimal places determine by precision
   // NOTE: precision is 1 followed by the number of zeros for the desired number of decimial places

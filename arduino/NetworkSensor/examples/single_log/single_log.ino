@@ -1,6 +1,5 @@
 #include <SPI.h>
 #include <Ethernet.h>
-#include <SD.h>
 #include <Time.h>
 #include <NetworkSensor.h>
 
@@ -12,13 +11,12 @@ unsigned int last_log = 0;
 
 void setup(){
   sensor.begin(mac, ip);
-  sensor.logf("Pi", 3.14159, 1000); // log a floating point with 3 decimal places of precision
-  sensor.logi("Time", 12345); // log an integer
-  sensor.logf("Pi", 3.14159, 1); // log a floating point with 3 decimal places of precision
-  sensor.logi("Time", 12338); // log an integer
+  sensor.logf("Pi", 3.14159); // log a floating point with 3 decimal places of precision
+  sensor.logi("BigNumber", 12345); // log an integer
+  sensor.logs("Message", "Hello world");
 }
 
 void loop(){
   // first thing in the loop: serve existing data
-  sensor.serve();
+  sensor.input_output();
 }
