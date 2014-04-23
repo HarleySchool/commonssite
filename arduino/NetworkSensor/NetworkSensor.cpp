@@ -7,7 +7,8 @@ NetworkSensor::NetworkSensor()
 NetworkSensor::~NetworkSensor(){}
 
 void NetworkSensor::begin(uint8_t mac[], uint8_t ip[])
-{  
+{
+  Serial.begin(9600); // for debugging
   // SS (Slave Select) pin low to enable ethernet
   pinMode(ETHSS, OUTPUT);
   digitalWrite(ETHSS, LOW);
@@ -34,9 +35,24 @@ void NetworkSensor::input_output()
   if (client) {
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
+    time_t epoch_arg = 0;
+    boolean reading_epoch = false, read_epoch = false;
+    char last_c = ' ';
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
+        // the header for the request should look like "GET / HTTP"
+        // if it's boring, or "GET /1358283494 HTTP" if it is providing
+        // us with an epoch time. here we parse that time.
+        if(last_c == '/' && !read_epoch) reading_epoch = true;
+        if(reading_epoch && '0' <= c && c <= '9'){
+          epoch_arg = epoch_arg*10+c-'0';
+        } else if(reading_epoch){
+          read_epoch = true;
+          reading_epoch = false;
+          remoteSetTime(epoch_arg);
+        }
+
         // if we've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so we can send a reply
@@ -78,14 +94,17 @@ void NetworkSensor::input_output()
           break;
         }
         currentLineIsBlank = (c == '\n' || c == '\r');
+        last_c = c;
       }
     }
-    delay(1);
+    delay(10);
     client.stop();
   }
 }
 
 void NetworkSensor::remoteSetTime(time_t epoch){
+  Serial.print("time set to ");
+  Serial.println(epoch);
   time_t new_offset = epoch - millis();
   // update existing times
   time_t update = new_offset - s_values.offset_millis; // this is zero if the clocks are synced
