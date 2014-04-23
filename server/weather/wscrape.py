@@ -1,4 +1,5 @@
 import datetime
+from commonssite.settings import weather_host
 import pytz
 import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -31,8 +32,10 @@ class Weather():
 			'windDir': 'winddir',
 			'windSpeed': 'windspeed',
 			'windchill': 'windchill',
-			'yearET': 'yearet'
-	}
+			'yearET': 'yearet',
+			'yearRain' : 'yearrain'
+		}
+		self.v = Vantage(type='ethernet', host=weather_host)
 
 	def doParse(self, data):
 		parsed = {}
@@ -41,15 +44,14 @@ class Weather():
 		return parsed
 
 	def get_data(self):
-		v = Vantage(type='ethernet', host='10.1.6.203')
-		data = next(v.genDavisLoopPackets())
+		data = next(self.v.genDavisLoopPackets())
 		parsed = self.doParse(data)
 		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		model = WeatherData(Time=now, **parsed)
 		return [model]
 
 if __name__ == '__main__':
+	from pprint import pprint
 	w = Weather()
-	m = w.get_data()
-	m.save(force_insert=True)
-	print 'done'
+	data = w.doParse(next(w.v.genDavisLoopPackets()))
+	pprint(data)

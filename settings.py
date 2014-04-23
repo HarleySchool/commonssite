@@ -60,4 +60,3 @@ url4 = 'http://%s/setup/devicexml.cgi?ADDRESS=4&TYPE=DATA' % veris_host
 ##############################
 
 weather_host = "10.1.6.203"
-weather_port = 22222
