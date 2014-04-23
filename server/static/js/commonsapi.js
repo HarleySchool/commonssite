@@ -35,15 +35,11 @@ function getCookie(name) {
 	return cookieValue;
 }
 
-
-
 function ToLocalDate (inDate) {
 	var date = new Date();
 	date.setTime(inDate.valueOf() - 60000 * inDate.getTimezoneOffset());
 	return date;
 }
-
-
 
 function server_to_highcharts_series(data){
 	var highcharts_construction = {}; // temporary, under-construction, series of data
@@ -79,7 +75,8 @@ function server_to_highcharts_series(data){
 	return highcharts_series;
 }
 
-function live_pie(data, top_n = 20){
+function live_pie(data, top_n){
+	top_n = top_n || 20;
 	var pie_data = []; // temporary, under-construction, series of data
 	// for each of the series that was initially requested, add it to the highcharts series...
 	for (var i = data.length - 1; i >= 0; i--) {
