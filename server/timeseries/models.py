@@ -1,10 +1,22 @@
 from django.db import models
 import re
+import datetime
+import pytz
 
 class TimeseriesBase(models.Model):
 	'''The minimum structure of a timeseries model. Other time-logging models should inherit from this class.
 	'''
 	Time = models.DateTimeField(db_column='time')
+	temporary = models.BooleanField(default=False) # whether or not this entry will be removed after a set time
+
+	@classmethod
+	def remove_old_temporaries(cls, timespan=datetime.timedelta(hours=24)):
+		"""Remove all entries tagged with `temporary` and that are older than (now - timespan)
+		"""
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
+		earliest = now - timespan
+		query = cls.objects.filter(Time__lt=earliest, temporary=True)
+		query.delete() # this call immediately hits the database and removes all the entries in the queryset
 
 	@classmethod
 	def get_field_names(cls):
