@@ -1,4 +1,5 @@
 import requests, re, pytz, datetime
+from timeseries.scraper import ScraperBase
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
 from commonssite.scrapers.xml_import import etree
 from commonssite.server.electric.models import ChannelEntry, DeviceSummary
@@ -12,7 +13,7 @@ class ElectricServerInterface(object):
 		return etree.fromstring(str(req.text))
 
 	
-class VerisScraperBase(object):
+class VerisScraperBase(ScraperBase):
 	"""A scraper class for gettind data from our veris system
 	"""
 

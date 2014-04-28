@@ -2,6 +2,7 @@ import requests
 import json
 import datetime
 import pytz
+from timeseries.scraper import ScraperBase
 from commonssite.settings import sma_host, sma_password, sma_port
 from commonssite.server.solar.models import SMAWeather, SMAPanels, SMAOverview
 
@@ -114,7 +115,7 @@ class SMAServerInterface(object):
 		rpc["id"] = "4"
 		return self.__postRequest(rpc)
 
-class SMAScraperBase(object):
+class SMAScraperBase(ScraperBase):
 
 	# Thanks to these pdfs: 
 	# http://files.sma.de/dl/1348/NG_PAR-TB-en-22.pdf, 
