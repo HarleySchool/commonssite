@@ -167,10 +167,10 @@ def live_filter(filter_obj):
 				continue
 			# get the corresponding model class
 			model = get_registered_model(m.model_class)
-			scraper_class = get_registered_scraper(m.scraper_class)
-			scraper = scraper_class()
-			# perform a scrape!
-			new_data = scraper.get_data()
+			# get the time of the latest logged value
+			latest_time = (model.objects.order_by('-Time')[0]).Time
+			# the relevant queryset is all rows which share this most-recent timestamp
+			new_data = model.objects.filter(Time=latest_time)
 			# use the series filters
 			for h, vals in specs.get('series').iteritems():
 				new_data = filter(lambda obj: obj.__dict__.get(h) in vals, new_data)
