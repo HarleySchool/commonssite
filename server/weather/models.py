@@ -18,7 +18,7 @@ class WeatherData(TimeseriesBase):
 	rain = models.FloatField(null=True)
 	rainrate = models.FloatField()
 	stormrain = models.FloatField()
-	stormstart = models.FloatField()
+	stormstart = models.FloatField(null=True)
 	sunrise = models.FloatField()
 	sunset = models.FloatField()
 	winddir = models.FloatField()

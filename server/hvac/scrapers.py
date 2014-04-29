@@ -1,5 +1,5 @@
 import datetime, string, requests, pytz
-from timeseries.scraper import ScraperBase
+from timeseries.scrapers import ScraperBase
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
 from commonssite.server.hvac.models import ErvEntry, VrfEntry
@@ -378,6 +378,9 @@ class HvacServerInterface(object):
 
 class ScraperERV(ScraperBase):
 
+	def __init__(self, model):
+		super(ScraperERV, self).__init__(model)
+
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
 
@@ -394,6 +397,9 @@ class ScraperERV(ScraperBase):
 		return models
 
 class ScraperVRF(ScraperBase):
+
+	def __init__(self, model):
+		super(ScraperVRF, self).__init__(model)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()

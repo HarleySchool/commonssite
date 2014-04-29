@@ -10,7 +10,7 @@ class TimeseriesBase(models.Model):
 	temporary = models.BooleanField(default=False) # whether or not this entry will be removed after a set time
 
 	@classmethod
-	def remove_old_temporaries(cls, timespan=datetime.timedelta(hours=24)):
+	def remove_expired(cls, timespan=datetime.timedelta(hours=24)):
 		"""Remove all entries tagged with `temporary` and that are older than (now - timespan)
 		"""
 		now = pytz.UTC.localize(datetime.datetime.utcnow())
@@ -30,6 +30,8 @@ class TimeseriesBase(models.Model):
 			fields.remove(h)
 		if u'id' in fields:
 			fields.remove(u'id')
+		if u'temporary' in fields:
+			fields.remove(u'temporary')
 		return fields
 
 	@classmethod
@@ -50,6 +52,12 @@ class TimeseriesBase(models.Model):
 		all_headers = cls.get_header_names()
 		all_headers.remove('Time')
 		return list(cls.objects.values(*all_headers).distinct())
+
+	@classmethod
+	def latest(cls):
+		"""return a datetime object that is the timestamp of the most recent entries in this table
+		"""
+		return (cls.objects.order_by('-Time')[0]).Time
 
 	class Meta:
 		abstract = True

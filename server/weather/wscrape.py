@@ -1,5 +1,5 @@
 import datetime
-from timeseries.scraper import ScraperBase
+from timeseries.scrapers import ScraperBase
 from commonssite.settings import weather_host
 import pytz
 import os, sys
@@ -9,7 +9,9 @@ from weewx.drivers.vantage import Vantage
 from commonssite.server.weather.models import WeatherData
 
 class Weather(ScraperBase):
-	def __init__(self):
+	
+	def __init__(self, model):
+		super(Weather, self).__init__(model)
 		self.dict_key_map = {
 			'UV' : 'uv',
 			'barometer' : 'barometer',
