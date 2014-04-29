@@ -129,6 +129,7 @@ def series_filter(filter_obj, tstart, tend, include_temporary=False):
 			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
 			# if it doesn't exist, skip this one
 			if not m:
+				print "ModelRegistry lookup failed for ", sys, subsys
 				continue
 			# get the corresponding model class
 			model = get_registered_model(m.model_class)

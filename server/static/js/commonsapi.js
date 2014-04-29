@@ -179,7 +179,7 @@ var Commons = {
 					chart_obj.redraw();
 				});
 				}
-			, 20000);
+			, 10000);
 		});
 	}
 };
