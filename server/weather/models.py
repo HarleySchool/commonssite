@@ -21,7 +21,7 @@ class WeatherData(TimeseriesBase):
 	stormstart = models.FloatField(null=True)
 	sunrise = models.FloatField()
 	sunset = models.FloatField()
-	winddir = models.FloatField()
+	winddir = models.FloatField(null=True)
 	windspeed = models.FloatField()
 	windchill = models.FloatField()
 	yearet = models.FloatField()
