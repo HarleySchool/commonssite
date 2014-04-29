@@ -1,28 +1,45 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block title %}Download Data{% endblock title %}
 
-{% block scripts %}
-<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
-<script src="{% static "js/jquery.timepicker.js" %}"></script>
-<script src="{% static "timeseries/js/downloads.js" %}"></script>
-<script src="{% static "timeseries/js/moment.min.js" %}"></script>
-<script src="{% static "timeseries/js/daterangepicker.js" %}"></script>
-{% endblock scripts %}
-
-{% block styles %}
-<link rel="stylesheet" href="{% static "timeseries/css/daterangepicker-bs3.css " %}" />
-{% endblock styles %}
-
 {% block content %}
+{# drop in the daterange UI #}
 {% include "timeseries/daterange.html" %}
-{% for sys, subs in systems.iteritems %}
-<div class="buttons-{{ sys|lower }}">
-	<h3>{{ sys }}</h3>
-	{% for subsys, specs in subs.iteritems %}
-	<button type='button' class='btn btn-sm btn-primary get_data_btn' data-type='{{ subsys }}'>Get {{ subsys }}</button>
-	{% endfor %}
-</div>
-{% endfor %}
+{# drop in the series picker UI #}
+{% include "timeseries/seriespicker.html" %}
+
+<button class="btn btn-primary" id="downloadBtn">Download CSV</button>
+<script>
+// thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
+var downloadURL = function downloadURL(url) {
+	var hiddenIFrameID = 'hiddenDownloader',
+		iframe = document.getElementById(hiddenIFrameID);
+	if (iframe === null) {
+		iframe = document.createElement('iframe');
+		iframe.id = hiddenIFrameID;
+		iframe.style.display = 'none';
+		document.body.appendChild(iframe);
+	}
+	iframe.src = url;
+};
+
+$(document).ready(function(){
+	// callback
+	function download_csv(series_obj){
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+
+		var url = '/data/api/csv/?' + $.param({
+			'series' : series_obj,
+			'tstart' : start.toISOString(),
+			'tend' : end.toISOString()
+		});
+		downloadURL(url);
+	}
+
+	$("#downloadBtn").click(function(){
+		download_csv(JSON.stringify(Commons.seriespicker()));
+	});
+});
+</script>
 {% endblock content %}

@@ -1,4 +1,5 @@
 import requests, re, pytz, datetime
+from timeseries.scrapers import ScraperBase
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
 from commonssite.scrapers.xml_import import etree
 from commonssite.server.electric.models import ChannelEntry, DeviceSummary
@@ -12,9 +13,12 @@ class ElectricServerInterface(object):
 		return etree.fromstring(str(req.text))
 
 	
-class VerisScraperBase(object):
+class VerisScraperBase(ScraperBase):
 	"""A scraper class for gettind data from our veris system
 	"""
+
+	def __init__(self, model):
+		super(VerisScraperBase, self).__init__(model)
 
 	devices = [2, 3, 4]
 	#__datetime_fmt = '%Y-%m-%d %H:%M:%S' # format of incoming XML datetime string
@@ -77,6 +81,9 @@ class VerisScraperBase(object):
 
 class ScraperCircuits(VerisScraperBase):
 
+	def __init__(self, model):
+		super(ScraperCircuits, self).__init__(model)
+
 	def __xml_to_db_entries(self, xml, set_time, set_panel):
 		# TODO attrib['alarm'] and attrib['units']
 		objects = {} # collection of under-construction model objects
@@ -109,6 +116,9 @@ class ScraperCircuits(VerisScraperBase):
 		return retlist
 
 class ScraperPowerSummary(VerisScraperBase):
+
+	def __init__(self, model):
+		super(ScraperPowerSummary, self).__init__(model)
 
 	def __xml_to_db_summary(self, xml, set_time, set_panel):
 		summary_obj = DeviceSummary(Time=set_time, Panel=set_panel)

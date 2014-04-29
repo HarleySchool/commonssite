@@ -46,7 +46,7 @@ class ErvEntry(TimeseriesBase):
 	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
 	Mode = models.CharField(db_column='mode', choices=MODE_CHOICES, max_length=14)
 	ErrorSign = models.BooleanField(db_column='error')
-	InletTemp = models.FloatField(db_column='measured temp')
+	InletTemp = models.FloatField(db_column='measured temp', verbose_name=u'Measured Temperature')
 	Running = models.NullBooleanField(db_column='running')
 
 	def __unicode__(self):
@@ -70,7 +70,7 @@ class VrfEntry(TimeseriesBase):
 	CoolMin = models.FloatField(db_column='cool min')
 	AutoMax = models.FloatField(db_column='auto max')
 	AutoMin = models.FloatField(db_column='auto min')
-	SetTemp = models.FloatField(db_column='set temp')
+	SetTemp = models.FloatField(db_column='set temp', verbose_name=u'Set Temperature')
 	Running = models.NullBooleanField(db_column='running')
 
 	def __unicode__(self):

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Graphs{% endblock title %}
+
+{% block scripts %}
+<script src="{% static "js/highcharts/highcharts.js" %}"></script>
+<script>
+$(function(){
+	// callback for actually making the graph
+	$("#makegraphBtn").click(function(){
+		
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+		var series = Commons.seriespicker();
+
+		Commons.create_chart(series, "Historical Data", start, end, "div#charts-container");
+	});
+});
+</script>
+{% endblock scripts %}
+
+{% block content %}
+{# drop in the daterange UI #}
+{% include "timeseries/daterange.html" %}
+{# drop in the series picker UI #}
+{% include "timeseries/seriespicker.html" %}
+<br />
+<button class="btn btn-primary" id="makegraphBtn">Make Graph</button>
+<div id="charts-container" style="width:100%"></div>
+{% endblock content %}

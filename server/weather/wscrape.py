@@ -1,13 +1,17 @@
 import datetime
+from timeseries.scrapers import ScraperBase
+from commonssite.settings import weather_host
 import pytz
 import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0,os.path.join(BASE_DIR, 'weather'))
 from weewx.drivers.vantage import Vantage
-from commonssite.server.weather.models import weatherdata
+from commonssite.server.weather.models import WeatherData
 
-class Weather():
-	def __init__(self):
+class Weather(ScraperBase):
+	
+	def __init__(self, model):
+		super(Weather, self).__init__(model)
 		self.dict_key_map = {
 			'UV' : 'uv',
 			'barometer' : 'barometer',
@@ -31,8 +35,10 @@ class Weather():
 			'windDir': 'winddir',
 			'windSpeed': 'windspeed',
 			'windchill': 'windchill',
-			'yearET': 'yearet'
-	}
+			'yearET': 'yearet',
+			'yearRain' : 'yearrain'
+		}
+		self.v = Vantage(type='ethernet', host=weather_host)
 
 	def doParse(self, data):
 		parsed = {}
@@ -41,15 +47,14 @@ class Weather():
 		return parsed
 
 	def get_data(self):
-		v = Vantage(type='ethernet', host='10.1.6.203')
-		data = next(v.genDavisLoopPackets())
+		data = next(self.v.genDavisLoopPackets())
 		parsed = self.doParse(data)
 		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		model = weatherdata(Time=now, **parsed)
+		model = WeatherData(Time=now, **parsed)
 		return [model]
 
 if __name__ == '__main__':
+	from pprint import pprint
 	w = Weather()
-	m = w.get_data()
-	m.save(force_insert=True)
-	print 'done'
+	data = w.doParse(next(w.v.genDavisLoopPackets()))
+	pprint(data)

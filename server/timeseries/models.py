@@ -1,10 +1,22 @@
 from django.db import models
 import re
+import datetime
+import pytz
 
 class TimeseriesBase(models.Model):
 	'''The minimum structure of a timeseries model. Other time-logging models should inherit from this class.
 	'''
 	Time = models.DateTimeField(db_column='time')
+	temporary = models.BooleanField(default=False) # whether or not this entry will be removed after a set time
+
+	@classmethod
+	def remove_expired(cls, timespan=datetime.timedelta(hours=24)):
+		"""Remove all entries tagged with `temporary` and that are older than (now - timespan)
+		"""
+		now = pytz.UTC.localize(datetime.datetime.utcnow())
+		earliest = now - timespan
+		query = cls.objects.filter(Time__lt=earliest, temporary=True)
+		query.delete() # this call immediately hits the database and removes all the entries in the queryset
 
 	@classmethod
 	def get_field_names(cls):
@@ -18,6 +30,8 @@ class TimeseriesBase(models.Model):
 			fields.remove(h)
 		if u'id' in fields:
 			fields.remove(u'id')
+		if u'temporary' in fields:
+			fields.remove(u'temporary')
 		return fields
 
 	@classmethod
@@ -39,17 +53,14 @@ class TimeseriesBase(models.Model):
 		all_headers.remove('Time')
 		return list(cls.objects.values(*all_headers).distinct())
 
+	@classmethod
+	def latest(cls):
+		"""return a datetime object that is the timestamp of the most recent entries in this table
+		"""
+		return (cls.objects.order_by('-Time')[0]).Time
+
 	class Meta:
 		abstract = True
-
-""" RUNTIME MODULE LOADER
-def my_import(name):
-    mod = __import__(name)
-    components = name.split('.')
-    for comp in components[1:]:
-        mod = getattr(mod, comp)
-    return mod
-"""	
 
 regex_non_char = re.compile(r'[^a-zA-Z]+')
 
