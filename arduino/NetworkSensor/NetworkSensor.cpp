@@ -21,9 +21,11 @@ void NetworkSensor::begin(uint8_t mac[], uint8_t ip[])
 // reduce memory footprint by keeping only one instance of each string
 const char* lbrace = "{";
 const char* rbrace = "}";
-const char* colon_brace_t_colon = ":{t:";
-const char* comma_v_colon = ",v:";
+const char* quote = "\"";
+const char* quote_colon_brace_t_colon = "\":{\"t\":";
+const char* comma_v_colon = ",\"v\":";
 const char* rbrace_comma = "},";
+const char* rbrace_end = "}";
 
 void NetworkSensor::input_output()
 {
@@ -53,6 +55,9 @@ void NetworkSensor::input_output()
           remoteSetTime(epoch_arg);
         }
 
+        int total_lines = s_values.size + f_values.size + i_values.size;
+        int line = 1;
+
         // if we've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
         // so we can send a reply
@@ -64,29 +69,34 @@ void NetworkSensor::input_output()
 
           client.println(lbrace);
           {
-            for(int i=0; i<s_values.size; ++i){
-              client.print(s_values.names[i]);
-              client.print(colon_brace_t_colon); // ":{t:"
-              client.print(String(s_values.times[i]));
-              client.print(comma_v_colon); // ",v:"
-              client.print(s_values.values[i]);
-              client.println(rbrace_comma); // "},"
+            for(int i=0; i<s_values.size; ++i, ++line){
+              client.print(quote);                      // "
+              client.print(s_values.names[i]);          // name
+              client.print(quote_colon_brace_t_colon);  // ":{"t":
+              client.print(String(s_values.times[i]));  // time
+              client.print(comma_v_colon);              // ,"v":
+              client.print(quote);                      // "
+              client.print(s_values.values[i]);         // value
+              client.print(quote);                      // "
+              client.println(line < total_lines ? rbrace_comma : rbrace_end);             // },
             }
-            for(int i=0; i<f_values.size; ++i){
-              client.print(f_values.names[i]);
-              client.print(colon_brace_t_colon); // ":{t:"
-              client.print(String(f_values.times[i]));
-              client.print(comma_v_colon); // ",v:"
-              client.print(floatToString(f_values.values[i], 1000));
-              client.println(rbrace_comma); // "},"
+            for(int i=0; i<f_values.size; ++i, ++line){
+              client.print(quote);                                    // "
+              client.print(f_values.names[i]);                        // name
+              client.print(quote_colon_brace_t_colon);                // ":{"t":
+              client.print(String(f_values.times[i]));                // time
+              client.print(comma_v_colon);                            // ,"v":
+              client.print(floatToString(f_values.values[i], 10000)); // v.alue
+              client.println(line < total_lines ? rbrace_comma : rbrace_end);                           // },
             }
-            for(int i=0; i<i_values.size; ++i){
-              client.print(i_values.names[i]);
-              client.print(colon_brace_t_colon); // ":{t:"
-              client.print(String(i_values.times[i]));
-              client.print(comma_v_colon); // ",v:"
-              client.print(String(i_values.values[i]));
-              client.println(rbrace_comma); // "},"
+            for(int i=0; i<i_values.size; ++i, ++line){
+              client.print(quote);                      // "
+              client.print(i_values.names[i]);          // name
+              client.print(quote_colon_brace_t_colon);  // ":{"t":
+              client.print(String(i_values.times[i]));  // time
+              client.print(comma_v_colon);              // ,"v":
+              client.print(String(i_values.values[i])); // value
+              client.println(line < total_lines ? rbrace_comma : rbrace_end);             // },
             }
           }
           client.println(rbrace);

@@ -22,30 +22,33 @@ const int BUFFER_SIZE = 8; // size of initial TupleArrays (no realloc for up to 
 template <typename T>
 struct TimestampValueArray{
   time_t* times; // array of epoch times
-  String* names; // array of names
-  T* values; // parallel array of values (times[i], names[i], and values[i] are a single point)
+  char** names;  // parallel array of names
+  T* values;     // parallel array of values (times[i], names[i], and values[i] are a single point)
   time_t offset_millis;
   int size, capacity; // dynamically growing array stuff
 
   TimestampValueArray(): offset_millis(0), size(0), capacity(BUFFER_SIZE)
   {
     times = (time_t*) malloc(sizeof(time_t) * capacity);
-    names = (String*) malloc(sizeof(String) * capacity);
+    names = (char**) malloc(sizeof(char*) * capacity);
     values = (T*) malloc(sizeof(T) * capacity);
   }
 
   ~TimestampValueArray()
   {
     free(times);
+    for(int i=0; i<size; i++) free(names[i]);
     free(names);
     free(values);
   }
 
   void set(String name, T value)
   {
+    char buf[32];
+    name.toCharArray(buf, 32);
     // search for existing name
     for(int i=0; i<size; ++i){
-      if(name.equals(names[i])){
+      if(strcmp(buf, names[i]) == 0){
         // update existing value and be done
         times[i] = millis() + offset_millis;
         values[i] = value;
@@ -58,12 +61,16 @@ struct TimestampValueArray{
       // double the capacity (it's more efficient this way than simply adding an additional slot)
       capacity *= 2;
       times = (time_t*) realloc(times, sizeof(time_t) * capacity);
-      names = (String*) realloc(names, sizeof(String) * capacity);
+      names = (char**) realloc(names, sizeof(char*) * capacity);
       values = (T*) realloc(values, sizeof(T) * capacity);
     }
     // add the new value
     times[size] = millis() + offset_millis;
-    names[size] = name;
+    // create character array and copy name to it
+    int null_terminated_length = name.length()+1;
+    names[size] = (char*) malloc(sizeof(char) * null_terminated_length);
+    name.toCharArray(names[size], null_terminated_length);
+    // copy value
     values[size] = value;
     size++;
   }
