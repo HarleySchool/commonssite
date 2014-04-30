@@ -2,6 +2,7 @@ import requests
 import json
 import datetime
 import pytz
+from timeseries.scrapers import ScraperBase
 from commonssite.settings import sma_host, sma_password, sma_port
 from commonssite.server.solar.models import SMAWeather, SMAPanels, SMAOverview
 
@@ -114,7 +115,11 @@ class SMAServerInterface(object):
 		rpc["id"] = "4"
 		return self.__postRequest(rpc)
 
-class SMAScraperBase(object):
+class SMAScraperBase(ScraperBase):
+
+
+	def __init__(self, model):
+		super(SMAScraperBase, self).__init__(model)
 
 	# Thanks to these pdfs: 
 	# http://files.sma.de/dl/1348/NG_PAR-TB-en-22.pdf, 
@@ -194,6 +199,10 @@ class SMAScraperBase(object):
 		return smaname in SMAScraperBase.name_mapping_dict.get(dname, {})
 
 class ScraperSolarPanels(SMAScraperBase):
+
+	def __init__(self, model):
+		super(ScraperSolarPanels, self).__init__(model)
+	
 	def get_data(self):
 		# TODO convert given units to default units
 		ssi = SMAServerInterface()
@@ -221,6 +230,9 @@ class ScraperSolarPanels(SMAScraperBase):
 
 class ScraperSolarWeather(SMAScraperBase):
 
+	def __init__(self, model):
+		super(ScraperSolarWeather, self).__init__(model)
+
 	def get_data(self):
 		# TODO convert given units to default units
 		ssi = SMAServerInterface()
@@ -247,6 +259,9 @@ class ScraperSolarWeather(SMAScraperBase):
 		return objects
 
 class ScraperSolarOverview(SMAScraperBase):
+
+	def __init__(self, model):
+		super(ScraperSolarOverview, self).__init__(model)
 
 	def get_data(self):
 		# TODO convert given units to default units

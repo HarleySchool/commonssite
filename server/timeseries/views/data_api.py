@@ -57,9 +57,10 @@ def series(request):
 		post = json.loads(request.body)
 		t_start = h.parse_time(post.get('from'))
 		t_end = h.parse_time(post.get('to'))
+		temp = post.get('temporary', False)
 		if t_start is None or t_end is None:
 			return HttpResponseBadRequest("series request error: 'from' and 'to' range are required and must be specified as an ISO-formatted string")
-		data = h.series_filter(post.get('series'), t_start, t_end)
+		data = h.series_filter(post.get('series'), t_start, t_end, include_temporary=temp)
 		# check for time formatting
 		for obj in data:
 			obj['Time'] = obj['Time'].isoformat()

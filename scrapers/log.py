@@ -15,9 +15,11 @@ class scheduler():
 	def __init__(self):
 		self.heap = []
 		self.taskdict = {}
-	def register(self, func, interval):
+		self.namedict = {}
+	def register(self, func, interval, name):
 		# Registers Functions into a dict
 		self.taskdict[func] = interval
+		self.namedict[func] = name
 	def run_threaded(self, func):
 		# To run Functions threaded
 		job_thread = threading.Thread(target=func)
@@ -31,7 +33,7 @@ class scheduler():
 		return [func, nexttime]
 	def startheap(self):
 		# Initializes the heap
-		# All function run on startup
+		# All functions run on startup
 		t = time.time()
 		for func, interval in self.taskdict.iteritems():
 			heapq.heappush(self.heap, (t, func))
@@ -45,20 +47,19 @@ class scheduler():
 				# don't even cut it close
 				# use run_theaded to clear the main thread
 				#############################
-				print '=================='
 				func, nexttime = self.popandnext()
 				self.run_threaded(func)
 				# Calculate the time that we should sleep
 				sleeptime = nexttime - time.time()
 				# Print some things
-				print "I done did a %s at %s.\nI'm gon do another log again in %s seconds" % (func.name, time.time(), sleeptime)
+				print "==================\nI done spawned a %s thread at %s.\nI'm gon spawn another process in %s seconds" % (self.namedict[func], time.time(), sleeptime)
 				# Gets around a negative sleep time error by using pass
 				if sleeptime < 1 and sleeptime > -3:
 					pass
 				elif sleeptime < -3:
 					print 'Sleep time error, heave you suspended your computer recently?'
 					self.heap = []
-					self.startheap
+					self.startheap()
 				else:
 					# If there is more than 1 second between functions, sleep the remainder of the time
 					time.sleep(sleeptime)
@@ -71,7 +72,7 @@ def dolog(scraper):
 		for item in data:
 			item.save(force_insert=True)
 		print '=================='
-		print '%s done at %s' % (scraper.__class__.__name__, time.time())
+		print '%s thread completed at %s' % (scraper.__class__.__name__, time.time())
 	getandsave.name = scraper.__class__.__name__
 	return getandsave
 
@@ -83,6 +84,6 @@ if __name__ == '__main__':
 		# Initialize all of them
 		scraperinst = scraper()
 		# Register with the scheduler
-		cron.register(dolog(scraperinst), minutes(20))
+		cron.register(dolog(scraperinst), minutes(20), scraper.__class__.__name__)
 	# Run the Scheduler (forever)
 	cron.main()
