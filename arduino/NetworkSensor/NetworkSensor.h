@@ -24,10 +24,10 @@ struct TimestampValueArray{
   time_t* times; // array of epoch times
   char** names;  // parallel array of names
   T* values;     // parallel array of values (times[i], names[i], and values[i] are a single point)
-  time_t offset_millis;
+  time_t offset_seconds;
   int size, capacity; // dynamically growing array stuff
 
-  TimestampValueArray(): offset_millis(0), size(0), capacity(BUFFER_SIZE)
+  TimestampValueArray(): offset_seconds(0), size(0), capacity(BUFFER_SIZE)
   {
     times = (time_t*) malloc(sizeof(time_t) * capacity);
     names = (char**) malloc(sizeof(char*) * capacity);
@@ -50,7 +50,7 @@ struct TimestampValueArray{
     for(int i=0; i<size; ++i){
       if(strcmp(buf, names[i]) == 0){
         // update existing value and be done
-        times[i] = millis() + offset_millis;
+        times[i] = (millis() / 1000) + offset_seconds;
         values[i] = value;
         return;
       }
@@ -65,7 +65,7 @@ struct TimestampValueArray{
       values = (T*) realloc(values, sizeof(T) * capacity);
     }
     // add the new value
-    times[size] = millis() + offset_millis;
+    times[size] = (millis() / 1000) + offset_seconds;
     // create character array and copy name to it
     int null_terminated_length = name.length()+1;
     names[size] = (char*) malloc(sizeof(char) * null_terminated_length);
