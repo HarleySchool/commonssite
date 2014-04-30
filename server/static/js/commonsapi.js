@@ -44,7 +44,7 @@ function ToLocalDate (inDate) {
 function server_to_highcharts_series(data){
 	var highcharts_construction = {}; // temporary, under-construction, series of data
 	// for each of the series that was initially requested, add it to the highcharts series...
-	for (var i = data.length - 1; i >= 0; i--) {
+	for (var i = 0; i < data.length; i++) {
 		var t = new Date(data[i].Time);
 		var h = data[i].H; // dict of headers
 		var d = data[i].D; // dict of datums
@@ -75,33 +75,6 @@ function server_to_highcharts_series(data){
 	return highcharts_series;
 }
 
-function live_pie(data, top_n){
-	top_n = top_n || 20;
-	var pie_data = []; // temporary, under-construction, series of data
-	// for each of the series that was initially requested, add it to the highcharts series...
-	for (var i = data.length - 1; i >= 0; i--) {
-		var h = data[i].H; // dict of headers
-		var d = data[i].D; // dict of datums
-		
-		var headers_name = ""; // e.g. "Panel 1: Channel #4"
-		for(var head in h){
-			if(headers_name !== "")
-				headers_name += ": ";
-			headers_name += h[head];
-		}
-
-		for(var col in d){
-			var full_name = headers_name + ": " + col; // e.g. "Panel 1: Channel #4: MaxPower"
-			// add data point
-			pie_data.push([full_name, d[col]]);
-		}
-	};
-
-	pie_data.sort(function(a,b){return b[1]-a[1]});
-
-	return pie_data.slice(0,top_n);
-}
-
 var Commons = {
 
 	csrf : function(){
@@ -116,14 +89,15 @@ var Commons = {
 		}).done(onsuccess);
 	},
 
-	create_chart : function(series, tstart, tend, container_selector){
+	create_chart : function(series, title, tstart, tend, container_selector, chart_type, temporary, callback){
+		temporary = temporary || false;
 		// set up default options
 		var chart_options = {
 			chart: {
-				type: 'spline' // http://api.highcharts.com/highcharts#plotOptions
+				type: chart_type || "spline" // http://api.highcharts.com/highcharts#plotOptions
 			},
 			title: {
-				text: 'Historical Data'
+				text: title,
 			},
 			xAxis: {
 				type: 'datetime', // 'linear' 'logarithmic' 'category'
@@ -145,6 +119,7 @@ var Commons = {
 		query = {
 			"from" : tstart.toISOString(),
 			"to" : tend.toISOString(),
+			"temporary" : temporary,
 			"series" : series
 		};
 		// query server for data
@@ -163,59 +138,18 @@ var Commons = {
 				$("div.container").append(container);
 			}
 			container.highcharts(chart_options);
+			if(typeof(callback) !== "undefined")
+				callback(container.highcharts());
 		});
 	},
 
 	live_chart : function(series, title, container_selector, timespan_mins, chart_type){
 		// default arguments
 		timespan_mins = timespan_mins || 60*24*7; // default to one week
-		var timespan_millis = timespan_mins * 60 * 1000;
-		chart_type = chart_type || 'spline';
-		// set up default options
-		var chart_options = {
-			chart: {
-				type: chart_type // http://api.highcharts.com/highcharts#plotOptions
-			},
-			title: {
-				text: title
-			},
-			xAxis: {
-				type: 'datetime', // 'linear' 'logarithmic' 'category'
-				title : {
-					text : 'Time'
-				}
-			},
-			tooltip: {
-				formatter: function() {
-						return '<b>'+ this.series.name +'</b><br/>'+
-						Highcharts.dateFormat('%m/%d %H:%M', this.x) +': '+ this.y;
-				}
-			},
-		}
-		var translator = server_to_highcharts_series;
-		if(chart_type === "pie"){
-			translator = live_pie;
-		}
-		// keep track of the chart itself
-		var thechart;
-		// query server for initial data
-		$.ajax({
-			url : '/data/api/single/',
-			type : 'POST',
-			contentType : 'json',
-			data : JSON.stringify({'series' : series})
-		}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-			var highcharts_series = translator(data);
-			chart_options.series = highcharts_series;
-			// create chart
-			var container = $(container_selector);
-			if(container === undefined){
-				container = $("<div style='width:600px'></div");
-				$("div.container").append(container);
-			}
-			container.highcharts(chart_options);
-			thechart = container.highcharts();
-
+		var timespan_millis = timespan_mins * 60000;
+		// make a chart of data up till now
+		var now = new Date();
+		this.create_chart(series, title, new Date(now - timespan_millis), now, container_selector, chart_type, true, function(chart_obj){
 			// set up updater function (new data every 10 seconds)
 			setInterval(function(){
 				// query server for new data
@@ -225,29 +159,24 @@ var Commons = {
 					contentType : 'json',
 					data : JSON.stringify({'series' : series})
 				}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-					var new_data = translator(data);
-
-					if(chart_type === "pie"){
-						thechart.series[0].setData(new_data);
-					} else{
-						// update each series
-						for (var i = new_data.length - 1; i >= 0; i--) {
-							var existing_series = thechart.series[i].options.data;
-							var update = new_data[i].data;
-							// remove old/expired points (each point is {x: time, y: value})
-							var span = update[0].x - existing_series[0].x;
-							console.log("timespan of "+title+": "+span);
-							while(span > timespan_millis){
-								existing_series.shift(); // removes the first element
-								span = update[0].x - existing_series[0].x;
-							}
-							// add new point
-							existing_series.push(update[0]);
-							thechart.series[i].setData(existing_series, false);
-						};
-					}
+					var new_data = server_to_highcharts_series(data);
+					// update each series
+					for (var i = new_data.length - 1; i >= 0; i--) {
+						var existing_series = chart_obj.series[i].options.data;
+						var update = new_data[i].data;
+						// remove old/expired points (each point is {x: time, y: value})
+						var span = update[0].x - existing_series[0].x;
+						console.log("timespan of "+title+": "+span);
+						while(span > timespan_millis){
+							existing_series.shift(); // removes the first element
+							span = update[0].x - existing_series[0].x;
+						}
+						// add new point
+						existing_series.push(update[0]);
+						chart_obj.series[i].setData(existing_series, false);
+					};
 					// redraw chart
-					thechart.redraw();
+					chart_obj.redraw();
 				});
 				}
 			, 10000);

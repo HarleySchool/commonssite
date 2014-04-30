@@ -1,7 +1,9 @@
 import datetime, string, requests, pytz
+from timeseries.scrapers import ScraperBase
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
 from commonssite.server.hvac.models import ErvEntry, VrfEntry
+from itertools import izip
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -374,7 +376,10 @@ class HvacServerInterface(object):
 		# get mapped name (or default to the given name)
 		return mapping.get(name, name)
 
-class ScraperERV(object):
+class ScraperERV(ScraperBase):
+
+	def __init__(self, model):
+		super(ScraperERV, self).__init__(model)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
@@ -386,12 +391,15 @@ class ScraperERV(object):
 			# check if VRF or ERV
 			if name.find('ERV') > -1:
 				model_fields = ErvEntry.get_field_names()
-				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
+				kargs = dict(izip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
 				model = ErvEntry(Time=now, Name=name, **kargs)
 				models.append(model)
 		return models
 
-class ScraperVRF(object):
+class ScraperVRF(ScraperBase):
+
+	def __init__(self, model):
+		super(ScraperVRF, self).__init__(model)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
@@ -403,7 +411,7 @@ class ScraperVRF(object):
 			# check if VRF or ERV
 			if name.find('ERV') == -1:
 				model_fields = VrfEntry.get_field_names()
-				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
+				kargs = dict(izip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
 				model = VrfEntry(Time=now, Name=name, **kargs)
 				models.append(model)
 		return models

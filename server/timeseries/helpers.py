@@ -99,9 +99,10 @@ def __obj_list_to_hd_dict(obj_list, model, columns):
 			hd_dict['D'][point] = obj[point]
 		hd_dict['Time'] = obj['Time']
 		retlist.append(hd_dict)
+	retlist.sort(key=lambda d: d['Time'])
 	return retlist
 
-def series_filter(filter_obj, tstart, tend):
+def series_filter(filter_obj, tstart, tend, include_temporary=False):
 	"""
 	Takes a definition of one or more series and returns a list of dicts with 'H' and 'D' fields for Headers and Data respectively.
 	All headers (e.g. Time, Name) will always be returned.
@@ -128,17 +129,19 @@ def series_filter(filter_obj, tstart, tend):
 			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
 			# if it doesn't exist, skip this one
 			if not m:
+				print "ModelRegistry lookup failed for ", sys, subsys
 				continue
 			# get the corresponding model class
 			model = get_registered_model(m.model_class)
 			filter_kwargs = {}
 			# filter by header and value
 			for h, vals in specs.get('series').iteritems():
-				param = h + '__in' # django syntax for "all values in a list"
-				filter_kwargs[param] = []
-				for v in vals:
-					filter_kwargs[param].append(v)
-			# start the queryset as empty (will be built up by filters)
+				param = h + '__in' # django syntax for "all values in a given list"
+								   # for example, objects.filter(Name__in=["foo", "bar"])
+				filter_kwargs[param] = vals
+			if not include_temporary:
+				filter_kwargs['temporary'] = False
+			# make the query according to all given filters
 			Q = model.objects.filter(Time__gte=tstart, Time__lt=tend, **filter_kwargs)
 			# filter for only the selected columns
 			# note that if 'columns' is None or [], no filtering is performed and all columns are returned
@@ -167,10 +170,8 @@ def live_filter(filter_obj):
 				continue
 			# get the corresponding model class
 			model = get_registered_model(m.model_class)
-			scraper_class = get_registered_scraper(m.scraper_class)
-			scraper = scraper_class()
-			# perform a scrape!
-			new_data = scraper.get_data()
+			# the relevant queryset is all rows which share this most-recent timestamp
+			new_data = model.objects.filter(Time=model.latest())
 			# use the series filters
 			for h, vals in specs.get('series').iteritems():
 				new_data = filter(lambda obj: obj.__dict__.get(h) in vals, new_data)

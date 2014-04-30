@@ -1,4 +1,5 @@
 import datetime
+from timeseries.scrapers import ScraperBase
 from commonssite.settings import weather_host
 import pytz
 import os, sys
@@ -7,8 +8,10 @@ sys.path.insert(0,os.path.join(BASE_DIR, 'weather'))
 from weewx.drivers.vantage import Vantage
 from commonssite.server.weather.models import WeatherData
 
-class Weather():
-	def __init__(self):
+class Weather(ScraperBase):
+	
+	def __init__(self, model):
+		super(Weather, self).__init__(model)
 		self.dict_key_map = {
 			'UV' : 'uv',
 			'barometer' : 'barometer',
@@ -35,7 +38,7 @@ class Weather():
 			'yearET': 'yearet',
 			'yearRain' : 'yearrain'
 		}
-		self.v = Vantage(type='ethernet', host=weather_host)
+		self.v = Vantage(type='ethernet', host=weather_host, max_retries=8)
 
 	def doParse(self, data):
 		parsed = {}
