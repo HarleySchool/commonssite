@@ -8,7 +8,6 @@ NetworkSensor::~NetworkSensor(){}
 
 void NetworkSensor::begin(uint8_t mac[], uint8_t ip[])
 {
-  Serial.begin(9600); // for debugging
   // SS (Slave Select) pin low to enable ethernet
   pinMode(ETHSS, OUTPUT);
   digitalWrite(ETHSS, LOW);
@@ -38,25 +37,34 @@ void NetworkSensor::input_output()
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     time_t epoch_arg = 0;
-    boolean reading_epoch = false, read_epoch = false;
-    char last_c = ' ';
+    typedef enum readstate{UNREAD, READING, DONE} readstate;
+    readstate reading = UNREAD;
     while (client.connected()) {
       if (client.available()) {
         char c = client.read();
-        // the header for the request should look like "GET / HTTP"
-        // if it's boring, or "GET /1358283494 HTTP" if it is providing
-        // us with an epoch time. here we parse that time.
-        if(last_c == '/' && !read_epoch) reading_epoch = true;
-        if(reading_epoch && '0' <= c && c <= '9'){
-          epoch_arg = epoch_arg*10+c-'0';
-        } else if(reading_epoch){
-          read_epoch = true;
-          reading_epoch = false;
-          remoteSetTime(epoch_arg);
+        // the header for the request should look like "GET / HTTP/1.1"
+        // if it's boring, or "GET /1358283494 HTTP/1.1" if it is providing
+        // us with an epoch time. here we parse that time by looking for the
+        // first instance of '/'
+
+        // condition to start reading epoch argument:
+        if(reading == UNREAD && c == '/'){
+          reading = READING;
+          continue;
         }
+        if(reading == READING){
+          // condition to continue adding digits to epoch argument:
+          if('0' <= c && c <= '9'){
+            epoch_arg = epoch_arg*10+c-'0';
+          // condition to finish reading and set time
+          } else{
+            reading = DONE;
+            if(epoch_arg > 0) remoteSetTime(epoch_arg);
+          }
+        } 
 
         int total_lines = s_values.size + f_values.size + i_values.size;
-        int line = 1;
+        int line = 1; // this is used to ensure that the last entry has no trailing comma
 
         // if we've gotten to the end of the line (received a newline
         // character) and the line is blank, the http request has ended,
@@ -78,7 +86,7 @@ void NetworkSensor::input_output()
               client.print(quote);                      // "
               client.print(s_values.values[i]);         // value
               client.print(quote);                      // "
-              client.println(line < total_lines ? rbrace_comma : rbrace_end);             // },
+              client.println(line < total_lines ? rbrace_comma : rbrace_end);             // }, OR }
             }
             for(int i=0; i<f_values.size; ++i, ++line){
               client.print(quote);                                    // "
@@ -87,7 +95,7 @@ void NetworkSensor::input_output()
               client.print(String(f_values.times[i]));                // time
               client.print(comma_v_colon);                            // ,"v":
               client.print(floatToString(f_values.values[i], 10000)); // v.alue
-              client.println(line < total_lines ? rbrace_comma : rbrace_end);                           // },
+              client.println(line < total_lines ? rbrace_comma : rbrace_end);                           // }, OR }
             }
             for(int i=0; i<i_values.size; ++i, ++line){
               client.print(quote);                      // "
@@ -96,7 +104,7 @@ void NetworkSensor::input_output()
               client.print(String(i_values.times[i]));  // time
               client.print(comma_v_colon);              // ,"v":
               client.print(String(i_values.values[i])); // value
-              client.println(line < total_lines ? rbrace_comma : rbrace_end);             // },
+              client.println(line < total_lines ? rbrace_comma : rbrace_end);             // }, OR }
             }
           }
           client.println(rbrace);
@@ -104,7 +112,6 @@ void NetworkSensor::input_output()
           break;
         }
         currentLineIsBlank = (c == '\n' || c == '\r');
-        last_c = c;
       }
     }
     delay(10);
@@ -113,8 +120,6 @@ void NetworkSensor::input_output()
 }
 
 void NetworkSensor::remoteSetTime(time_t epoch){
-  Serial.print("time set to ");
-  Serial.println(epoch);
   time_t new_offset = epoch - millis();
   // update existing times
   time_t update = new_offset - s_values.offset_millis; // this is zero if the clocks are synced
