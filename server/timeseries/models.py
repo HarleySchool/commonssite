@@ -66,6 +66,8 @@ __regex_non_char = re.compile(r'[^a-zA-Z]+')
 class ModelRegistry(models.Model):
 	'''This table keeps track of registered timeseries models and related information'''
 
+	# see timeseries.scrapers.ScraperBase.get_and_save_single
+	# for an example of how these are used
 	STATUS_CHOICES = (
 		(0, 'Communication Error'),
 		(1, 'Connection Down'),
@@ -74,7 +76,7 @@ class ModelRegistry(models.Model):
 	system = models.CharField(max_length=16)
 	short_name = models.CharField(max_length=32) # aka subsystem
 	description = models.TextField()
-	status = models.IntegerField(choices=STATUS_CHOICES)
+	status = models.IntegerField(choices=STATUS_CHOICES) # latest status of this model's scraper
 	model_class = models.CharField(max_length=64)
 	scraper_class = models.CharField(max_length=64, null=True)
 

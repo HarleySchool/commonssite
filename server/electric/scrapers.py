@@ -17,8 +17,8 @@ class VerisScraperBase(ScraperBase):
 	"""A scraper class for gettind data from our veris system
 	"""
 
-	def __init__(self, model):
-		super(VerisScraperBase, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(VerisScraperBase, self).__init__(model, registry_instance)
 
 	devices = [2, 3, 4]
 	#__datetime_fmt = '%Y-%m-%d %H:%M:%S' # format of incoming XML datetime string
@@ -81,8 +81,8 @@ class VerisScraperBase(ScraperBase):
 
 class ScraperCircuits(VerisScraperBase):
 
-	def __init__(self, model):
-		super(ScraperCircuits, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperCircuits, self).__init__(model, registry_instance)
 
 	def __xml_to_db_entries(self, xml, set_time, set_panel):
 		# TODO attrib['alarm'] and attrib['units']
@@ -117,8 +117,8 @@ class ScraperCircuits(VerisScraperBase):
 
 class ScraperPowerSummary(VerisScraperBase):
 
-	def __init__(self, model):
-		super(ScraperPowerSummary, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperPowerSummary, self).__init__(model, registry_instance)
 
 	def __xml_to_db_summary(self, xml, set_time, set_panel):
 		summary_obj = DeviceSummary(Time=set_time, Panel=set_panel)

@@ -118,8 +118,8 @@ class SMAServerInterface(object):
 class SMAScraperBase(ScraperBase):
 
 
-	def __init__(self, model):
-		super(SMAScraperBase, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(SMAScraperBase, self).__init__(model, registry_instance)
 
 	# Thanks to these pdfs: 
 	# http://files.sma.de/dl/1348/NG_PAR-TB-en-22.pdf, 
@@ -200,8 +200,8 @@ class SMAScraperBase(ScraperBase):
 
 class ScraperSolarPanels(SMAScraperBase):
 
-	def __init__(self, model):
-		super(ScraperSolarPanels, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperSolarPanels, self).__init__(model, registry_instance)
 	
 	def get_data(self):
 		# TODO convert given units to default units
@@ -230,8 +230,8 @@ class ScraperSolarPanels(SMAScraperBase):
 
 class ScraperSolarWeather(SMAScraperBase):
 
-	def __init__(self, model):
-		super(ScraperSolarWeather, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperSolarWeather, self).__init__(model, registry_instance)
 
 	def get_data(self):
 		# TODO convert given units to default units
@@ -260,8 +260,8 @@ class ScraperSolarWeather(SMAScraperBase):
 
 class ScraperSolarOverview(SMAScraperBase):
 
-	def __init__(self, model):
-		super(ScraperSolarOverview, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperSolarOverview, self).__init__(model, registry_instance)
 
 	def get_data(self):
 		# TODO convert given units to default units

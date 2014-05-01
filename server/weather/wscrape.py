@@ -10,8 +10,8 @@ from commonssite.server.weather.models import WeatherData
 
 class Weather(ScraperBase):
 	
-	def __init__(self, model):
-		super(Weather, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(Weather, self).__init__(model, registry_instance)
 		self.dict_key_map = {
 			'UV' : 'uv',
 			'barometer' : 'barometer',

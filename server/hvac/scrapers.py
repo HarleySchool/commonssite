@@ -378,8 +378,8 @@ class HvacServerInterface(object):
 
 class ScraperERV(ScraperBase):
 
-	def __init__(self, model):
-		super(ScraperERV, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperERV, self).__init__(model, registry_instance)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
@@ -398,8 +398,8 @@ class ScraperERV(ScraperBase):
 
 class ScraperVRF(ScraperBase):
 
-	def __init__(self, model):
-		super(ScraperVRF, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperVRF, self).__init__(model, registry_instance)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
