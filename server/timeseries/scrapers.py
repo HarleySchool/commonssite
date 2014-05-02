@@ -1,5 +1,4 @@
 import time
-import requests
 
 class ScraperBase(object):
 	"""A scraper base class which takes care of shared functionality
@@ -21,6 +20,12 @@ class ScraperBase(object):
 		# this method is called infrequently (~20 minutes). Use this opportunity to release old objects
 		self._model.remove_expired()
 
+	def status_format_error(self):
+		self._registry.status = 1
+
+	def status_comm_error(self):
+		self._registry.status = 0
+
 	def get_and_save_single(self):
 		try:
 			for new_data in self.get_data():
@@ -28,13 +33,8 @@ class ScraperBase(object):
 				new_data.save(force_insert=True)
 			print '=================='
 			print '%s done at %s' % (self.__class__.__name__, time.time())
-			self._registry.status = 2 # 2 means 'OK'
-		except requests.exceptions.ConnectionError:
-			# what happens when the requests library fails
-			self._registry.status = 1 # 1 means 'Connection Down'
-		except Exception:
-			# catch-all for other problems
-			self._registry.status = 0 # 0 means 'Communication Error'
+		except:
+			self.status_comm_error()
 		finally:
 			self._registry.save() # update status in the database
 

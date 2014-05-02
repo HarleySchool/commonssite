@@ -206,26 +206,34 @@ class ScraperSolarPanels(SMAScraperBase):
 	def get_data(self):
 		# TODO convert given units to default units
 		ssi = SMAServerInterface()
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		objects = []
-		# GET DEVICE DATA
-		data_dict = ssi.doGetData()
-		if 'id' in data_dict and int(data_dict['id']) == 1: # part of the SMA RPC protocol
-			for dev_dict in data_dict['result']['devices']:
-				if dev_dict.get('key') == devices['power']['key']:
-					# PARSE PANELS
-					channel_info = dev_dict['channels']
-					kwargs = {}
-					for field in channel_info:
-						nm = field['name']
-						try:
-							val = float(field['value'])
-						except:
-							val = field['value']
-						if self.supports_sma_field('panels', nm):
-							kwargs[self.map_dict('panels', nm)] = val
-					panel_obj = SMAPanels(Time=now, **kwargs)
-					objects.append(panel_obj)
+
+		try:
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			objects = []
+			# GET DEVICE DATA
+			data_dict = ssi.doGetData()
+			if 'id' in data_dict and int(data_dict['id']) == 1: # part of the SMA RPC protocol
+				for dev_dict in data_dict['result']['devices']:
+					if dev_dict.get('key') == devices['power']['key']:
+						# PARSE PANELS
+						channel_info = dev_dict['channels']
+						kwargs = {}
+						for field in channel_info:
+							nm = field['name']
+							try:
+								val = float(field['value'])
+							except:
+								val = field['value']
+							if self.supports_sma_field('panels', nm):
+								kwargs[self.map_dict('panels', nm)] = val
+						panel_obj = SMAPanels(Time=now, **kwargs)
+						objects.append(panel_obj)
+			self.status_ok()
+		except requests.exceptions.ConnectionError:
+			self.status_down()
+		except Exception:
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_comm_error()
 		return objects
 
 class ScraperSolarWeather(SMAScraperBase):

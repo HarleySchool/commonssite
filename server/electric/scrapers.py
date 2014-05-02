@@ -106,13 +106,20 @@ class ScraperCircuits(VerisScraperBase):
 		return objects.values()
 
 	def get_data(self):
-		esi = ElectricServerInterface()
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		retlist = []
-		for d in self.devices:
-			xml_tree = esi.get_xml_data(d)
-			# TODO better panel name
-			retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
+		try:
+			esi = ElectricServerInterface()
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			retlist = []
+			for d in self.devices:
+				xml_tree = esi.get_xml_data(d)
+				# TODO better panel name
+				retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
+			self.status_ok()
+		except requests.exceptions.ConnectionError:
+			self.status_down()
+		except Exception:
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_comm_error()
 		return retlist
 
 class ScraperPowerSummary(VerisScraperBase):

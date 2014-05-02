@@ -70,7 +70,7 @@ class ModelRegistry(models.Model):
 	# for an example of how these are used
 	STATUS_CHOICES = (
 		(0, 'Communication Error'),
-		(1, 'Connection Down'),
+		(1, 'Formatting Error'),
 		(2, 'OK'))
 
 	system = models.CharField(max_length=16)

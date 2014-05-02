@@ -6,6 +6,7 @@ import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0,os.path.join(BASE_DIR, 'weather'))
 from weewx.drivers.vantage import Vantage
+import weewx
 from commonssite.server.weather.models import WeatherData
 
 class Weather(ScraperBase):
@@ -38,7 +39,7 @@ class Weather(ScraperBase):
 			'yearET': 'yearet',
 			'yearRain' : 'yearrain'
 		}
-		self.v = Vantage(type='ethernet', host=weather_host, max_retries=8)
+		self.v = Vantage(type='ethernet', host=weather_host, max_retries=4, wait_before_retry=2.0)
 
 	def doParse(self, data):
 		parsed = {}
@@ -47,10 +48,22 @@ class Weather(ScraperBase):
 		return parsed
 
 	def get_data(self):
-		data = next(self.v.genDavisLoopPackets())
-		parsed = self.doParse(data)
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		model = WeatherData(Time=now, **parsed)
+		try:
+			data = next(self.v.genDavisLoopPackets())
+			parsed = self.doParse(data)
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			model = WeatherData(Time=now, **parsed)
+			self.status_ok()
+		except weewx.WakeupError:
+			print "Weather parser wakeup issues. resetting connection."
+			self.v.closePort()
+			self.v = Vantage(type='ethernet', host=weather_host, max_retries=4, wait_before_retry=2.0)
+			self.status_comm_error()
+		except Exception as e:
+			print "Weather parser error:"
+			print e
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_format_error()
 		return [model]
 
 if __name__ == '__main__':
