@@ -12,6 +12,7 @@ def systems_dict():
 			'subsystem name' : {
 				id : 'CamelCaseId',
 				description : 'this is a really fancy and efficient subsystem',
+				status : 0, // 0, 1, or 2. see timeseries.models.ModelRegistry for what they mean.
 				numeric : ['ColumnName1', 'ColumnName2'],
 				selection : {
 					'header1' : ['unique_value1', 'unique_value2'],
@@ -45,6 +46,7 @@ def systems_dict():
 			header_selections[h] = [str(val) for val in model.objects.values_list(h, flat=True).distinct()]
 		systems[registry.system][registry.short_name] = {
 			'description' : registry.description,
+			'status' : registry.status,
 			'numeric' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['numeric']],
 			'string' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['string']],
 			'selection' : header_selections,

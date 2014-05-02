@@ -12,5 +12,6 @@ urlpatterns = patterns('',
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^electric/', include('electric.urls')),
 	#url(r'^hvac/', include('hvac.urls')),
-	url(r'^(timeseries|data)/', include('timeseries.urls'))
+	url(r'^(timeseries|data)/', include('timeseries.urls')),
+	url(r'^status/', 'timeseries.views.status')
 )

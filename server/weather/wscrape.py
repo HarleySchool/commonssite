@@ -54,6 +54,7 @@ class Weather(ScraperBase):
 			now = pytz.UTC.localize(datetime.datetime.utcnow())
 			model = WeatherData(Time=now, **parsed)
 			self.status_ok()
+			return [model]
 		except weewx.WakeupError:
 			print "Weather parser wakeup issues. resetting connection."
 			self.v.closePort()
@@ -64,7 +65,7 @@ class Weather(ScraperBase):
 			print e
 			# any other exception implies that the transaction took place but we weren't able to parse it
 			self.status_format_error()
-		return [model]
+		return []
 
 if __name__ == '__main__':
 	from pprint import pprint

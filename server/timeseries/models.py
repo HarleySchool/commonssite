@@ -62,7 +62,6 @@ class TimeseriesBase(models.Model):
 	class Meta:
 		abstract = True
 
-__regex_non_char = re.compile(r'[^a-zA-Z]+')
 class ModelRegistry(models.Model):
 	'''This table keeps track of registered timeseries models and related information'''
 
@@ -72,6 +71,8 @@ class ModelRegistry(models.Model):
 		(0, 'Communication Error'),
 		(1, 'Formatting Error'),
 		(2, 'OK'))
+	
+	__regex_non_char = re.compile(r'[^a-zA-Z]+')
 
 	system = models.CharField(max_length=16)
 	short_name = models.CharField(max_length=32) # aka subsystem
@@ -87,6 +88,6 @@ class ModelRegistry(models.Model):
 		"""Convert the short_name into an HTML-usable id (no spaces or special characters)
 		"""
 		# a regualar expression to capture a sequence of non-letter characters
-		words = __regex_non_char.split(self.short_name)
+		words = ModelRegistry.__regex_non_char.split(self.short_name)
 		caps = [w.capitalize() for w in words]
 		return ''.join(caps)

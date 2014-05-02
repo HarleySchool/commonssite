@@ -20,6 +20,9 @@ class ScraperBase(object):
 		# this method is called infrequently (~20 minutes). Use this opportunity to release old objects
 		self._model.remove_expired()
 
+	def status_ok(self):
+		self._registry.status = 2
+
 	def status_format_error(self):
 		self._registry.status = 1
 
@@ -38,8 +41,8 @@ class ScraperBase(object):
 		finally:
 			self._registry.save() # update status in the database
 
-
 	def get_data(self):
-		"""Return a list of TimeseriesBase (subclass) models
+		"""Return a list of TimeseriesBase (subclass) models. get_data must be implemented by subclasses of ScraperBase
 		"""
+		self.status_comm_error()
 		return []
