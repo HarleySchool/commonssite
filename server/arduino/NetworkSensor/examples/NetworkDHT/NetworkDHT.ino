@@ -74,8 +74,8 @@ void setup(){
     psensors[i] = new DHT(DHTPIN, DHT22);
     psensors[i]->begin();
   }
-  muxSelect(7); // select a non-sensor
-  delay(2000); // delay 2 seconds to let sensors stabilize (the manual recommends 1 second, but 2 gets us a higher success rate)
+  muxSelect(7); // select a non-sensor to let them clear
+  delay(1500); // delay 1.5 seconds to let sensors stabilize (the datasheet recommends 1 second, but 1.5 gets us a higher success rate)
 }
 
 // This function takes a selection ({0 .. 7}) and activates
@@ -90,15 +90,16 @@ void muxSelect(int which){
     // 0x04 is 00000100
     // 0x08 is 00001000
     // etc..
-    digitalWrite(S0, which & 0x01 == 0 ? LOW : HIGH);
-    digitalWrite(S1, which & 0x02 == 0 ? LOW : HIGH);
-    digitalWrite(S2, which & 0x04 == 0 ? LOW : HIGH);
+    digitalWrite(S0, which & 0x01);
+    digitalWrite(S1, which & 0x02);
+    digitalWrite(S2, which & 0x04);
     Serial.print("Selected mux ");
     Serial.println(which);
   } else{
      Serial.print("Invalid mux selection: ");
      Serial.println(which);
-  } 
+  }
+  delay(50);
 }
 
 void loop(){
@@ -136,4 +137,3 @@ void loop(){
   }
   cur_dht = (cur_dht + 1) % N_SENSORS; // increment the "current" sensor, wrapping around to 0 when we reached the end
 }
-
