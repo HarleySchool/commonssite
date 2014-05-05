@@ -1,9 +1,12 @@
+from timeseries.models import TimeseriesBase
 from django.db import models
 
-# Create your models here.
-class SensorRegistry(models.Model):
+class SensorDataPoint(TimeseriesBase):
+	sensor = models.ForeignKey('timeseries.ModelRegistry')
+	name   = models.CharField(max_length=16)
+	svalue = models.TextField(null=True)
+	fvalue = models.FloatField(null=True)
+	ivalue = models.IntegerField(null=True)
 
-	name = models.CharField(max_length=32)
-	address = models.GenericIPAddressField(protocol='IPv4')
-	table = models.ForeignKeyField() # TODO a reference to this sensor's table as created by django-mutant
-	# TODO (?) owner = a django user
+	class Meta:
+		unique_together=(('Time','name','sensor'),)
