@@ -44,7 +44,8 @@ INSTALLED_APPS = (
     'hvac',
     'electric',
     'solar',
-    'south'
+    'south',
+    'water'
 )
 
 MIDDLEWARE_CLASSES = (
