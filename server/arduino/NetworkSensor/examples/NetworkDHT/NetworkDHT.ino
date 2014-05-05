@@ -43,7 +43,8 @@ byte mac[] = { 0xDC, 0x50, 0xA1, 0x42, 0x83, 0x7E };
 // ***********************************************
 byte ip[] = {10, 1, 6, 106};
 // the NetworkSensor instance
-NetworkSensor sensor;
+char* float_names[] = {"H0", "T0", "H1", "T1"};
+NetworkSensor sensor(NULL,0,float_names,4,NULL,0);
 
 // In order to call sensor.input_output() as frequently as possible,
 // we only poll a single DHT sensor per loop() iteration. (This is OK

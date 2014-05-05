@@ -1,8 +1,12 @@
 #include "NetworkSensor.h"
 
-NetworkSensor::NetworkSensor()
+NetworkSensor::NetworkSensor(char** strings, int nstrings, char** floats, int nfloats, char** ints, int nints)
 : initialized(false), server(SERVERPORT)
-{}
+{
+  for(int i=0; i<nstrings; ++i) logs(strings[i], "");
+  for(int i=0; i<nfloats; ++i)  logf(floats[i], 0.0);
+  for(int i=0; i<nints; ++i)    logs(ints[i], 0);
+}
 
 NetworkSensor::~NetworkSensor(){}
 
