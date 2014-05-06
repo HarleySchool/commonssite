@@ -16,9 +16,9 @@ class NetworkSensorScraper(ScraperBase):
 		models = []
 		try:
 			js = requests.get('http://%s/%d' % (self.ip, time.time())).json()
-			models = []
 			for pointname, info in js.iteritems():
 				t = info['t'] # time
+				if t is 0: continue # sensor initialized but hasn't stored a valid data point yet
 				v = info['v'] # value
 				m = SensorDataPoint(sensor=self._registry, name=pointname, Time=datetime.datetime.utcfromtimestamp(t))
 				if type(v) == str:
