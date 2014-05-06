@@ -352,7 +352,7 @@ class HvacServerInterface(object):
 			'Content-type': 'text/xml',
 			'Accept': 'text/html, image/gif, image/jpeg, *;'
 		}
-		req = requests.post(full_url, data=body, headers=headers)
+		req = requests.post(full_url, data=body, headers=headers, timeout=5.0)
 		return str(req.text)
 
 	def status_dict(self, groups=[], values=[], units={}):
@@ -396,8 +396,8 @@ class ScraperERV(ScraperBase):
 					model = ErvEntry(Time=now, Name=name, **kargs)
 					models.append(model)
 			self.status_ok()
-		except requests.exceptions.ConnectionError:
-			self.status_down()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
 			self.status_comm_error()
@@ -423,8 +423,8 @@ class ScraperVRF(ScraperBase):
 					model = VrfEntry(Time=now, Name=name, **kargs)
 					models.append(model)
 			self.status_ok()
-		except requests.exceptions.ConnectionError:
-			self.status_down()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
 			self.status_comm_error()

@@ -24,6 +24,7 @@
 				<ul class="nav nav-pills pull-right">
 					{% block nav %}
 					<li class="{% url_search request '^/$' %}"><a href="/"><span class="glyphicon glyphicon-home"></a></li>
+					<li class="{% url_search request '^/status' %}"><a href="/status"><span class="glyphicon glyphicon-info-sign"></span></a></li>
 					<li class="{% url_search request '^/(data|timeseries)/live' %}"><a href="/data/live/"><span class="glyphicon glyphicon-stats"></span></a></li>
 					<li class="{% url_search request '^/(data|timeseries)/download' %}"><a href="/data/download/"><span class="glyphicon glyphicon-download"></span></a></li>
 					<li class="{% url_search request '^/electric' %}"><a href="/electric"><span class="glyphicon glyphicon-off"></span></a></li>

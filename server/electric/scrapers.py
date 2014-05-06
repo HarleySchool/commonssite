@@ -9,7 +9,7 @@ class ElectricServerInterface(object):
 
 	def get_xml_data(self, channel):
 		full_url = "http://%s:%d/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % (veris_host, veris_port, channel)
-		req = requests.get(full_url, auth=(veris_uname, veris_password))
+		req = requests.get(full_url, auth=(veris_uname, veris_password), timeout=5.0)
 		return etree.fromstring(str(req.text))
 
 	
@@ -115,8 +115,8 @@ class ScraperCircuits(VerisScraperBase):
 				# TODO better panel name
 				retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
 			self.status_ok()
-		except requests.exceptions.ConnectionError:
-			self.status_down()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
 			self.status_comm_error()

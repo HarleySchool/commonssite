@@ -96,7 +96,7 @@ class SMAServerInterface(object):
 		return self.__postRequest(rpc)
 
 	def __postRequest(self, body={}):
-		req = requests.post('http://%s:%d/solar/rpc' % (sma_host, sma_port), data="RPC=%s" % json.dumps(body))
+		req = requests.post('http://%s:%d/solar/rpc' % (sma_host, sma_port), data="RPC=%s" % json.dumps(body), timeout=5.0)
 		return req.json()
 
 	def doGetData(self):
@@ -229,8 +229,8 @@ class ScraperSolarPanels(SMAScraperBase):
 						panel_obj = SMAPanels(Time=now, **kwargs)
 						objects.append(panel_obj)
 			self.status_ok()
-		except requests.exceptions.ConnectionError:
-			self.status_down()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
 			self.status_comm_error()
@@ -267,8 +267,8 @@ class ScraperSolarWeather(SMAScraperBase):
 						weather_obj = SMAWeather(Time=now, **kwargs)
 						objects.append(weather_obj)
 			self.status_ok()
-		except requests.exceptions.ConnectionError:
-			self.status_down()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
 			self.status_comm_error()
@@ -302,8 +302,8 @@ class ScraperSolarOverview(SMAScraperBase):
 				overview_obj = SMAOverview(Time=now, **kwargs)
 				objects.append(overview_obj)
 			self.status_ok()
-		except requests.exceptions.ConnectionError:
-			self.status_down()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
 			self.status_comm_error()

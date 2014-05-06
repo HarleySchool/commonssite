@@ -129,9 +129,15 @@ void NetworkSensor::remoteSetTime(time_t epoch_seconds){
   time_t new_offset = epoch_seconds - (millis() / 1000);
   // update existing times
   time_t update = new_offset - s_values.offset_seconds; // this is zero if the clocks are synced
-  for(int i=0; i<s_values.size; ++i) s_values.times[i] += update;
-  for(int i=0; i<f_values.size; ++i) f_values.times[i] += update;
-  for(int i=0; i<i_values.size; ++i) i_values.times[i] += update;
+  for(int i=0; i<s_values.size; ++i)
+    if(s_values.times[i] != 0)
+      s_values.times[i] += update;
+  for(int i=0; i<f_values.size; ++i)
+    if(f_values.times[i] != 0)
+      f_values.times[i] += update;
+  for(int i=0; i<i_values.size; ++i)
+    if(i_values.times[i] != 0)
+      i_values.times[i] += update;
   s_values.offset_seconds = new_offset;
   f_values.offset_seconds = new_offset;
   i_values.offset_seconds = new_offset;
