@@ -82,8 +82,11 @@ struct TimestampValueArray{
 
 class NetworkSensor{
 public:
+  // constructor which records all field names (in case of early errors, all names are still available)
+  NetworkSensor(char** strings, int nstrings, char** floats, int nfloats, char** ints, int nints);
   // dummy constructor for declarations
   NetworkSensor();
+
   // destructor (called when object is destroyed; responsible for cleaning up (i.e. deallocate memory))
   ~NetworkSensor();
 
