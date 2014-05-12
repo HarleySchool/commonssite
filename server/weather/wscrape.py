@@ -1,6 +1,7 @@
 import datetime
 from timeseries.scrapers import ScraperBase
 from commonssite.settings import weather_host
+from timeseries.models import ModelRegistry
 import pytz
 import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -69,6 +70,9 @@ class Weather(ScraperBase):
 
 if __name__ == '__main__':
 	from pprint import pprint
-	w = Weather()
+	r = ModelRegistry.objects.get(short_name='Weather')
+	w = Weather(WeatherData,r)
 	data = w.doParse(next(w.v.genDavisLoopPackets()))
 	pprint(data)
+	w.v.closePort()
+	w.v = Vantage(type='ethernet',host=weather_host, max_retries=4, wait_before_retry=2.0)

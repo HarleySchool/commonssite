@@ -36,7 +36,9 @@ class ScraperBase(object):
 				new_data.save(force_insert=True)
 			print '=================='
 			print '%s done at %s' % (self.__class__.__name__, time.time())
-		except:
+		except Exception as e:
+			print "Scraper error that wasn't caught by subclass!"
+			print e
 			self.status_comm_error()
 		finally:
 			self._registry.save() # update status in the database
