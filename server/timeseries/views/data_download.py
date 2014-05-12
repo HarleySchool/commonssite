@@ -38,6 +38,9 @@ def download_csv(request):
 			csv_headers |= set(obj['H'].keys()) # this behaves like list.extend, but since it's a set it doesn't allow duplicates
 			csv_headers |= set(obj['D'].keys())
 		csv_headers = list(csv_headers) # convert from set back to list
+		# make sure 'Time' is the first row
+		csv_headers.pop(csv_headers.index('Time'))
+		csv_headers.insert(0, 'Time')
 		# first row of the CSV is csv_headers
 		writer.writerow(csv_headers)
 

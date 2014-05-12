@@ -62,15 +62,24 @@ class TimeseriesBase(models.Model):
 	class Meta:
 		abstract = True
 
-regex_non_char = re.compile(r'[^a-zA-Z]+')
-
 class ModelRegistry(models.Model):
 	'''This table keeps track of registered timeseries models and related information'''
+
+	# see timeseries.scrapers.ScraperBase.get_and_save_single
+	# for an example of how these are used
+	STATUS_CHOICES = (
+		(0, 'Communication Error'),
+		(1, 'Formatting Error'),
+		(2, 'OK'))
+	
+	__regex_non_char = re.compile(r'[^a-zA-Z]+')
+
 	system = models.CharField(max_length=16)
+	short_name = models.CharField(max_length=32) # aka subsystem
+	description = models.TextField()
+	status = models.IntegerField(choices=STATUS_CHOICES) # latest status of this model's scraper
 	model_class = models.CharField(max_length=64)
 	scraper_class = models.CharField(max_length=64, null=True)
-	description = models.TextField()
-	short_name = models.CharField(max_length=32)
 
 	def __unicode__(self):
 		return unicode(self.short_name)
@@ -79,6 +88,6 @@ class ModelRegistry(models.Model):
 		"""Convert the short_name into an HTML-usable id (no spaces or special characters)
 		"""
 		# a regualar expression to capture a sequence of non-letter characters
-		words = regex_non_char.split(self.short_name)
+		words = ModelRegistry.__regex_non_char.split(self.short_name)
 		caps = [w.capitalize() for w in words]
 		return ''.join(caps)

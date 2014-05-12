@@ -9,7 +9,7 @@ class ElectricServerInterface(object):
 
 	def get_xml_data(self, channel):
 		full_url = "http://%s:%d/setup/devicexml.cgi?ADDRESS=%d&TYPE=DATA" % (veris_host, veris_port, channel)
-		req = requests.get(full_url, auth=(veris_uname, veris_password))
+		req = requests.get(full_url, auth=(veris_uname, veris_password), timeout=5.0)
 		return etree.fromstring(str(req.text))
 
 	
@@ -17,8 +17,8 @@ class VerisScraperBase(ScraperBase):
 	"""A scraper class for gettind data from our veris system
 	"""
 
-	def __init__(self, model):
-		super(VerisScraperBase, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(VerisScraperBase, self).__init__(model, registry_instance)
 
 	devices = [2, 3, 4]
 	#__datetime_fmt = '%Y-%m-%d %H:%M:%S' # format of incoming XML datetime string
@@ -81,8 +81,8 @@ class VerisScraperBase(ScraperBase):
 
 class ScraperCircuits(VerisScraperBase):
 
-	def __init__(self, model):
-		super(ScraperCircuits, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperCircuits, self).__init__(model, registry_instance)
 
 	def __xml_to_db_entries(self, xml, set_time, set_panel):
 		# TODO attrib['alarm'] and attrib['units']
@@ -106,19 +106,26 @@ class ScraperCircuits(VerisScraperBase):
 		return objects.values()
 
 	def get_data(self):
-		esi = ElectricServerInterface()
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		retlist = []
-		for d in self.devices:
-			xml_tree = esi.get_xml_data(d)
-			# TODO better panel name
-			retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
+		try:
+			esi = ElectricServerInterface()
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			retlist = []
+			for d in self.devices:
+				xml_tree = esi.get_xml_data(d)
+				# TODO better panel name
+				retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
+			self.status_ok()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
+		except Exception:
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_comm_error()
 		return retlist
 
 class ScraperPowerSummary(VerisScraperBase):
 
-	def __init__(self, model):
-		super(ScraperPowerSummary, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperPowerSummary, self).__init__(model, registry_instance)
 
 	def __xml_to_db_summary(self, xml, set_time, set_panel):
 		summary_obj = DeviceSummary(Time=set_time, Panel=set_panel)

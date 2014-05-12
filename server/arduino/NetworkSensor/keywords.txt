@@ -1,0 +1,5 @@
+NetworkSensor	KEYWORD1
+logf KEYWORD2
+logi KEYWORD2
+logs KEYWORD2
+serve KEYWORD2

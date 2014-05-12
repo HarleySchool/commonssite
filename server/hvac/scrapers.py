@@ -352,7 +352,7 @@ class HvacServerInterface(object):
 			'Content-type': 'text/xml',
 			'Accept': 'text/html, image/gif, image/jpeg, *;'
 		}
-		req = requests.post(full_url, data=body, headers=headers)
+		req = requests.post(full_url, data=body, headers=headers, timeout=5.0)
 		return str(req.text)
 
 	def status_dict(self, groups=[], values=[], units={}):
@@ -378,42 +378,57 @@ class HvacServerInterface(object):
 
 class ScraperERV(ScraperBase):
 
-	def __init__(self, model):
-		super(ScraperERV, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperERV, self).__init__(model, registry_instance)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
 
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		models = []
-		dict_data = hsi.status_dict(groups=groups, units=units)
-		for (name, data) in dict_data.iteritems():
-			# check if VRF or ERV
-			if name.find('ERV') > -1:
-				model_fields = ErvEntry.get_field_names()
-				kargs = dict(izip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
-				model = ErvEntry(Time=now, Name=name, **kargs)
-				models.append(model)
+		try:
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			models = []
+			dict_data = hsi.status_dict(groups=groups, units=units)
+			for (name, data) in dict_data.iteritems():
+				# check if VRF or ERV
+				if name.find('ERV') > -1:
+					model_fields = ErvEntry.get_field_names()
+					kargs = dict(izip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
+					model = ErvEntry(Time=now, Name=name, **kargs)
+					models.append(model)
+			self.status_ok()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
+		except Exception:
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_comm_error()
 		return models
 
 class ScraperVRF(ScraperBase):
 
-	def __init__(self, model):
-		super(ScraperVRF, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(ScraperVRF, self).__init__(model, registry_instance)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
 
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		models = []
-		dict_data = hsi.status_dict(groups=groups, units=units)
-		for (name, data) in dict_data.iteritems():
-			# check if VRF or ERV
-			if name.find('ERV') == -1:
-				model_fields = VrfEntry.get_field_names()
-				kargs = dict(izip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
-				model = VrfEntry(Time=now, Name=name, **kargs)
-				models.append(model)
+		try:
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			models = []
+			dict_data = hsi.status_dict(groups=groups, units=units)
+			for (name, data) in dict_data.iteritems():
+				# check if VRF or ERV
+				if name.find('ERV') == -1:
+					model_fields = VrfEntry.get_field_names()
+					kargs = dict(izip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
+					model = VrfEntry(Time=now, Name=name, **kargs)
+					models.append(model)
+			self.status_ok()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
+		except Exception:
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_comm_error()
+
 		return models
 
 if __name__ == '__main__':
