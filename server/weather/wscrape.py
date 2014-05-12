@@ -38,7 +38,7 @@ class Weather(ScraperBase):
 			'yearET': 'yearet',
 			'yearRain' : 'yearrain'
 		}
-		self.v = Vantage(type='ethernet', host=weather_host, max_retries=8)
+		self.v = Vantage(type='ethernet', host=weather_host, max_retries=4, wait_before_retry=2.4)
 
 	def doParse(self, data):
 		parsed = {}
