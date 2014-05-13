@@ -68,13 +68,13 @@ if __name__ == '__main__':
     from commonssite.server.water.models import water
     sf = sys.argv[1]
     a = csvgen(os.path.expanduser(sf))
-    counter = 1
-    path = os.path.split(sf)[1][2:4]
+    path = int('20' + os.path.split(sf)[1][2:4])
     tz = pytz.timezone('America/New_York')
+    counter = 1
     for x in a:
         mmdd = x.pop('MMDD')
         hhmm = x.pop('HHMM')
-        timestamp = tz.localize(datetime.datetime(int('20'+path), int(mmdd[0:2]), int(mmdd[2:4]), int(hhmm[0:2]), int(hhmm[2:4])))
+        timestamp = tz.localize(datetime.datetime(path, int(mmdd[0:2]), int(mmdd[2:4]), int(hhmm[0:2]), int(hhmm[2:4])))
         w = water(Time=timestamp, **x)
         w.save()
         print counter
