@@ -1,5 +1,3 @@
-import sys
-import os
 from django.db import models
 from commonssite.server.water.models import water
 '''
@@ -33,39 +31,24 @@ from commonssite.server.water.models import water
     (26, 'Acc. H'),
     (27, 'Acc. Flow'),
 ]
-{
-    u'Pump 10 (on/off)': 7311,
-    u'Pump 4 (%)': 7311,
-    u'Pump 5 (%)': 7311,
-    u'Pump 6 (on/off)': 7311,
-    u'Pump 7 (on/off)': 7311,
-    u'Pump 8 (on/off)': 7311,
-    u'Pump 9 (on/off)': 7311,
-    u'T10 (*C)': 7311,
-    u'T11 (*C)': 7311,
-    u'T12 (*C)': 7311,
-    u'T7 (*C)': 7311,
-    u'T8 (*C)': 7311,
-    u'T9 (*C)': 7311,
-}
 
 '''
 headers = [
     (0, 'MMDD'),
     (1, 'HHMM'),
-    (2, 'T1 (*C)'),
-    (3, 'T2 (*C)'),
-    (4, 'T3 (*C)'),
-    (5, 'T4 (*C)'),
-    (6, 'T5 (*C)'),
-    (13, 'Flow'),
-    (14, 'Pressure'),
-    (15, 'Pump 1 (%)'),
-    (16, 'Pump 2 (%)'),
-    (17, 'Pump 3 (on/off)'),
-    (25, 'Acc. NRJ'),
-    (26, 'Acc. H'),
-    (27, 'Acc. Flow'),
+    (2, 't1'),
+    (3, 't2'),
+    (4, 't3'),
+    (5, 't4'),
+    (6, 't5'),
+    (13, 'flow'),
+    (14, 'pressure'),
+    (15, 'pump1'),
+    (16, 'pump2'),
+    (17, 'pump3'),
+    (25, 'accnrj'),
+    (26, 'acch'),
+    (27, 'accflow'),
 ]
 
 
@@ -82,6 +65,8 @@ def csvgen(path):
 if __name__ == '__main__':
     import datetime
     import pytz
+    import os
+    import sys
     a = csvgen(os.path.expanduser(sys.argv[1]))
     counter = 1
     path = os.path.split(sys.argv[1])[1][2:4]
@@ -91,9 +76,8 @@ if __name__ == '__main__':
         hhmm = x.pop('HHMM')
         timestamp = datetime.datetime(int('20'+path), int(mmdd[0:2]), int(mmdd[2:4]), int(hhmm[0:2]), int(hhmm[2:4]))
         timestamp = tz.localize(timestamp)
-        for title, val in x.iteritems():
-            a = water(Time=timestamp, name=title, val=val)
-            a.save()
-            print counter
-            counter += 1
+        w = water(Time=timestamp, **x)
+        w.save()
+        print counter
+        counter += 1
 
