@@ -31,7 +31,11 @@
 ]
 
 '''
-headers = [
+
+
+
+def csvgen(path):
+    headers = [
     (0, 'MMDD'),
     (1, 'HHMM'),
     (2, 't1'),
@@ -46,12 +50,8 @@ headers = [
     (17, 'pump3'),
     (25, 'accnrj'),
     (26, 'acch'),
-    (27, 'accflow'),
-]
-
-
-
-def csvgen(path):
+    (27, 'accflow')
+    ]
     import csv
     with open(path, 'rU') as csvfile:
         reader = csv.reader(csvfile, delimiter=';')
