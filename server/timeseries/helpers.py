@@ -43,7 +43,7 @@ def systems_dict():
 		all_headers = model.get_header_names()
 		all_headers.remove('Time')
 		for h in all_headers:
-			header_selections[h] = [str(val) for val in model.objects.values_list(h, flat=True).distinct()]
+			header_selections[h] = [str(val) for val in model.objects.filter(Time=model.latest()).values_list(h, flat=True).distinct()]
 		systems[registry.system][registry.short_name] = {
 			'description' : registry.description,
 			'status' : registry.status,
