@@ -1,5 +1,3 @@
-from django.db import models
-from commonssite.server.water.models import water
 '''
 [
     (0, 'MMDD'),
@@ -67,15 +65,16 @@ if __name__ == '__main__':
     import pytz
     import os
     import sys
-    a = csvgen(os.path.expanduser(sys.argv[1]))
+    from commonssite.server.water.models import water
+    sf = sys.argv[1]
+    a = csvgen(os.path.expanduser(sf))
     counter = 1
-    path = os.path.split(sys.argv[1])[1][2:4]
+    path = os.path.split(sf)[1][2:4]
     tz = pytz.timezone('America/New_York')
     for x in a:
         mmdd = x.pop('MMDD')
         hhmm = x.pop('HHMM')
-        timestamp = datetime.datetime(int('20'+path), int(mmdd[0:2]), int(mmdd[2:4]), int(hhmm[0:2]), int(hhmm[2:4]))
-        timestamp = tz.localize(timestamp)
+        timestamp = tz.localize(datetime.datetime(int('20'+path), int(mmdd[0:2]), int(mmdd[2:4]), int(hhmm[0:2]), int(hhmm[2:4])))
         w = water(Time=timestamp, **x)
         w.save()
         print counter
