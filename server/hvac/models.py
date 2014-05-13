@@ -52,11 +52,10 @@ class FanDirections(models.Model):
 	value = models.CharField(max_length=14)
 
 class ErvEntry(TimeseriesBase):
-
-	Name = models.CharField(db_column='name', max_length=32)
-	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=16)
-	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
-	Mode = models.CharField(db_column='mode', choices=MODE_CHOICES, max_length=14)
+	Name = models.ForeignKey('Rooms', db_column='name', default=1)
+	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1)
+	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1)
+	Mode = models.ForeignKey('Modes', db_column='mode', default=1)
 	ErrorSign = models.BooleanField(db_column='error')
 	InletTemp = models.FloatField(db_column='measured temp', verbose_name=u'Measured Temperature')
 	Running = models.NullBooleanField(db_column='running')
@@ -69,11 +68,10 @@ class ErvEntry(TimeseriesBase):
 		unique_together=('Time', 'Name')
 
 class VrfEntry(TimeseriesBase):
-
-	Name = models.CharField(db_column='name', max_length=32)
-	AirDirection = models.CharField(db_column='air direction', choices=DIRECTION_CHOICES, max_length=16)
-	FanSpeed = models.CharField(db_column='fan speed', choices=SPEED_CHOICES, max_length=8)
-	Mode = models.CharField(db_column='mode', choices=MODE_CHOICES, max_length=14)
+	Name = models.ForeignKey('Rooms', db_column='name', default=1)
+	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1)
+	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1)
+	Mode = models.ForeignKey('Modes', db_column='mode', default=1)
 	ErrorSign = models.BooleanField(db_column='error')
 	InletTemp = models.FloatField(db_column='measured temp')
 	HeatMax = models.FloatField(db_column='heat max')
