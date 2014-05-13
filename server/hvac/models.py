@@ -39,6 +39,18 @@ SPEED_CHOICES = (
 	('AUTO', 'Auto')
 )
 
+class Rooms(models.Model):
+	name = models.CharField(max_length=32)
+
+class FanSpeeds(models.Model):
+	value = models.CharField(max_length=8)
+
+class Modes(models.Model):
+	value = models.CharField(max_length=12)
+
+class FanDirections(models.Model):
+	value = models.CharField(max_length=14)
+
 class ErvEntry(TimeseriesBase):
 
 	Name = models.CharField(db_column='name', max_length=32)
