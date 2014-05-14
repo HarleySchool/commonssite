@@ -161,3 +161,13 @@ class ScraperPowerSummary(VerisScraperBase):
 		except Exception:
 			self.status_format_error()
 		return retlist
+
+if __name__ == '__main__':
+	from timeseries.models import ModelRegistry
+	from pprint import pprint
+	
+	sc  = ScraperCircuits(CircuitEntry, ModelRegistry.objects.get(short_name="Circuits"))
+	sps = ScraperPowerSummary(DeviceSummary, ModelRegistry.objects.get(short_name="Electric Overview"))
+
+	pprint(sc.get_data())
+	pprint(sps.get_data())
