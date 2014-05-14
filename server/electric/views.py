@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from commonssite.miscellaneous import VerisMonitor
-from electric.models import ChannelNameMap
 
 def update_time_tuple(m):
 	update_dict = m.get_new_data()
@@ -41,21 +40,3 @@ def diff_refresh(request):
 	request.session['monitor'] = m.serialize()
 	settings = m.get_settings()
 	return render(request, 'electric/veris_tables.html', {'monitor' : update_dict, 'settings' : settings, 'telapse' : telapse})
-
-def name_map(request):
-	devices = ['Panel %d' % p for p in [2,3,4]]
-	map_dict = {}
-	for dev in devices:
-		map_dict[dev] = []
-		for obj in ChannelNameMap.objects.filter(Panel__exact=dev):
-			map_dict[dev].append((obj.Channel, obj.Name))
-	return render(request, 'electric/channel_names.html', {'name_map' : map_dict})
-
-def update_names(request):
-	print request.GET
-	for dev in request.GET.keys():
-		print dev
-		if dev in ['Panel 2', 'Panel 3', 'Panel 4']:
-			for ch, nm in request.GET.get(dev).items():
-				print dev, "updating", ch, "to", nm
-	return HttpResponse()
