@@ -1,6 +1,7 @@
 from django.contrib import admin
-from electric.models import ChannelEntry, DeviceSummary, ChannelNameMap
+from electric.models import CircuitEntry, DeviceSummary, Circuit, Panel
 
-admin.site.register(ChannelEntry)
+admin.site.register(CircuitEntry)
 admin.site.register(DeviceSummary)
-admin.site.register(ChannelNameMap)
+admin.site.register(Circuit)
+admin.site.register(Panel)

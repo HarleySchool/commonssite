@@ -8,7 +8,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'ChannelEntry.temporary'
+        # Adding field 'CircuitEntry.temporary'
         db.add_column('electric-channel', 'temporary',
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
@@ -20,7 +20,7 @@ class Migration(SchemaMigration):
 
 
     def backwards(self, orm):
-        # Deleting field 'ChannelEntry.temporary'
+        # Deleting field 'CircuitEntry.temporary'
         db.delete_column('electric-channel', 'temporary')
 
         # Deleting field 'DeviceSummary.temporary'
@@ -35,7 +35,7 @@ class Migration(SchemaMigration):
             'Energy': ('django.db.models.fields.FloatField', [], {'db_column': "'energy'"}),
             'MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'current-max'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'power-max'"}),
-            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'ChannelEntry', 'db_table': "'electric-channel'"},
+            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-channel'"},
             'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
             'Power': ('django.db.models.fields.FloatField', [], {'db_column': "'power'"}),
             'PowerDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'power-demand'"}),

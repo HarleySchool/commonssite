@@ -14,7 +14,7 @@ class Migration(SchemaMigration):
         # Deleting model 'ChannelNameMap'
         db.delete_table('electic-channel-map')
 
-        # Renaming model 'ChannelEntry'
+        # Renaming model 'CircuitEntry'
         db.rename_table('electric-channel', 'electric-circuits')
 
         # Adding model 'Panel'

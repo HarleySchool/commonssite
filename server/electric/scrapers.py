@@ -2,7 +2,7 @@ import requests, re, pytz, datetime
 from timeseries.scrapers import ScraperBase
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
 from commonssite.scrapers.xml_import import etree
-from commonssite.server.electric.models import ChannelEntry, DeviceSummary
+from commonssite.server.electric.models import CircuitEntry, DeviceSummary, Panel, Circuit
 
 class ElectricServerInterface(object):
 	"""The class in charge of handling the network interface with the veris server"""
@@ -20,9 +20,9 @@ class VerisScraperBase(ScraperBase):
 	def __init__(self, model, registry_instance):
 		super(VerisScraperBase, self).__init__(model, registry_instance)
 
-	devices = [2, 3, 4]
-	#__datetime_fmt = '%Y-%m-%d %H:%M:%S' # format of incoming XML datetime string
-	channel_parser = re.compile(r'(Channel \#\d+)\s?(.*)')
+		self.devices = [2, 3, 4]
+		#__datetime_fmt = '%Y-%m-%d %H:%M:%S' # format of incoming XML datetime string
+		self.channel_parser = re.compile(r'(Channel \#\d+)\s?(.*)')
 
 	def map_db_field(self, xml_name):
 		# the name given by xml mapped to the field name in our DB object
@@ -91,35 +91,40 @@ class ScraperCircuits(VerisScraperBase):
 			n = pt.attrib['name']
 			parse_name = self.channel_parser.match(n)
 			if parse_name:
-				channel = parse_name.group(1)
+				channel_hash_num = parse_name.group(1) # this comes in in the format "Channel #1" to "Channel #42"
 				column = parse_name.group(2)
+				try:
+					channel_num = int(channel_hash_num[channel_hash_num.find("#")+1:])
+					circuit_obj = Circuit.objects.get(panel=set_panel, veris_id=channel_num)
+				except:
+					"[ERROR] ScraperCircuits encountered an unknown channel:", channel_hash_num, "on", set_panel
+					continue
 				val = pt.attrib['value']
 				# get under-construction channel OR create new one
-				obj = objects.get(channel, ChannelEntry(Time=set_time, Panel=set_panel, Channel=channel))
-				try:
-					# all fields in this model should be float values
-					obj.__dict__[self.map_db_field(column)] = float(val)
-				except:
-					print "[ERROR] could not parse %s value as float: %s" % (column, val)
-					obj.__dict__[self.map_db_field(column)] = None
-			objects[channel] = obj
+				obj = objects.get(channel_hash_num, CircuitEntry(Time=set_time, Circuit=circuit_obj))
+				# all fields in this model should be float values (if not, caught by get_data and status_format_error() is called)
+				obj.__dict__[self.map_db_field(column)] = float(val)
+			objects[channel_hash_num] = obj
 		return objects.values()
 
 	def get_data(self):
+		retlist = []
 		try:
 			esi = ElectricServerInterface()
 			now = pytz.UTC.localize(datetime.datetime.utcnow())
-			retlist = []
 			for d in self.devices:
 				xml_tree = esi.get_xml_data(d)
-				# TODO better panel name
-				retlist.extend(self.__xml_to_db_entries(xml_tree, now, 'Panel %d' % d))
+				try:
+					panel_obj = Panel.objects.get(veris_id=d)
+				except:
+					print "[ERROR] ScraperCircuits could not find Panel", d
+				retlist.extend(self.__xml_to_db_entries(xml=xml_tree, set_time=now, set_panel=panel_obj))
 			self.status_ok()
 		except requests.exceptions.RequestException:
 			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
-			self.status_comm_error()
+			self.status_format_error()
 		return retlist
 
 class ScraperPowerSummary(VerisScraperBase):
@@ -132,22 +137,27 @@ class ScraperPowerSummary(VerisScraperBase):
 		for pt in xml.findall('.//point'):
 			n = pt.attrib['name']
 			parse_name = self.channel_parser.match(n)
-			if not parse_name:
+			if not parse_name: # anything that doesn't match the 'Channel #1' - 'Channel #42' pattern is part of summary data
 				column = self.map_db_field(n)
 				val = pt.attrib['value']
-				try:
-					summary_obj.__dict__[column] = float(val)
-				except:
-					print "[ERROR] could not parse %s value as float: %s" % (column, val)
-					summary_obj.__dict__[self.map_db_field(column)] = None
+				summary_obj.__dict__[column] = float(val)
 		return [summary_obj]
 
 	def get_data(self):
-		esi = ElectricServerInterface()
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		retlist = []
-		for d in self.devices:
-			xml_tree = esi.get_xml_data(d)
-			# TODO better panel name
-			retlist.extend(self.__xml_to_db_summary(xml_tree, now, 'Panel %d' % d))
+		try:
+			esi = ElectricServerInterface()
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			for d in self.devices:
+				xml_tree = esi.get_xml_data(d)
+				try:
+					panel_obj = Panel.objects.get(veris_id=d)
+				except:
+					print "[ERROR] ScraperPowerSummary could not find Panel", d
+				retlist.extend(self.__xml_to_db_summary(xml=xml_tree, set_time=now, set_panel=panel_obj))
+			self.status_ok()
+		except requests.exceptions.RequestException:
+			self.status_comm_error()
+		except Exception:
+			self.status_format_error()
 		return retlist
