@@ -3,42 +3,6 @@ from timeseries.models import TimeseriesBase
 from commonssite.settings import hvac_sql_table_vrf, hvac_sql_table_erv, datetime_out_format
 from django.db import models
 
-DIRECTION_CHOICES = (
-	('SWING', 'Swing'),
-	('VERTICAL', 'Vertical'),
-	('MID-VERTICAL', 'Mid-Vertical'),
-	('MID-HORIZONTAL', 'Mid-Horizontal'),
-	('HORIZONTAL', 'Horizontal'),
-	('MID', 'Mid'),
-	('AUTO', 'Auto'))
-
-MODE_CHOICES = (
-	('FAN', 'Fan'),
-	('COOL', 'Cool'),
-	('HEAT', 'Heat'),
-	('DRY', 'Dry'),
-	('AUTO', 'Auto'),
-	('BAHP', 'BAHP'),
-	('AUTOCOOL', 'AUTOCOOL'),
-	('AUTOHEAT', 'AUTOHEAT'),
-	('VENTILATE', 'VENTILATE'),
-	('PANECOOL', 'PANECOOL'),
-	('PANEHEAT', 'PANEHEAT'),
-	('OUTCOOL', 'OUTCOOL'),
-	('DEFLOST', 'DEFLOST'),
-	('HEATRECOVERY', 'HEATRECOVERY'),
-	('BYPASS', 'BYPASS'),
-	('LC_AUTO', 'LC_AUTO')
-)
-
-SPEED_CHOICES = (
-	('LOW', 'Low'), 
-	('MID-LOW', 'Mid-Low'),
-	('MID-HIGH', 'Mid-High'),
-	('HIGH', 'High'),
-	('AUTO', 'Auto')
-)
-
 class Rooms(models.Model):
 	name = models.CharField(max_length=32)
 
