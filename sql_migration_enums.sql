@@ -16,3 +16,13 @@ ModeIndex_id=(SELECT id from hvac_modes where hvac_modes.value=`hvac-erv`.`mode`
 # 0006
 # 0007
 
+# ELECTRIC MIGRATION
+
+# 0003 (deletion ended up ok, but maybe more safe to answer 'no' then manually drop unnecessary tables)
+# 0004 add FK fields
+
+UPDATE `electric-summary` SET `panel_id`=(SELECT `id` FROM `electric_panel` WHERE `electric_panel`.`veris_id`=CONVERT(SUBSTRING_INDEX(`electric-summary`.`panel`,"Panel ", -1), UNSIGNED INT));
+UPDATE `electric-circuits` SET `circuit`=(SELECT `id` FROM `electric_circuit` WHERE `electric_circuit`.`panel_id`=-1+CONVERT(SUBSTRING_INDEX(`electric-circuits`.`panel`,"Panel ", -1), UNSIGNED INT) AND `electric_circuit`.`name`=`electric-circuits`.`channel`);
+# ^  354250 rows affected (26.75 sec)
+
+# 0005 remove old string fields, update uniqueness constraints

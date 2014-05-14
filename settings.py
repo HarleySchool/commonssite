@@ -42,9 +42,8 @@ sma_sql_table_overview = 'sma-overview'
 
 veris_host = "10.1.6.202"
 veris_port = 80
-veris_sql_table_channel = 'electric-channel'
+veris_sql_table_circuits = 'electric-circuits'
 veris_sql_table_device = 'electric-summary'
-veris_sql_table_map = 'electic-channel-map'
 
 ##################
 # VPMXP settings #
