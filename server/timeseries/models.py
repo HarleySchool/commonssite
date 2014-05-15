@@ -68,9 +68,9 @@ class ModelRegistry(models.Model):
 	# see timeseries.scrapers.ScraperBase.get_and_save_single
 	# for an example of how these are used
 	STATUS_CHOICES = (
-		(0, 'Communication Error'),
+		(2, 'Communication Error'),
 		(1, 'Formatting Error'),
-		(2, 'OK'))
+		(0, 'OK'))
 	
 	__regex_non_char = re.compile(r'[^a-zA-Z]+')
 

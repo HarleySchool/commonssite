@@ -21,13 +21,13 @@ class ScraperBase(object):
 		self._model.remove_expired()
 
 	def status_ok(self):
-		self._registry.status = 2
+		self._registry.status = 0
 
 	def status_format_error(self):
 		self._registry.status = 1
 
 	def status_comm_error(self):
-		self._registry.status = 0
+		self._registry.status = 2
 
 	def get_and_save_single(self):
 		try:
