@@ -58,9 +58,10 @@ def series(request):
 		t_start = h.parse_time(post.get('from'))
 		t_end = h.parse_time(post.get('to'))
 		temp = post.get('temporary', False)
+		avg = post.get('averages', True)
 		if t_start is None or t_end is None:
 			return HttpResponseBadRequest("series request error: 'from' and 'to' range are required and must be specified as an ISO-formatted string")
-		data = h.series_filter(post.get('series'), t_start, t_end, include_temporary=temp)
+		data = h.series_filter(post.get('series'), t_start, t_end, include_temporary=temp, include_averages=avg)
 		# check for time formatting
 		for obj in data:
 			obj['Time'] = obj['Time'].isoformat()

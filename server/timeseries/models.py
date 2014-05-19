@@ -25,7 +25,7 @@ class TimeseriesBase(models.Model):
 		fields = []
 		if hasattr(cls, "_meta"):
 			if hasattr(cls._meta, "fields"):
-				fields = [field.name for field in cls._meta.fields]
+				fields = [field.get_attname() for field in cls._meta.fields]
 		for h in cls.get_header_names():
 			fields.remove(h)
 		if u'id' in fields:
@@ -42,7 +42,7 @@ class TimeseriesBase(models.Model):
 		if hasattr(cls, "_meta"):
 			if hasattr(cls._meta, "unique_together"):
 				if len(cls._meta.unique_together) > 0:
-					return list(cls._meta.unique_together[0])
+					return [f.get_attname() for f in cls._meta.fields if f.name in list(cls._meta.unique_together[0])]
 		return ['Time']
 
 	@classmethod
@@ -54,10 +54,19 @@ class TimeseriesBase(models.Model):
 		return list(cls.objects.values(*all_headers).distinct())
 
 	@classmethod
-	def latest(cls):
+	def latest(cls, temporary=None):
 		"""return a datetime object that is the timestamp of the most recent entries in this table
 		"""
-		return (cls.objects.order_by('-Time')[0]).Time
+		if temporary is None:
+			return (cls.objects.order_by('-Time')[0]).Time
+		else:
+			return (cls.objects.filter(temporary=temporary).order_by('-Time')[0]).Time
+
+	def index(self):
+		"""return a tuple of index (header) values for this object
+		"""
+		vals = [vars(self)[head] for head in self.get_header_names() if head != 'Time']
+		return tuple(vals) 
 
 	class Meta:
 		abstract = True

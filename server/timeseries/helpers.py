@@ -2,6 +2,12 @@ from timeseries.models import ModelRegistry
 import dateutil.parser
 from dateutil.tz import tzlocal
 
+# refer to https://docs.djangoproject.com/en/dev/ref/models/fields/#field-types
+model_types = {
+	'numeric' : [u'FloatField', u'IntegerField', u'BigIntegerField', u'DecimalField', u'PositiveIntegerField', u'PositiveSmallIntegerField', u'SmallIntegerField' ],
+	'string' : [u'CharField', u'BooleanField', u'TextField']
+}
+
 def systems_dict():
 	"""construct and return a json object describing the different systems with available timeseries data. Note that no actual data is returned.
 	A 'system' is something like 'HVAC' or 'Electric', and a subsystem is, for example, VRF within HVAC
@@ -27,11 +33,6 @@ def systems_dict():
 		}, ...
 	}
 	"""
-	# refer to https://docs.djangoproject.com/en/dev/ref/models/fields/#field-types
-	model_types = {
-		'numeric' : [u'FloatField', u'IntegerField', u'BigIntegerField', u'DecimalField', u'PositiveIntegerField', u'PositiveSmallIntegerField', u'SmallIntegerField' ],
-		'string' : [u'CharField', u'BooleanField', u'TextField']
-	}
 	systems = {}
 	# start with the ModelRegistry - that's where we keep track of models and scrapers
 	for registry in ModelRegistry.objects.all():
@@ -54,6 +55,19 @@ def systems_dict():
 			'units' : {} # TODO
 		}
 	return systems
+
+def split_on_indexes(queryset):
+	"""given a queryset of TimeseriesBase objects, return a dict mapping from each unique index to the list of
+	objects which share that index"""
+	index_lookup = {}
+	for obj in queryset:
+		ind = obj.index() # index() method is defined in TimeseriesBase. it returns a tuple of index values
+		index_lookup[ind] = index_lookup.get(ind, []) + [obj] # append the current object to this list
+	return index_lookup
+
+def timedelta_seconds(timedelta):
+	"""get the total seconds in a timedelta object"""
+	return timedelta.days * 86400 + timedelta.seconds
 
 model_cache = {}
 def get_registered_model(class_path):
@@ -104,7 +118,7 @@ def __obj_list_to_hd_dict(obj_list, model, columns):
 	retlist.sort(key=lambda d: d['Time'])
 	return retlist
 
-def series_filter(filter_obj, tstart, tend, include_temporary=False):
+def series_filter(filter_obj, tstart, tend, include_temporary=False, include_averages=True):
 	"""
 	Takes a definition of one or more series and returns a list of dicts with 'H' and 'D' fields for Headers and Data respectively.
 	All headers (e.g. Time, Name) will always be returned.
@@ -141,7 +155,13 @@ def series_filter(filter_obj, tstart, tend, include_temporary=False):
 				param = h + '__in' # django syntax for "all values in a given list"
 								   # for example, objects.filter(Name__in=["foo", "bar"])
 				filter_kwargs[param] = vals
-			if not include_temporary:
+			if not (include_temporary or include_averages):
+				raise AssertionError("series must include either temporary or average values")
+			elif include_temporary and include_averages:
+				pass # just don't filter at all
+			elif include_temporary:
+				filter_kwargs['temporary'] = True
+			elif include_averages:
 				filter_kwargs['temporary'] = False
 			# make the query according to all given filters
 			Q = model.objects.filter(Time__gte=tstart, Time__lt=tend, **filter_kwargs)
@@ -168,17 +188,16 @@ def live_filter(filter_obj):
 			# look up the requested system in our registry
 			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
 			# if it doesn't exist, skip this one
-			if not m:
-				continue
+			if not m: continue
 			# get the corresponding model class
 			model = get_registered_model(m.model_class)
 			# the relevant queryset is all rows which share this most-recent timestamp
-			new_data = model.objects.filter(Time=model.latest())
+			new_data = model.objects.filter(Time=model.latest(temporary=True))
 			# use the series filters
 			for h, vals in specs.get('series').iteritems():
-				new_data = filter(lambda obj: obj.__dict__.get(h) in vals, new_data)
+				new_data = filter(lambda obj: vars(obj).get(h) in vals, new_data)
 			data_columns = specs.get('columns')
 			if not data_columns:
 				data_columns = model.get_field_names()
-			retlist.extend(__obj_list_to_hd_dict([d.__dict__ for d in new_data], model, data_columns))
+			retlist.extend(__obj_list_to_hd_dict([vars(d) for d in new_data], model, data_columns))
 	return retlist

@@ -89,8 +89,9 @@ var Commons = {
 		}).done(onsuccess);
 	},
 
-	create_chart : function(series, title, tstart, tend, container_selector, chart_type, temporary, callback){
-		temporary = temporary || false;
+	create_chart : function(series, title, tstart, tend, container_selector, chart_type, temporary, averages, callback){
+		temporary = typeof(temporary) === "undefined" ? false : temporary;
+		averages = typeof(averages) === "undefined" ? true : averages;
 		// set up default options
 		var chart_options = {
 			chart: {
@@ -120,6 +121,7 @@ var Commons = {
 			"from" : tstart.toISOString(),
 			"to" : tend.toISOString(),
 			"temporary" : temporary,
+			"averages" : averages,
 			"series" : series
 		};
 		// query server for data
@@ -149,7 +151,7 @@ var Commons = {
 		var timespan_millis = timespan_mins * 60000;
 		// make a chart of data up till now
 		var now = new Date();
-		this.create_chart(series, title, new Date(now - timespan_millis), now, container_selector, chart_type, true, function(chart_obj){
+		this.create_chart(series, title, new Date(now - timespan_millis), now, container_selector, chart_type, true, false, function(chart_obj){
 			// set up updater function (new data every 10 seconds)
 			setInterval(function(){
 				// query server for new data
