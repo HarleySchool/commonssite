@@ -59,6 +59,11 @@ def csvgen(path):
             yield {val: line[key] for key, val in headers}
 
 
+class DummyScraper(ScraperBase):
+
+    def get_data(self):
+        print "Solar Hot Water must be run separately after getting the data off the SD card."
+        return []
 
 if __name__ == '__main__':
     import datetime
