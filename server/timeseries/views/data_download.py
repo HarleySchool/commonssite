@@ -7,7 +7,7 @@ from django.http import HttpResponseServerError
 from commonssite.settings import datetime_out_format
 
 def makedownload(request):
-	return render(request, 'timeseries/download.html', {'systems' : h.systems_dict()})
+	return render(request, 'timeseries/download.html', {'systems' : h.systems_schema()})
 
 def download_csv(request):
 	# parse start and end times

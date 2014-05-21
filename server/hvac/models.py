@@ -6,14 +6,26 @@ from django.db import models
 class Rooms(models.Model):
 	name = models.CharField(max_length=32)
 
+	def __unicode__(self):
+		return u'%s' % self.name
+
 class FanSpeeds(models.Model):
 	value = models.CharField(max_length=8)
+
+	def __unicode__(self):
+		return u'%s' % self.value
 
 class Modes(models.Model):
 	value = models.CharField(max_length=12)
 
+	def __unicode__(self):
+		return u'%s' % self.value
+
 class FanDirections(models.Model):
 	value = models.CharField(max_length=14)
+
+	def __unicode__(self):
+		return u'%s' % self.value
 
 class ErvEntry(TimeseriesBase):
 	Name = models.ForeignKey('Rooms', db_column='name', default=1)

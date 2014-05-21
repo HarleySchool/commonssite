@@ -1,5 +1,6 @@
 # HVAC MIGRATION
 # BACKUP! BACKUP! BACKUP!
+# Also update the modelregistry channel=>circuit
 # 0004 handled by fixtures
 # 0005
 UPDATE `hvac-vrf` SET NameIndex_id=(SELECT id FROM hvac_rooms where hvac_rooms.name=`hvac-vrf`.name),

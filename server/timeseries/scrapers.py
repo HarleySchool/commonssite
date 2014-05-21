@@ -79,10 +79,9 @@ class ScraperBase(object):
 					kwargs[nm] = None
 			# lastly we need to add the index columns back in
 			typical_object = objects[-1] # really any of them will work here
-			index_fields = typical_object.get_header_names()
-			index_fields.remove('Time')
-			kwargs.update(dict([(ind, vars(typical_object)[ind]) for ind in index_fields]))
-			print kwargs
+			index_field = typical_object.get_index_column()
+			if index_field:
+				kwargs.update({index_field: vars(typical_object)[index_field]})
 			# create and save the new object
 			new_object = self._model(**kwargs)
 			new_object.save()

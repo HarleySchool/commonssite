@@ -8,9 +8,10 @@ model_types = {
 	'string' : [u'CharField', u'BooleanField', u'TextField']
 }
 
-def systems_dict():
+def systems_schema():
 	"""construct and return a json object describing the different systems with available timeseries data. Note that no actual data is returned.
-	A 'system' is something like 'HVAC' or 'Electric', and a subsystem is, for example, VRF within HVAC
+	A 'system' is something like 'HVAC' or 'Electric', and a subsystem is, for example, VRF within HVAC.
+	`indexes` may be empty.
 
 	structure is as follows:
 	{
@@ -19,16 +20,13 @@ def systems_dict():
 				id : 'CamelCaseId',
 				description : 'this is a really fancy and efficient subsystem',
 				status : 0, // 0, 1, or 2. see timeseries.models.ModelRegistry for what they mean.
-				numeric : ['ColumnName1', 'ColumnName2'],
-				selection : {
-					'header1' : ['unique_value1', 'unique_value2'],
-					...
-				}
+				numeric : [('ColumnName1', 'readable name'), ('ColumnName2', 'readable name'), ...],
+				string  : [('ColumnNameA', 'readable name'), ('ColumnNameB', 'readable name'), ...],
+				indexes : [(id,'readable name'), (id, 'readable name'), ...]
 				units : {
 					'ColumnName1' : 'in',
 					'ColumnName2' : 'kWh'
 				}
-				string : ['ColumnNameA', 'ColumnNameB'],
 			}, ...
 		}, ...
 	}
@@ -36,24 +34,7 @@ def systems_dict():
 	systems = {}
 	# start with the ModelRegistry - that's where we keep track of models and scrapers
 	for registry in ModelRegistry.objects.all():
-		if registry.system not in systems:
-			systems[registry.system] = {}
-		model = get_registered_model(registry.model_class)
-		# construct 'selection' based on unique headers
-		header_selections = {}
-		all_headers = model.get_header_names()
-		all_headers.remove('Time')
-		for h in all_headers:
-			header_selections[h] = [str(val) for val in model.objects.filter(Time=model.latest()).values_list(h, flat=True).distinct()]
-		systems[registry.system][registry.short_name] = {
-			'description' : registry.description,
-			'status' : registry.status,
-			'numeric' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['numeric']],
-			'string' : [f.name for f in model._meta.fields if f.get_internal_type() in model_types['string']],
-			'selection' : header_selections,
-			'id' : registry.make_id(),
-			'units' : {} # TODO
-		}
+		systems.update(registry.schema())
 	return systems
 
 def split_on_indexes(queryset):
@@ -64,6 +45,12 @@ def split_on_indexes(queryset):
 		ind = obj.index() # index() method is defined in TimeseriesBase. it returns a tuple of index values
 		index_lookup[ind] = index_lookup.get(ind, []) + [obj] # append the current object to this list
 	return index_lookup
+
+def field_name_tuples(fields_list, registry):
+	db_names = [f.get_attname() for f in fields_list]
+	# readable = [FieldMetaData.objects.get(table=registry, column=dbname).verbose_name for dbname in db_names]
+	readable = [f.verbose_name or f.name for f in fields_list]
+	return zip(db_names, readable)
 
 def timedelta_seconds(timedelta):
 	"""get the total seconds in a timedelta object"""
@@ -108,7 +95,7 @@ def __obj_list_to_hd_dict(obj_list, model, columns):
 	retlist = []
 	for obj in obj_list:
 		hd_dict = {'H' : {}, 'D' : {}}
-		for head in model.get_header_names():
+		for head in model.get_index_column():
 			if head != 'Time':
 				hd_dict['H'][head] = obj[head]
 		for point in columns:
@@ -170,12 +157,12 @@ def series_filter(filter_obj, tstart, tend, include_temporary=False, include_ave
 			data_columns = specs.get('columns')
 			if data_columns:
 				all_columns = data_columns[:]
-				for head in model.get_header_names():
+				for head in model.get_index_column():
 					if head not in all_columns:
 						all_columns.append(head)
 			else:
 				data_columns = model.get_field_names()
-				all_columns = model.get_header_names() + model.get_field_names()
+				all_columns = model.get_index_column() + model.get_field_names()
 			Q = Q.values(*all_columns)
 			retlist.extend(__obj_list_to_hd_dict(Q, model, data_columns))
 	return retlist
