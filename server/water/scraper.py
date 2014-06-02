@@ -1,3 +1,4 @@
+from timeseries.scrapers import ScraperBase
 '''
 [
     (0, 'MMDD'),
@@ -56,7 +57,7 @@ def csvgen(path):
     with open(path, 'rU') as csvfile:
         reader = csv.reader(csvfile, delimiter=';')
         for line in reader:
-            yield {val: line[key] for key, val in headers}
+            yield dict([(val, line[key]) for key, val in headers])
 
 
 class DummyScraper(ScraperBase):
