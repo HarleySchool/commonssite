@@ -1,4 +1,4 @@
 from django.contrib import admin
-from arduino.models import SensorDataPoint
+from arduino.models import GreenhouseDHT
 
-admin.site.register(SensorDataPoint)
+admin.site.register(GreenhouseDHT)

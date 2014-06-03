@@ -16,6 +16,15 @@
 			}
 		};
 
+		var greenhouse_series = {
+			'Arduino' : {
+				'Greenhouse DHT' : {
+					'columns' : [],
+					'series' : {}
+				}
+			}
+		}
+
 		var solar_series = {
 			'Solar' : {
 				'Solar Overview' : {
@@ -34,23 +43,23 @@
 			}
 		};
 
-		var greenhouse_series = {
-			'HVAC' : {
-				'VRF' : {
-					'columns' : ['InletTemp'],
-					'series' : {
-						'Name' : ['Mezzanine']
-					}
-				}
-			}
-		};
+		// var greenhouse_series = {
+		// 	'HVAC' : {
+		// 		'VRF' : {
+		// 			'columns' : ['InletTemp'],
+		// 			'series' : {
+		// 				'Name' : ['Mezzanine']
+		// 			}
+		// 		}
+		// 	}
+		// };
 
 		var hour = 60;
 
 		Commons.live_chart(solar_series, "Solar Energy Production (W)", "#solar", hour, "spline");
 		Commons.live_chart(weather_series, "Outside Temperature", "#weather", hour, "spline");
 		Commons.live_chart(power_series, "Total Power Use (kW)", "#power", hour, "spline");
-		Commons.live_chart(greenhouse_series, "Greenhouse Temperature (F)", "#greenhouse-temp", hour, "spline");
+		Commons.live_chart(greenhouse_series, "Greenhouse Temperature (F) and Humidity (%)", "#greenhouse-temp", hour, "spline");
 	});
 </script>
 {% endblock scripts %}
