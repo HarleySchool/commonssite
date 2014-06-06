@@ -9,32 +9,32 @@ model_types = {
 }
 
 def systems_schema():
-	"""construct and return a json object describing the different systems with available timeseries data. Note that no actual data is returned.
+	"""construct and return a list of json objects describing the different systems with available timeseries data. Note that no actual data is returned.
 	A 'system' is something like 'HVAC' or 'Electric', and a subsystem is, for example, VRF within HVAC.
-	`indexes` may be empty.
+	Some system have 'indexes'. These are columns which further differentiate within a subsystem. For example, the HVAC system has an index for rooms; there
+	is one entry per timestamp per room. `indexes` may be empty in some systems.
 
 	structure is as follows:
-	{
-		'system name' : {
-			'subsystem name' : {
-				id : 'CamelCaseId',
-				description : 'this is a really fancy and efficient subsystem',
-				status : 0, // 0, 1, or 2. see timeseries.models.ModelRegistry for what they mean.
-				numeric : [('ColumnName1', 'readable name'), ('ColumnName2', 'readable name'), ...],
-				string  : [('ColumnNameA', 'readable name'), ('ColumnNameB', 'readable name'), ...],
-				indexes : [(id,'readable name'), (id, 'readable name'), ...]
-				units : {
-					'ColumnName1' : 'in',
-					'ColumnName2' : 'kWh'
-				}
-			}, ...
+	[
+		{
+			system: 'System Name',
+			subsystem: 'Subsystem Name',
+			id : 'CamelCaseId',
+			description : 'this is a really fancy and efficient subsystem',
+			status : 0, // 0, 1, or 2. see timeseries.models.ModelRegistry for what they mean.
+			numeric : [('NumericColumn1', 'readable name'), ('NumericColumn2', 'readable name'), ...],
+			string  : [('NonNumericColumnA', 'readable name'), ('NonNumericColumnB', 'readable name'), ...],
+			indexes : [(id,'readable name'), (id, 'readable name'), ...]
+			units : {
+				'ColumnName1' : 'in',
+				'ColumnName2' : 'kWh'
 		}, ...
-	}
+	]
 	"""
-	systems = {}
+	systems = []
 	# start with the ModelRegistry - that's where we keep track of models and scrapers
 	for registry in ModelRegistry.objects.all():
-		systems.update(registry.schema())
+		systems.append(registry.schema())
 	return systems
 
 def split_on_indexes(queryset):
@@ -42,47 +42,52 @@ def split_on_indexes(queryset):
 	objects which share that index"""
 	index_lookup = {}
 	for obj in queryset:
-		ind = obj.index() # index() method is defined in TimeseriesBase. it returns a tuple of index values
+		ind = obj.index_tuple() # index_tuple() method is defined in TimeseriesBase. May be None.
 		index_lookup[ind] = index_lookup.get(ind, []) + [obj] # append the current object to this list
 	return index_lookup
 
 def field_name_tuples(fields_list, registry):
 	db_names = [f.get_attname() for f in fields_list]
-	# readable = [FieldMetaData.objects.get(table=registry, column=dbname).verbose_name for dbname in db_names]
+	# TODO relate this to Max's metadata table. something like this:
+	# readable = [Metadata.objects.get(model=registry, field=dbname).humanname for dbname in db_names]
 	readable = [f.verbose_name or f.name for f in fields_list]
 	return zip(db_names, readable)
 
 def timedelta_seconds(timedelta):
-	"""get the total seconds in a timedelta object"""
+	"""get the total seconds in a timedelta object.
+
+	the built-in timedelta.total_seconds() function appears first in Python 2.7. The server runs 2.6.
+	"""
 	return timedelta.days * 86400 + timedelta.seconds
 
-model_cache = {}
+def memoized(fn):
+	"""decorator to cache function results"""
+	cache = {}
+	def fn_wrapper(*args):
+		a = tuple(args)
+		if a not in cache:
+			cache[a] = fn(*args)
+		return cache[a]
+	return fn_wrapper
+
+@memoized
 def get_registered_model(class_path):
 	"""given the import path for a model (e.g. ModelRegistry.model_class), return the model class"""
-	if class_path in model_cache:
-		return model_cache[class_path]
-	else:
-		# import it
-		path_parts = class_path.split('.')
-		module_path = '.'.join(path_parts[:-1])
-		class_name = path_parts[-1]
-		mod = __import__(module_path, globals(), locals(), [class_name])
-		model_cache[class_path] = getattr(mod, class_name)
-		return model_cache[class_path]
+	path_parts = class_path.split('.')
+	module_path = '.'.join(path_parts[:-1])
+	class_name = path_parts[-1]
+	mod = __import__(module_path, globals(), locals(), [class_name])
+	return getattr(mod, class_name)
 
-scraper_cache = {}
+@memoized
 def get_registered_scraper(scraper_path):
 	"""given the import path for a scraper (e.g. ModelRegistry.scraper_class), return the scraper class"""
-	if scraper_path in scraper_cache:
-		return scraper_cache[scraper_path]
-	else:
-		# import it
-		path_parts = scraper_path.split('.')
-		module_path = '.'.join(path_parts[:-1])
-		class_name = path_parts[-1]
-		mod = __import__(module_path, globals(), locals(), [class_name])
-		scraper_cache[scraper_path] = getattr(mod, class_name)
-		return scraper_cache[scraper_path]
+	path_parts = scraper_path.split('.')
+	module_path = '.'.join(path_parts[:-1])
+	class_name = path_parts[-1]
+	mod = __import__(module_path, globals(), locals(), [class_name])
+	return getattr(mod, class_name)
+
 
 def parse_time(isostring):
 	"""Parse an ISO datetime string into a datetime object. If no timezone information is given it's assumed to be local"""

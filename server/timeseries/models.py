@@ -60,44 +60,40 @@ class TimeseriesBase(models.Model):
 			return (cls.objects.filter(temporary=temporary).order_by('-Time')[0]).Time
 
 	def index(self):
-		"""return a tuple of index (header) values for this object
+		"""return the index value of this object (or None if it has no index)
 		"""
 		col = self.get_index_column()
-		if col:
-			obj_dict = vars(self)
-			return obj_dict[col]
+		if not col: return
+		obj_dict = vars(self)
+		return obj_dict[col]
+
+	def index_tuple(self):
+		"""return a tuple of (index id, index value) for this object (or None if no index)
+		"""
+		col = self.get_index_column()
+		if not col: return
+		# check if foreign-key index
+		field = self._meta.get_field_by_name(col)[0]
+		obj_dict = vars(self)
+		if field.rel:
+			# get object from foreign key table. django appends _id to foreign keys in the object's __dict__.
+			foreign_key_id = obj_dict[col+'_id']
+			foreign_key_object = field.related.parent_model.objects.get(id=foreign_key_id)
+			return (foreign_key_object.id, str(foreign_key_object))
 		else:
-			return None
+			# just get value out of self and stringify it
+			index_object = obj_dict[col]
+			return (index_object, str(index_object))
 
 	@classmethod
-	def index_value_tuples(cls, queryset_latest=None):
+	def get_latest_index_tuples(cls, queryset_latest=None):
 		"""construct a list of tuples (id,name) for this model's index (or empty list if no index)
 		"""
-		# ideally the queryset is passed in so it can be reused
+		# ideally the queryset is passed in so it can be reused. if not, here it is:
 		if not queryset_latest:
 			queryset_latest = cls.objects.filter(Time=cls.latest())
-		# start with blank list (default)
-		indexes = []
-		index_column = cls.get_index_column()
-		if index_column:
-			# we want to build up a parallel array of index ids/names.
-			# for example if index_values is [1,2,3] then index_names could be ["Circuit 1", "Outlets", "another circuit"]
-			# such that zip(index_values, index_names) forms pairings of indexes and names
-			index_ids = [obj.index() for obj in queryset_latest]
-			# check if it's a foreign key
-			if cls._meta.get_field_by_name(index_column).rel:
-				# look up the ForeignKey's Model
-				foreignkey_table = cls._meta.get_field_by_name(index_column).related.parent_model
-				# this lambda function maps from an object to the string value of its' ForeignKey index
-				name_getter = lambda obj: str(foreignkey_table.objects.get(id=vars(obj)[index_column]))
-			else:
-				# if not a foreign key, then just use the plain ol' index value
-				name_getter = lambda obj: str(vars(obj)[index_column])
-			# create list of names
-			index_names = map(name_getter, queryset_latest)
-			# zip together ids and names
-			indexes = zip(index_ids, index_names)
-		return indexes
+		# make a list by mapping the index_tuple function onto each object in the queryset
+		return map(lambda obj: obj.index_tuple(), queryset_latest)
 
 	class Meta:
 		abstract = True
@@ -137,19 +133,18 @@ class ModelRegistry(models.Model):
 		from timeseries import helpers as h
 		model = h.get_registered_model(self.model_class)
 		# break fields up into numeric and string types
-		# (note that some types aren't covered in either numeric or string, like AutoField, ForeignKey, etc..
-		# these are for data columns only)
+		# (note that some types aren't covered in either numeric or string, like AutoField, ForeignKey, etc. since these are for data columns only)
 		fields = model._meta.fields
 		numeric_fields = filter(lambda f: f.get_internal_type() in h.model_types['numeric'], fields)
-		string_fields  = filter(lambda f: f.get_internal_type() in h.model_types['string'], fields)
+		string_fields  = filter(lambda f: f.get_internal_type() in h.model_types['string'] and f.attname != 'temporary', fields)
 		schema = {
 			'system' : self.system,
 			'subsystem' : self.short_name,
-			'indexes' : model.index_value_tuples(),
+			'indexes' : model.get_latest_index_tuples(),
 			'id' : self.make_id(),
 			'status' : self.status,
-			'numeric' : h.field_name_tuples(numeric_fields),
-			'string' : h.field_name_tuples(string_fields),
+			'numeric' : h.field_name_tuples(numeric_fields, self),
+			'string' : h.field_name_tuples(string_fields, self),
 			'units' : {} # TODO
 		}
 		return schema

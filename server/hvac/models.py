@@ -49,7 +49,7 @@ class VrfEntry(TimeseriesBase):
 	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1)
 	Mode = models.ForeignKey('Modes', db_column='mode', default=1)
 	ErrorSign = models.BooleanField(db_column='error')
-	InletTemp = models.FloatField(db_column='measured temp')
+	InletTemp = models.FloatField(db_column='measured temp', verbose_name=u'Measured Temperature')
 	HeatMax = models.FloatField(db_column='heat max')
 	HeatMin = models.FloatField(db_column='heat min')
 	CoolMax = models.FloatField(db_column='cool max')
