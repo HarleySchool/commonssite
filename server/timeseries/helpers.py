@@ -31,19 +31,20 @@ def systems_schema():
 		}, ...
 	]
 	"""
-	systems = []
-	# start with the ModelRegistry - that's where we keep track of models and scrapers
-	for registry in ModelRegistry.objects.all():
-		systems.append(registry.schema())
-	return systems
+	return (registry.schema() for registry in ModelRegistry.objects.all())
 
-def split_on_indexes(queryset):
+def split_on_indexes(queryset, column_filter=None):
 	"""given a queryset of TimeseriesBase objects, return a dict mapping from each unique index to the list of
-	objects which share that index"""
+	objects which share that index
+
+	column_filter behaves like QuerySet.values(); instead of a list of objects, a list of object-like dictionaries will be returned"""
 	index_lookup = {}
 	for obj in queryset:
 		ind = obj.index_tuple() # index_tuple() method is defined in TimeseriesBase. May be None.
-		index_lookup[ind] = index_lookup.get(ind, []) + [obj] # append the current object to this list
+		filtered_obj = obj if not column_filter else dict((key, vars(obj)[key]) for key in column_filter)
+		if 'Time' in filtered_obj:
+			filtered_obj['Time'] = filtered_obj['Time'].isoformat()
+		index_lookup[ind] = index_lookup.get(ind, []) + [filtered_obj] # append the current object to this list
 	return index_lookup
 
 def field_name_tuples(fields_list, registry):
@@ -88,7 +89,6 @@ def get_registered_scraper(scraper_path):
 	mod = __import__(module_path, globals(), locals(), [class_name])
 	return getattr(mod, class_name)
 
-
 def parse_time(isostring):
 	"""Parse an ISO datetime string into a datetime object. If no timezone information is given it's assumed to be local"""
 	dt = dateutil.parser.parse(isostring)
@@ -96,102 +96,112 @@ def parse_time(isostring):
 		dt = dt.replace(tzinfo=tzlocal())
 	return dt
 
-def __obj_list_to_hd_dict(obj_list, model, columns):
-	retlist = []
-	for obj in obj_list:
-		hd_dict = {'H' : {}, 'D' : {}}
-		for head in model.get_index_column():
-			if head != 'Time':
-				hd_dict['H'][head] = obj[head]
-		for point in columns:
-			hd_dict['D'][point] = obj[point]
-		hd_dict['Time'] = obj['Time']
-		retlist.append(hd_dict)
-	retlist.sort(key=lambda d: d['Time'])
-	return retlist
-
-def series_filter(filter_obj, tstart, tend, include_temporary=False, include_averages=True):
-	"""
-	Takes a definition of one or more series and returns a list of dicts with 'H' and 'D' fields for Headers and Data respectively.
-	All headers (e.g. Time, Name) will always be returned.
+def series_filter(filter_objs, tstart, tend, include_temporary=False, include_averages=True):
+	"""Given the definition of some serieses, return a list of dicts with the data.
 
 	filter definition is as follows:
-	{
-		'system name' : {
-			'subsystem name' : {
-				series : {
-					'header1' : ['value1', 'value2', ...],
-					'header2' : ['valueX', 'valueY', ...]
-				},
-				columns : ['ColumnName1', 'ColumnName2']
-			}, ...
+	[
+		{
+			system: 'system name',
+			subsystem: 'subsystem name', 
+			indexes : [id1, id2, id3, ...],
+			columns : ['ColumnName1', 'ColumnName2']
 		}, ...
-	}
+	]
 
-	Note that setting columns to '[]' is interpreted as all columns.
+	returned data is in this format:
+	[
+		{
+			system: 'system name',
+			subsystem: 'subsystem name',
+			index: 'index name',
+			data: [	{Time: 'ISO Time 1', 'ColumnName1': value1, 'ColumnName2: value2'},
+					{Time: 'ISO Time 2', 'ColumnName1': value1, 'ColumnName2: value2'}, ...]
+		}, ...
+	]
 	"""
 	retlist = []
-	for sys, subs in filter_obj.iteritems():
-		for subsys, specs in subs.iteritems():
-			# look up the requested system in our registry
-			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
-			# if it doesn't exist, skip this one
-			if not m:
-				print "ModelRegistry lookup failed for ", sys, subsys
-				continue
-			# get the corresponding model class
-			model = get_registered_model(m.model_class)
-			filter_kwargs = {}
-			# filter by header and value
-			for h, vals in specs.get('series').iteritems():
-				param = h + '__in' # django syntax for "all values in a given list"
-								   # for example, objects.filter(Name__in=["foo", "bar"])
-				filter_kwargs[param] = vals
-			if not (include_temporary or include_averages):
-				raise AssertionError("series must include either temporary or average values")
-			elif include_temporary and include_averages:
-				pass # just don't filter at all
-			elif include_temporary:
-				filter_kwargs['temporary'] = True
-			elif include_averages:
-				filter_kwargs['temporary'] = False
-			# make the query according to all given filters
-			Q = model.objects.filter(Time__gte=tstart, Time__lt=tend, **filter_kwargs)
-			# filter for only the selected columns
-			# note that if 'columns' is None or [], no filtering is performed and all columns are returned
-			data_columns = specs.get('columns')
-			if data_columns:
-				all_columns = data_columns[:]
-				for head in model.get_index_column():
-					if head not in all_columns:
-						all_columns.append(head)
-			else:
-				data_columns = model.get_field_names()
-				all_columns = model.get_index_column() + model.get_field_names()
-			Q = Q.values(*all_columns)
-			retlist.extend(__obj_list_to_hd_dict(Q, model, data_columns))
+	for specs in filter_objs:
+		sys = specs.get('system')
+		subsys = specs.get('subsystem')
+		# look up the requested system in our registry
+		m = ModelRegistry.objects.get(system=sys, short_name=subsys)
+		# if it doesn't exist, skip this one
+		if not m:
+			print "ModelRegistry lookup failed for ", sys, subsys
+			continue
+		# get the corresponding model class
+		model = get_registered_model(m.model_class)
+		# build the queryset filter
+		filter_kwargs = {}
+		# filter by index
+		idx_col = model.get_index_column()
+		if idx_col:
+			filter_kwargs['%s__in' % idx_col] = specs.get('indexes')
+		if not (include_temporary or include_averages):
+			raise AssertionError("series must include either temporary or average values")
+		elif include_temporary and include_averages:
+			pass # just don't filter at all
+		elif include_temporary:
+			filter_kwargs['temporary'] = True
+		elif include_averages:
+			filter_kwargs['temporary'] = False
+
+		# filter for only the selected columns
+		columns = specs.get('columns')
+		if not columns: continue
+		if 'Time' not in columns:
+			columns.insert(0, 'Time')
+
+		# make the query according to all given filters
+		Q = model.objects.filter(Time__gte=tstart, Time__lt=tend, **filter_kwargs)
+		Q = Q.select_related() # follow foreign key references
+		indexes_split = split_on_indexes(Q, column_filter=columns)
+
+		for idx, objects in indexes_split.iteritems():
+			retlist.append({
+				'system' : sys,
+				'subsystem' : subsys,
+				'index' : idx[1] if idx else None,
+				# manual column filter
+				'data' : objects
+			})
+
 	return retlist
 
-def live_filter(filter_obj):
+def live_filter(filter_objs):
 	"""see series_filter for api (identical)"""
 	retlist = []
-	for sys, subs in filter_obj.iteritems():
-		for subsys, specs in subs.iteritems():
-			# look up the requested system in our registry
-			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
-			# if it doesn't exist, skip this one
-			if not m:
-				print "ModelRegistry lookup failed for ", sys, subsys
-				continue
-			# get the corresponding model class
-			model = get_registered_model(m.model_class)
-			# the relevant queryset is all rows which share this most-recent timestamp
-			new_data = model.objects.filter(Time=model.latest(temporary=True))
-			# use the series filters
-			for h, vals in specs.get('series').iteritems():
-				new_data = filter(lambda obj: vars(obj).get(h) in vals, new_data)
-			data_columns = specs.get('columns')
-			if not data_columns:
-				data_columns = model.get_field_names()
-			retlist.extend(__obj_list_to_hd_dict([vars(d) for d in new_data], model, data_columns))
+	for specs in filter_objs:
+		sys = specs.get('system')
+		subsys = specs.get('subsystem')
+		# look up the requested system in our registry
+		m = ModelRegistry.objects.get(system=sys, short_name=subsys)
+		# if it doesn't exist, skip this one
+		if not m:
+			print "ModelRegistry lookup failed for ", sys, subsys
+			continue
+		# get the corresponding model class
+		model = get_registered_model(m.model_class)
+
+		# filter for only the selected columns
+		columns = specs.get('columns')
+		if not columns: continue
+		if 'Time' not in columns:
+			columns.insert(0, 'Time')
+
+		# the relevant queryset is all rows which share this most-recent timestamp.
+		# non-temporary vals are averages, and we don't want those live.
+		Q = model.objects.filter(Time=model.latest(temporary=True))
+		Q = Q.select_related() # follow foreign key references
+		indexes_split = split_on_indexes(Q, column_filter=columns)
+
+		for idx, objects in indexes_split.iteritems():
+			retlist.append({
+				'system' : sys,
+				'subsystem' : subsys,
+				'index' : idx[1] if idx else None,
+				# manual column filter
+				'data' : objects
+			})
 	return retlist

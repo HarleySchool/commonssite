@@ -23,15 +23,11 @@ class TimeseriesBase(models.Model):
 		"""Return all field names but none of the header names
 		"""
 		fields = []
+		idx_col = cls.get_index_column()
+		exclude = [u'id', u'temporary', u'Time', idx_col]
 		if hasattr(cls, "_meta"):
 			if hasattr(cls._meta, "fields"):
-				fields = [field.get_attname() for field in cls._meta.fields]
-		for head in cls.get_index_column():
-			fields.remove(head)
-		if u'id' in fields:
-			fields.remove(u'id')
-		if u'temporary' in fields:
-			fields.remove(u'temporary')
+				fields = [field.get_attname() for field in cls._meta.fields if field.name not in exclude]
 		return fields
 
 	@classmethod

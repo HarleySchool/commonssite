@@ -27,7 +27,7 @@ class ScraperBase(object):
 		# first, separate the big queryset of points into multiple smaller lists based on their index
 		indexed_objects = h.split_on_indexes(data_points)
 		# there will be one new averaged object inserted per index
-		for index, objects in indexed_objects.iteritems():
+		for index_tuple, objects in indexed_objects.iteritems():
 			if len(objects) == 0:
 				continue
 			elif len(objects) == 1:
@@ -39,6 +39,9 @@ class ScraperBase(object):
 			tend = objects[-1].Time + datetime.timedelta(seconds=1)
 			# we will construct the object from a kwarg dict
 			kwargs = {'temporary' : False, 'Time' : tend}
+			# set the index value for this group of objects
+			index_col = self._model.get_index_column()
+			if index_col: kwargs[index_col+'_id'] = index_tuple[0]
 			# numeric types are averaged; all others are plurality vote
 			# note that the interval is NOT assumed to be regular; votes and averages are weighted by the span of
 			# time between any two measurements
@@ -46,6 +49,8 @@ class ScraperBase(object):
 			prev_point = vars(objects[0]) # the 'previous' value in the loop
 			total_span = 0.0
 			value_fields = [(f.get_attname(), f.get_internal_type(), f.null) for f in self._model._meta.fields if f.get_attname() in self._model.get_field_names()]
+			print "VALUE FIELDS"
+			print value_fields
 			# model_average is a map from attributes => (current average or votes)
 			# initialize averages according to the 0th object
 			model_average = dict([(nm, 0.0 if typ in h.model_types['numeric'] and not isnull else {prev_point[nm] : 1}) for nm, typ, isnull in value_fields])
@@ -77,11 +82,6 @@ class ScraperBase(object):
 					kwargs[nm] = max(model_average[nm].iteritems(), key=operator.itemgetter(1))[0]
 				else:
 					kwargs[nm] = None
-			# lastly we need to add the index columns back in
-			typical_object = objects[-1] # really any of them will work here
-			index_field = typical_object.get_index_column()
-			if index_field:
-				kwargs.update({index_field: vars(typical_object)[index_field]})
 			# create and save the new object
 			new_object = self._model(**kwargs)
 			new_object.save()

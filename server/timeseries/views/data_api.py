@@ -53,7 +53,7 @@ def series(request):
 	},
 	}, ... et cetera]
 	"""
-	if request.method == 'POST' and request.is_ajax():
+	if request.body:
 		post = json.loads(request.body)
 		t_start = h.parse_time(post.get('from'))
 		t_end = h.parse_time(post.get('to'))
@@ -73,7 +73,7 @@ def series(request):
 def single(request):
 	"""using a scraper, return a single live data point. API is identical to series() (but from: and to: are not needed)
 	"""
-	if request.method == 'POST' and request.is_ajax():
+	if request.body:
 		post = json.loads(request.body)
 		data = h.live_filter(post.get('series'))
 		# check for time formatting
