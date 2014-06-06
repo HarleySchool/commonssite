@@ -97,6 +97,13 @@ var Commons = {
 			chart: {
 				type: chart_type || "spline" // http://api.highcharts.com/highcharts#plotOptions
 			},
+			plotOptions : {
+				series : {
+					marker : {
+						enabled : false
+					}
+				}
+			},
 			title: {
 				text: title,
 			},
