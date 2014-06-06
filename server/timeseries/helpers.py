@@ -188,7 +188,9 @@ def live_filter(filter_obj):
 			# look up the requested system in our registry
 			m = ModelRegistry.objects.get(system=sys, short_name=subsys)
 			# if it doesn't exist, skip this one
-			if not m: continue
+			if not m:
+				print "ModelRegistry lookup failed for ", sys, subsys
+				continue
 			# get the corresponding model class
 			model = get_registered_model(m.model_class)
 			# the relevant queryset is all rows which share this most-recent timestamp
