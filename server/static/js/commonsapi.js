@@ -35,44 +35,50 @@ function getCookie(name) {
 	return cookieValue;
 }
 
-function ToLocalDate (inDate) {
+function toLocalDate (inDate) {
 	var date = new Date();
 	date.setTime(inDate.valueOf() - 60000 * inDate.getTimezoneOffset());
 	return date;
 }
 
-function server_to_highcharts_series(data){
-	var highcharts_construction = {}; // temporary, under-construction, series of data
+function server_to_highcharts_format(server_serieses){
+	var highcharts_serieses = [];
 	// for each of the series that was initially requested, add it to the highcharts series...
-	for (var i = 0; i < data.length; i++) {
-		var t = new Date(data[i].Time);
-		var h = data[i].H; // dict of headers
-		var d = data[i].D; // dict of datums
-		
-		var headers_name = ""; // e.g. "Panel 1: Channel #4"
-		for(var head in h){
-			if(headers_name !== "")
-				headers_name += ": ";
-			headers_name += h[head];
+	for (var s = 0; s < server_serieses.length; s++) {
+		var server_series = server_serieses[s];
+		var data_points = server_series.data;
+		if(data_points.length == 0) continue;
+
+		/* The data come in as [{Time: 'ISO', Col1: val1, Col2: val2}, ...]
+		 * And need to go out as [{Time: 'ISO', Col1: val1},...], [{Time: 'ISO', Col2: val2}]
+		 * (in other words, each 'column' gets its own highcharts series)
+		 */
+		var under_construction = {};
+		// using the 0th entry as a 'typical' example, make a separate list of data points for each column
+		var col_names = Object.keys(data_points[0]);
+		var time_index = col_names.indexOf('Time');
+		if(time_index > -1) col_names.splice(time_index,1);
+		for(var i=0; i<col_names.length; i++)
+			under_construction[col_names[i]] = [];
+
+		for(var i=0; i<data_points.length; i++){
+			var point = data_points[i];
+			var t = new Date(point.Time);
+			for(var j=0; j<col_names.length; j++){
+				under_construction[col_names[j]].push({x: toLocalDate(t).valueOf(), y: point[col_names[j]]});
+			}
 		}
 
-		for(var col in d){
-			var full_name = headers_name + ": " + col; // e.g. "Panel 1: Channel #4: MaxPower"
-			// create new series if not already exists
-			if(!highcharts_construction.hasOwnProperty(full_name))
-				highcharts_construction[full_name] = {'name' : full_name, 'data' : []}
-			// add data point
-			highcharts_construction[full_name].data.push({x: ToLocalDate(t).valueOf(), y: d[col]});
+		// now we have an object which maps from colname => [list of data points]
+		for(var named_data in under_construction){
+			var series_name = named_data;
+			if(server_series.index){
+				series_name = server_series.index + " " + series_name;
+			}
+			highcharts_serieses.push({'name' : series_name, 'data' : under_construction[named_data]});
 		}
 	};
-
-	// done constructing series. now just the values of highcharts_construction are relevant
-	var highcharts_series = [];
-	for(var name in highcharts_construction){
-		highcharts_series.push(highcharts_construction[name]);
-	}
-
-	return highcharts_series;
+	return highcharts_serieses;
 }
 
 var Commons = {
@@ -81,7 +87,7 @@ var Commons = {
 		return getCookie('csrftoken');
 	},
 	
-	// request systems' information from the api. see timeseries/views/data_api
+	// request systems' schema and other information from the api. see timeseries/views/data_api
 	get_systems : function(onsuccess){
 		return $.ajax({
 			url : '/data/api/systems/',
@@ -138,8 +144,8 @@ var Commons = {
 			contentType : 'json',
 			data : JSON.stringify(query)
 		}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-			var highcharts_series = server_to_highcharts_series(data);
-			chart_options.series = highcharts_series;
+			var highcharts_serieses = server_to_highcharts_format(data);
+			chart_options.series = highcharts_serieses;
 			// create chart
 			var container = $(container_selector);
 			if(container === undefined){
@@ -168,7 +174,7 @@ var Commons = {
 					contentType : 'json',
 					data : JSON.stringify({'series' : series})
 				}).done(function(data){ // do this when the server response (see timeseries.helpers.series_filter regarding how `data` is formatted)
-					var new_data = server_to_highcharts_series(data);
+					var new_data = server_to_highcharts_format(data);
 					// update each series
 					for (var i = new_data.length - 1; i >= 0; i--) {
 						var existing_series = chart_obj.series[i].options.data;
