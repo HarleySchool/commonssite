@@ -49,8 +49,6 @@ class ScraperBase(object):
 			prev_point = vars(objects[0]) # the 'previous' value in the loop
 			total_span = 0.0
 			value_fields = [(f.get_attname(), f.get_internal_type(), f.null) for f in self._model._meta.fields if f.get_attname() in self._model.get_field_names()]
-			print "VALUE FIELDS"
-			print value_fields
 			# model_average is a map from attributes => (current average or votes)
 			# initialize averages according to the 0th object
 			model_average = dict([(nm, 0.0 if typ in h.model_types['numeric'] and not isnull else {prev_point[nm] : 1}) for nm, typ, isnull in value_fields])
