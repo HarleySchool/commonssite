@@ -32,7 +32,7 @@ def systems_schema():
 		}, ...
 	]
 	"""
-	return (registry.schema() for registry in ModelRegistry.objects.all())
+	return [registry.schema() for registry in ModelRegistry.objects.all()]
 
 def split_on_indexes(queryset, column_filter=None, isoformat=False):
 	"""given a queryset of TimeseriesBase objects, return a dict mapping from each unique index to the list of

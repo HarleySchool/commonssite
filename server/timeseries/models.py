@@ -136,7 +136,7 @@ class ModelRegistry(models.Model):
 		schema = {
 			'system' : self.system,
 			'subsystem' : self.short_name,
-			'indexes' : model.get_latest_index_tuples(),
+			'indexes' : model.get_latest_index_tuples() if model.get_index_column() else [],
 			'id' : self.make_id(),
 			'status' : self.status,
 			'numeric' : h.field_name_tuples(numeric_fields, self),
