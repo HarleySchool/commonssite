@@ -36,7 +36,7 @@ class ScraperBase(object):
 				objects[0].save()
 				continue
 			# adding timedelta here is a hack to prevent collisions with duplicate times
-			tend = objects[-1].Time + datetime.timedelta(seconds=1)
+			tend = objects[-1]['Time'] + datetime.timedelta(seconds=1)
 			# we will construct the object from a kwarg dict
 			kwargs = {'temporary' : False, 'Time' : tend}
 			# set the index value for this group of objects
@@ -46,17 +46,17 @@ class ScraperBase(object):
 			# note that the interval is NOT assumed to be regular; votes and averages are weighted by the span of
 			# time between any two measurements
 			# running average is computed using the formula for the area of a trapezoid (we assume that a linear fit between points is good enough)
-			prev_point = vars(objects[0]) # the 'previous' value in the loop
+			prev_point = objects[0] # the 'previous' value in the loop
 			total_span = 0.0
 			value_fields = [(f.get_attname(), f.get_internal_type(), f.null) for f in self._model._meta.fields if f.get_attname() in self._model.get_field_names()]
 			# model_average is a map from attributes => (current average or votes)
 			# initialize averages according to the 0th object
 			model_average = dict([(nm, 0.0 if typ in h.model_types['numeric'] and not isnull else {prev_point[nm] : 1}) for nm, typ, isnull in value_fields])
 			for curr_point in objects[1:]:
-				span_seconds = h.timedelta_seconds(curr_point.Time - prev_point['Time'])
+				span_seconds = h.timedelta_seconds(curr_point['Time'] - prev_point['Time'])
 				total_span += span_seconds
 				for nm, typ, isnull in value_fields:
-					val = vars(curr_point)[nm]
+					val = curr_point[nm]
 					prev_val = prev_point[nm]
 					# NUMERIC NON-NULL TYPES: running average
 					if typ in h.model_types['numeric'] and not isnull:
@@ -68,7 +68,7 @@ class ScraperBase(object):
 						# count occurances of val by mapping val:count
 						# but count is actually span_seconds so that values with longer spans get more votes
 						model_average[nm][val] = model_average[nm].get(val, 0) + span_seconds
-				prev_point = vars(curr_point)
+				prev_point = curr_point
 			# at this point, all numeric types are averaged and all non-numeric types have a vote tally.
 			# now we must get the plurality winners for non-numeric types. Results are put into kwargs.
 			for nm, typ, isnull in value_fields:
