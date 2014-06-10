@@ -109,5 +109,4 @@ class CalculatedStats(TimeseriesBase):
 	GrossEnergyProduced = models.FloatField(null=True, verbose_name='Gross Energy (Produced)')
 	# Net = Gross - (energy produced)
 	NetPower = models.FloatField(null=True, verbose_name='Net Power')
-	NetPowerFactor = models.FloatField(null=True, verbose_name='Net Power Factor')
 	NetEnergy = models.FloatField(null=True, verbose_name='Net Energy')
