@@ -7,23 +7,23 @@
 	$(function(){
 		var power_series = [
 			{	'system' : 'Electric',
-				'subystem' : 'Electric Overview',
-				'indexes' : [1,2,3],
-				'columns' : ['TotalPower']
+				'subsystem' : 'Gross and Net',
+				'indexes' : [],
+				'columns' : ['GrossPowerUsed', 'GrossPowerProduced', 'NetPower']
 			}
 		];
 
 		var greenhouse_series = [
 			{	'system' : 'Arduino',
-				'subystem' : 'Greenhouse DHT',
+				'subsystem' : 'Greenhouse DHT',
 				'indexes' : [],
 				'columns' : ['temp_east_chimney_low', 'temp_east_chimney_high', 'temp_west_chimney_low', 'temp_west_chimney_high']
 			}
-		}
+		];
 
 		var solar_series = [
 			{	'system' : 'Solar',
-				'subystem' : 'Solar Overview',
+				'subsystem' : 'Solar Overview',
 				'indexes' : [],
 				'columns' : ['TotalACPower']
 			}
@@ -31,7 +31,7 @@
 
 		var weather_series = [
 			{	'system' : 'Weather Station',
-				'subystem' : 'Weather',
+				'subsystem' : 'Weather',
 				'indexes' : [],
 				'columns' : ['outtemp']
 			}
@@ -42,7 +42,7 @@
 		Commons.live_chart(solar_series, "Solar Energy Production (W)", "#solar", hour, "spline");
 		Commons.live_chart(weather_series, "Outside Temperature", "#weather", hour, "spline");
 		Commons.live_chart(power_series, "Total Power Use (kW)", "#power", hour, "spline");
-		Commons.live_chart(greenhouse_series, "Greenhouse Temperature (F) and Humidity (%)", "#greenhouse-temp", hour, "spline");
+		Commons.live_chart(greenhouse_series, "Greenhouse Temperature (F)", "#greenhouse-temp", hour, "spline");
 	});
 </script>
 {% endblock scripts %}

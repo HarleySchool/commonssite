@@ -193,17 +193,17 @@ class ScraperCalculatedStats(ScraperBase):
 
 		for measurement in latest_circuits:
 			if measurement.id in solar_circuit_ids:
-				gross_power_produced += measurement.Power
-				gross_power_factor_produced += measurement.PowerFactor
-				gross_energy_produced += measurement.Energy
+				gross_power_produced += abs(measurement.Power)
+				gross_power_factor_produced += abs(measurement.PowerFactor)
+				gross_energy_produced += abs(measurement.Energy)
 			else:
-				gross_power_used += measurement.Power
-				gross_power_factor_used += measurement.PowerFactor
-				gross_energy_used += measurement.Energy
+				gross_power_used += abs(measurement.Power)
+				gross_power_factor_used += abs(measurement.PowerFactor)
+				gross_energy_used += abs(measurement.Energy)
 
-		net_power = gross_power_produced - gross_power_used
-		net_energy = gross_energy_produced - gross_energy_used
-		net_power_factor = gross_power_factor_produced - gross_power_factor_used
+		net_power = gross_power_used - gross_power_produced
+		net_energy = gross_energy_used - gross_energy_produced
+		net_power_factor = gross_power_factor_used - gross_power_factor_produced
 
 		return [CalculatedStats(Time=latest_circuits[0].Time,
 			NetPower=net_power,

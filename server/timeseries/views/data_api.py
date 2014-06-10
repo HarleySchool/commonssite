@@ -63,6 +63,7 @@ def series(request):
 	"""
 	if request.body:
 		post = json.loads(request.body)
+		print post
 		t_start = h.parse_time(post.get('from'))
 		t_end = h.parse_time(post.get('to'))
 		temp = post.get('temporary', False)

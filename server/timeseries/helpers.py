@@ -144,9 +144,10 @@ def series_filter(filter_objs, tstart, tend, include_temporary=False, include_av
 		sys = specs.get('system')
 		subsys = specs.get('subsystem')
 		# lookup the registered sys/subsys pair in the registry
-		reg = ModelRegistry.objects.get(system=sys, short_name=subsys)
+		try:
+			reg = ModelRegistry.objects.get(system=sys, short_name=subsys)
 		# if it doesn't exist, skip this one
-		if not reg:
+		except:
 			print "ModelRegistry lookup failed for ", sys, subsys
 			continue
 		# get the corresponding model class
