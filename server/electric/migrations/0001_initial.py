@@ -20,7 +20,7 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'ChannelNameMap', fields ['Panel', 'Channel']
         db.create_unique('electic-channel-map', ['panel', 'channel'])
 
-        # Adding model 'ChannelEntry'
+        # Adding model 'CircuitEntry'
         db.create_table('electric-channel', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('Time', self.gf('django.db.models.fields.DateTimeField')(db_column='time')),
@@ -35,9 +35,9 @@ class Migration(SchemaMigration):
             ('PowerDemand', self.gf('django.db.models.fields.FloatField')(db_column='power-demand')),
             ('PowerFactor', self.gf('django.db.models.fields.FloatField')(db_column='power-factor')),
         ))
-        db.send_create_signal(u'electric', ['ChannelEntry'])
+        db.send_create_signal(u'electric', ['CircuitEntry'])
 
-        # Adding unique constraint on 'ChannelEntry', fields ['Time', 'Channel', 'Panel']
+        # Adding unique constraint on 'CircuitEntry', fields ['Time', 'Channel', 'Panel']
         db.create_unique('electric-channel', ['time', 'channel', 'panel'])
 
         # Adding model 'DeviceSummary'
@@ -94,7 +94,7 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'DeviceSummary', fields ['Time', 'Panel']
         db.delete_unique('electric-summary', ['time', 'panel'])
 
-        # Removing unique constraint on 'ChannelEntry', fields ['Time', 'Channel', 'Panel']
+        # Removing unique constraint on 'CircuitEntry', fields ['Time', 'Channel', 'Panel']
         db.delete_unique('electric-channel', ['time', 'channel', 'panel'])
 
         # Removing unique constraint on 'ChannelNameMap', fields ['Panel', 'Channel']
@@ -103,7 +103,7 @@ class Migration(SchemaMigration):
         # Deleting model 'ChannelNameMap'
         db.delete_table('electic-channel-map')
 
-        # Deleting model 'ChannelEntry'
+        # Deleting model 'CircuitEntry'
         db.delete_table('electric-channel')
 
         # Deleting model 'DeviceSummary'
@@ -118,7 +118,7 @@ class Migration(SchemaMigration):
             'Energy': ('django.db.models.fields.FloatField', [], {'db_column': "'energy'"}),
             'MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'current-max'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'power-max'"}),
-            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'ChannelEntry', 'db_table': "'electric-channel'"},
+            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-channel'"},
             'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
             'Power': ('django.db.models.fields.FloatField', [], {'db_column': "'power'"}),
             'PowerDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'power-demand'"}),

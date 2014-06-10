@@ -1,55 +1,86 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
-
 
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'CircuitEntry.temporary'
-        db.add_column('electric-channel', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Removing unique constraint on 'CircuitEntry', fields ['Time', 'Channel', 'Panel']
+        # (to be replaced by ['Time', 'Circuit'])
+        db.delete_unique('electric-circuits', ['time', 'channel', 'panel'])
+        # Deleting field 'CircuitEntry.Channel'
+        db.delete_column('electric-circuits', 'channel')
+        # Deleting field 'CircuitEntry.Panel'
+        db.delete_column('electric-circuits', 'panel')
+        # Renaming column for 'CircuitEntry.Circuit'
+        db.rename_column('electric-circuits', 'circuit', 'circuit_id')
+        # Create index for use in uniqe constraint
+        db.create_index('electric-circuits', ['circuit_id'])
+        # Adding unique constraint on 'CircuitEntry', fields ['Time', 'Circuit']
+        db.create_unique('electric-circuits', ['time', 'circuit_id'])
 
-        # Adding field 'DeviceSummary.temporary'
-        db.add_column('electric-summary', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Remove unique on 'DeviceSummary', fields ['time', 'panel']
+        db.delete_unique('electric-summary', ['time', 'panel'])
+        # Adding index on 'DeviceSummary', fields ['Panel']
+        db.create_index('electric-summary', ['panel_id'])
+        # create unique constraint using panel_id
+        db.create_unique('electric-summary', ['time', 'panel_id'])
+        # remove old panel field
+        db.delete_column('electric-summary', 'panel')
 
 
     def backwards(self, orm):
-        # Deleting field 'CircuitEntry.temporary'
-        db.delete_column('electric-channel', 'temporary')
-
-        # Deleting field 'DeviceSummary.temporary'
-        db.delete_column('electric-summary', 'temporary')
+        # TODO sql queries inside migrations so that they can actually be used
+        print "CAN'T ACTUALLY MIGRATE BACKWARDS FROM 0005 SAFELY. YOU SHOULD QUIT NOW."
+        raw_input()
+        """# Removing unique constraint on 'CircuitEntry', fields ['Time', 'Circuit']
+                                db.delete_unique('electric-circuits', ['time', 'circuit_id'])
+                                # Removing index on 'CircuitEntry', fields ['Circuit']
+                                db.delete_index('electric-circuits', ['circuit_id'])
+                                # Renaming column for 'CircuitEntry.Circuit' to match new field type.
+                                db.rename_column('electric-circuits', 'circuit_id', 'circuit')
+                                # Adding field 'CircuitEntry.Channel'
+                                db.add_column('electric-circuits', 'Channel',
+                                              self.gf('django.db.models.fields.CharField')(default='Channel XX', max_length=32, db_column='channel'),
+                                              keep_default=False)
+                                # Adding field 'CircuitEntry.Panel'
+                                db.add_column('electric-circuits', 'Panel',
+                                              self.gf('django.db.models.fields.CharField')(default='Panel XX', max_length=16, db_column='panel'),
+                                              keep_default=False)
+                                # Adding unique constraint on 'CircuitEntry', fields ['Time', 'Channel', 'Panel']
+                                db.create_unique('electric-circuits', ['time', 'channel', 'panel'])
+                        
+                                # add old 'panel' column back in
+                                db.add_column('electric-summary', 'Panel',
+                                              self.gf('django.db.models.fields.CharField')(default='Panel XX', max_length=16, db_column='panel'),
+                                              keep_default=False)
+                                db.delete_unique('electric-summary', ['time', 'panel_id'])
+                                db.delete_index('electric-summary', ['panel_id'])
+                                db.create_unique('electric-summary', ['time', 'panel'])"""
 
 
     models = {
-        u'electric.channelentry': {
-            'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
+        u'electric.circuit': {
+            'Meta': {'object_name': 'Circuit'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'panel': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['electric.Panel']"}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
+        },
+        u'electric.circuitentry': {
+            'Circuit': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['electric.Circuit']", 'db_column': "'circuit_id'"}),
             'Current': ('django.db.models.fields.FloatField', [], {'db_column': "'current'"}),
             'Demand': ('django.db.models.fields.FloatField', [], {'db_column': "'demand'"}),
             'Energy': ('django.db.models.fields.FloatField', [], {'db_column': "'energy'"}),
             'MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'current-max'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'power-max'"}),
-            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-channel'"},
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
+            'Meta': {'unique_together': "(('Time', 'Circuit'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-circuits'"},
             'Power': ('django.db.models.fields.FloatField', [], {'db_column': "'power'"}),
             'PowerDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'power-demand'"}),
             'PowerFactor': ('django.db.models.fields.FloatField', [], {'db_column': "'power-factor'"}),
             'Time': ('django.db.models.fields.DateTimeField', [], {'db_column': "'time'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
-        },
-        u'electric.channelnamemap': {
-            'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
-            'Meta': {'unique_together': "(('Panel', 'Channel'),)", 'object_name': 'ChannelNameMap', 'db_table': "'electic-channel-map'"},
-            'Name': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'name'"}),
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         u'electric.devicesummary': {
             'AToB': ('django.db.models.fields.FloatField', [], {'db_column': "'a_to_b'"}),
@@ -66,7 +97,7 @@ class Migration(SchemaMigration):
             'MaxDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'max_3ph_demand'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'max_3ph_power'"}),
             'Meta': {'unique_together': "(('Time', 'Panel'),)", 'object_name': 'DeviceSummary', 'db_table': "'electric-summary'"},
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
+            'Panel': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['electric.Panel']", 'db_column': "'panel_id'"}),
             'Phase1Current': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_current'"}),
             'Phase1Demand': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_demand'"}),
             'Phase1MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_max_current'"}),
@@ -95,6 +126,12 @@ class Migration(SchemaMigration):
             'TotalPowerFactor': ('django.db.models.fields.FloatField', [], {'db_column': "'total_power_factor'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        u'electric.panel': {
+            'Meta': {'object_name': 'Panel'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
         }
     }
 

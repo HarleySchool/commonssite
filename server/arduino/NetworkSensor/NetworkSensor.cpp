@@ -30,14 +30,16 @@ const char* comma_v_colon = ",\"v\":";
 const char* rbrace_comma = "},";
 const char* rbrace_end = "}";
 
-void NetworkSensor::input_output()
+bool NetworkSensor::input_output()
 {
   if(!initialized){
-    return;
+    return false;
   }
+  bool conn = false;
   // check for client connections and write requested data back
   EthernetClient client = server.available();
   if (client) {
+    conn = client.connected();
     // an http request ends with a blank line
     boolean currentLineIsBlank = true;
     time_t epoch_arg = 0;
@@ -121,6 +123,7 @@ void NetworkSensor::input_output()
     delay(10);
     client.stop();
   }
+  return conn;
 }
 
 void NetworkSensor::remoteSetTime(time_t epoch_seconds){

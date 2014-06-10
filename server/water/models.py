@@ -10,9 +10,7 @@ class water(TimeseriesBase):
 	pressure = models.FloatField(verbose_name='Pressure')
 	pump1 = models.IntegerField(verbose_name='Pump 1 (%)')
 	pump2 = models.IntegerField(verbose_name='Pump 2 (%)')
-	pump3 = models.IntegerField(verbose_name='Pump 3 (on/off)')
+	pump3 = models.BooleanField(verbose_name='Pump 3 (on/off)')
 	accnrj = models.IntegerField(verbose_name='Acc. NRJ')
 	acch = models.IntegerField(verbose_name='Acc. H')
 	accflow = models.IntegerField(verbose_name='Acc. Flow')
-
-

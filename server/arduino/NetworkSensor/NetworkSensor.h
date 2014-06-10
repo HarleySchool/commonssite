@@ -94,7 +94,8 @@ public:
   void begin(uint8_t mac[], uint8_t ip[]);
 
   // the do-all function that is called every loop(). it handles serving data over ethernet.
-  void input_output();
+  // returns true iff connected to the internet
+  bool input_output();
 
   // logging functions
   void logf(String name, float value);

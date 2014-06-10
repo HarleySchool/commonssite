@@ -8,34 +8,42 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'CircuitEntry.temporary'
-        db.add_column('electric-channel', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
+        # Adding field 'DeviceSummary.PanelFK'
+        db.add_column('electric-summary', 'PanelFK',
+                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['electric.Panel'], db_column='panel_id'),
                       keep_default=False)
 
-        # Adding field 'DeviceSummary.temporary'
-        db.add_column('electric-summary', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
+        # Adding field 'CircuitEntry.Circuit'
+        db.add_column('electric-circuits', 'Circuit',
+                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['electric.Circuit'], db_column='circuit'),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'CircuitEntry.temporary'
-        db.delete_column('electric-channel', 'temporary')
+        # Deleting field 'DeviceSummary.PanelFK'
+        db.delete_column('electric-summary', 'panel_id')
 
-        # Deleting field 'DeviceSummary.temporary'
-        db.delete_column('electric-summary', 'temporary')
+        # Deleting field 'CircuitEntry.Circuit'
+        db.delete_column('electric-circuits', 'circuit')
 
 
     models = {
-        u'electric.channelentry': {
+        u'electric.circuit': {
+            'Meta': {'object_name': 'Circuit'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'panel': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['electric.Panel']"}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
+        },
+        u'electric.circuitentry': {
             'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
+            'Circuit': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['electric.Circuit']", 'db_column': "'circuit'"}),
             'Current': ('django.db.models.fields.FloatField', [], {'db_column': "'current'"}),
             'Demand': ('django.db.models.fields.FloatField', [], {'db_column': "'demand'"}),
             'Energy': ('django.db.models.fields.FloatField', [], {'db_column': "'energy'"}),
             'MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'current-max'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'power-max'"}),
-            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-channel'"},
+            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-circuits'"},
             'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
             'Power': ('django.db.models.fields.FloatField', [], {'db_column': "'power'"}),
             'PowerDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'power-demand'"}),
@@ -43,13 +51,6 @@ class Migration(SchemaMigration):
             'Time': ('django.db.models.fields.DateTimeField', [], {'db_column': "'time'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
-        },
-        u'electric.channelnamemap': {
-            'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
-            'Meta': {'unique_together': "(('Panel', 'Channel'),)", 'object_name': 'ChannelNameMap', 'db_table': "'electic-channel-map'"},
-            'Name': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'name'"}),
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         u'electric.devicesummary': {
             'AToB': ('django.db.models.fields.FloatField', [], {'db_column': "'a_to_b'"}),
@@ -67,6 +68,7 @@ class Migration(SchemaMigration):
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'max_3ph_power'"}),
             'Meta': {'unique_together': "(('Time', 'Panel'),)", 'object_name': 'DeviceSummary', 'db_table': "'electric-summary'"},
             'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
+            'PanelFK': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['electric.Panel']", 'db_column': "'panel_id'"}),
             'Phase1Current': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_current'"}),
             'Phase1Demand': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_demand'"}),
             'Phase1MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_max_current'"}),
@@ -95,6 +97,12 @@ class Migration(SchemaMigration):
             'TotalPowerFactor': ('django.db.models.fields.FloatField', [], {'db_column': "'total_power_factor'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        u'electric.panel': {
+            'Meta': {'object_name': 'Panel'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
         }
     }
 

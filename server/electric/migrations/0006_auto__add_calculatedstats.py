@@ -8,48 +8,66 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'CircuitEntry.temporary'
-        db.add_column('electric-channel', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
-
-        # Adding field 'DeviceSummary.temporary'
-        db.add_column('electric-summary', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Adding model 'CalculatedStats'
+        db.create_table(u'electric_calculatedstats', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('Time', self.gf('django.db.models.fields.DateTimeField')(db_column='time')),
+            ('temporary', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('GrossPowerUsed', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('GrossPowerFactorUsed', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('GrossEnergyUsed', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('GrossPowerProduced', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('GrossPowerFactorProduced', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('GrossEnergyProduced', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('NetPower', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('NetPowerFactor', self.gf('django.db.models.fields.FloatField')(null=True)),
+            ('NetEnergy', self.gf('django.db.models.fields.FloatField')(null=True)),
+        ))
+        db.send_create_signal(u'electric', ['CalculatedStats'])
 
 
     def backwards(self, orm):
-        # Deleting field 'CircuitEntry.temporary'
-        db.delete_column('electric-channel', 'temporary')
-
-        # Deleting field 'DeviceSummary.temporary'
-        db.delete_column('electric-summary', 'temporary')
+        # Deleting model 'CalculatedStats'
+        db.delete_table(u'electric_calculatedstats')
 
 
     models = {
-        u'electric.channelentry': {
-            'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
+        u'electric.calculatedstats': {
+            'GrossEnergyProduced': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'GrossEnergyUsed': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'GrossPowerFactorProduced': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'GrossPowerFactorUsed': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'GrossPowerProduced': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'GrossPowerUsed': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'Meta': {'object_name': 'CalculatedStats'},
+            'NetEnergy': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'NetPower': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'NetPowerFactor': ('django.db.models.fields.FloatField', [], {'null': 'True'}),
+            'Time': ('django.db.models.fields.DateTimeField', [], {'db_column': "'time'"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        u'electric.circuit': {
+            'Meta': {'object_name': 'Circuit'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'panel': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['electric.Panel']"}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
+        },
+        u'electric.circuitentry': {
+            'Circuit': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['electric.Circuit']", 'db_column': "'circuit_id'"}),
             'Current': ('django.db.models.fields.FloatField', [], {'db_column': "'current'"}),
             'Demand': ('django.db.models.fields.FloatField', [], {'db_column': "'demand'"}),
             'Energy': ('django.db.models.fields.FloatField', [], {'db_column': "'energy'"}),
             'MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'current-max'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'power-max'"}),
-            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-channel'"},
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
+            'Meta': {'unique_together': "(('Time', 'Circuit'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-circuits'"},
             'Power': ('django.db.models.fields.FloatField', [], {'db_column': "'power'"}),
             'PowerDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'power-demand'"}),
             'PowerFactor': ('django.db.models.fields.FloatField', [], {'db_column': "'power-factor'"}),
             'Time': ('django.db.models.fields.DateTimeField', [], {'db_column': "'time'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
-        },
-        u'electric.channelnamemap': {
-            'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
-            'Meta': {'unique_together': "(('Panel', 'Channel'),)", 'object_name': 'ChannelNameMap', 'db_table': "'electic-channel-map'"},
-            'Name': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'name'"}),
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         u'electric.devicesummary': {
             'AToB': ('django.db.models.fields.FloatField', [], {'db_column': "'a_to_b'"}),
@@ -66,7 +84,7 @@ class Migration(SchemaMigration):
             'MaxDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'max_3ph_demand'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'max_3ph_power'"}),
             'Meta': {'unique_together': "(('Time', 'Panel'),)", 'object_name': 'DeviceSummary', 'db_table': "'electric-summary'"},
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
+            'Panel': ('django.db.models.fields.related.ForeignKey', [], {'default': '1', 'to': u"orm['electric.Panel']", 'db_column': "'panel_id'"}),
             'Phase1Current': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_current'"}),
             'Phase1Demand': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_demand'"}),
             'Phase1MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'phase_1_max_current'"}),
@@ -95,6 +113,12 @@ class Migration(SchemaMigration):
             'TotalPowerFactor': ('django.db.models.fields.FloatField', [], {'db_column': "'total_power_factor'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        u'electric.panel': {
+            'Meta': {'object_name': 'Panel'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
         }
     }
 

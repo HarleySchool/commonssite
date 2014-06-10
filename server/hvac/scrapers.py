@@ -27,7 +27,7 @@ bulk_lookup_table = {
 		9: "PANECOOL",
 		10: "PANEHEAT",
 		11: "OUTCOOL",
-		12: "DEFLOST",
+		12: "DEFROST",
 		128: "HEATRECOVERY",
 		129: "BYPASS",
 		130: "LC_AUTO"

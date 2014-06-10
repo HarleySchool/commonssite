@@ -8,34 +8,73 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'CircuitEntry.temporary'
-        db.add_column('electric-channel', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Removing unique constraint on 'ChannelNameMap', fields ['Panel', 'Channel']
+        db.delete_unique('electic-channel-map', ['panel', 'channel'])
 
-        # Adding field 'DeviceSummary.temporary'
-        db.add_column('electric-summary', 'temporary',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Deleting model 'ChannelNameMap'
+        db.delete_table('electic-channel-map')
+
+        # Renaming model 'CircuitEntry'
+        db.rename_table('electric-channel', 'electric-circuits')
+
+        # Adding model 'Panel'
+        db.create_table(u'electric_panel', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('veris_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=16)),
+        ))
+        db.send_create_signal(u'electric', ['Panel'])
+
+        # Adding model 'Circuit'
+        db.create_table(u'electric_circuit', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('panel', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['electric.Panel'])),
+            ('veris_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=32)),
+        ))
+        db.send_create_signal(u'electric', ['Circuit'])
 
 
     def backwards(self, orm):
-        # Deleting field 'CircuitEntry.temporary'
-        db.delete_column('electric-channel', 'temporary')
 
-        # Deleting field 'DeviceSummary.temporary'
-        db.delete_column('electric-summary', 'temporary')
+        # Adding model 'ChannelNameMap'
+        db.create_table('electic-channel-map', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('Name', self.gf('django.db.models.fields.CharField')(max_length=32, db_column='name')),
+            ('Channel', self.gf('django.db.models.fields.CharField')(max_length=32, db_column='channel')),
+            ('Panel', self.gf('django.db.models.fields.CharField')(max_length=16, db_column='panel')),
+        ))
+        db.send_create_signal(u'electric', ['ChannelNameMap'])
+
+        # Adding unique constraint on 'ChannelNameMap', fields ['Panel', 'Channel']
+        db.create_unique('electic-channel-map', ['panel', 'channel'])
+
+        # Renaming model 'CircuitEntry'
+        db.rename_table('electric-circuits', 'electric-channel')
+
+        # Deleting model 'Panel'
+        db.delete_table(u'electric_panel')
+
+        # Deleting model 'Circuit'
+        db.delete_table(u'electric_circuit')
 
 
     models = {
-        u'electric.channelentry': {
+        u'electric.circuit': {
+            'Meta': {'object_name': 'Circuit'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
+            'panel': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['electric.Panel']"}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
+        },
+        u'electric.circuitentry': {
             'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
             'Current': ('django.db.models.fields.FloatField', [], {'db_column': "'current'"}),
             'Demand': ('django.db.models.fields.FloatField', [], {'db_column': "'demand'"}),
             'Energy': ('django.db.models.fields.FloatField', [], {'db_column': "'energy'"}),
             'MaxCurrent': ('django.db.models.fields.FloatField', [], {'db_column': "'current-max'"}),
             'MaxPower': ('django.db.models.fields.FloatField', [], {'db_column': "'power-max'"}),
-            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-channel'"},
+            'Meta': {'unique_together': "(('Time', 'Channel', 'Panel'),)", 'object_name': 'CircuitEntry', 'db_table': "'electric-circuits'"},
             'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
             'Power': ('django.db.models.fields.FloatField', [], {'db_column': "'power'"}),
             'PowerDemand': ('django.db.models.fields.FloatField', [], {'db_column': "'power-demand'"}),
@@ -43,13 +82,6 @@ class Migration(SchemaMigration):
             'Time': ('django.db.models.fields.DateTimeField', [], {'db_column': "'time'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
-        },
-        u'electric.channelnamemap': {
-            'Channel': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'channel'"}),
-            'Meta': {'unique_together': "(('Panel', 'Channel'),)", 'object_name': 'ChannelNameMap', 'db_table': "'electic-channel-map'"},
-            'Name': ('django.db.models.fields.CharField', [], {'max_length': '32', 'db_column': "'name'"}),
-            'Panel': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_column': "'panel'"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         u'electric.devicesummary': {
             'AToB': ('django.db.models.fields.FloatField', [], {'db_column': "'a_to_b'"}),
@@ -95,6 +127,12 @@ class Migration(SchemaMigration):
             'TotalPowerFactor': ('django.db.models.fields.FloatField', [], {'db_column': "'total_power_factor'"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'temporary': ('django.db.models.fields.BooleanField', [], {'default': 'False'})
+        },
+        u'electric.panel': {
+            'Meta': {'object_name': 'Panel'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '16'}),
+            'veris_id': ('django.db.models.fields.IntegerField', [], {})
         }
     }
 

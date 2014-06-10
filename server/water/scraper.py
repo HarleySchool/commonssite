@@ -32,7 +32,7 @@ from timeseries.scrapers import ScraperBase
 ]
 
 '''
-
+from timeseries.scrapers import ScraperBase
 
 
 def csvgen(path):

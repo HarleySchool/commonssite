@@ -1,28 +1,37 @@
 # ORM model for Electric/Veris data
 from timeseries.models import TimeseriesBase
 from django.db import models
-from commonssite.settings import veris_sql_table_channel,	\
+import re
+from commonssite.settings import veris_sql_table_circuits,	\
 	veris_sql_table_device,									\
-	veris_sql_table_map,									\
 	datetime_out_format
 
-class ChannelNameMap(models.Model):
-
-	Panel = models.CharField(db_column='panel', max_length=16)
-	Channel = models.CharField(db_column='channel', max_length=32)
-	Name = models.CharField(db_column='name', max_length=32)
+class Panel(models.Model):
+	veris_id = models.IntegerField()
+	name = models.CharField(max_length=16)
 
 	def __unicode__(self):
-		return u'%s => %s' % (self.Channel, self.Name)
+		return unicode(self.name)
 
-	class Meta:
-		db_table = veris_sql_table_map
-		unique_together = ('Panel', 'Channel')
+class Circuit(models.Model):
+	panel = models.ForeignKey('Panel')
+	veris_id = models.IntegerField()
+	name = models.CharField(max_length=32)
 
-class ChannelEntry(TimeseriesBase):
+	__re_default_name = re.compile(r'Channel \#\d+')
+
+	def __eq__(self, other):
+		return self.id == other.id and self.veris_id == other.veris_id
+
+	def __unicode__(self):
+		if Circuit.__re_default_name.match(self.name):
+			return u'%s %s' % (unicode(self.panel), self.name)
+		else:
+			return u'%s' % self.name
+
+class CircuitEntry(TimeseriesBase):
 	
-	Panel = models.CharField(db_column='panel', max_length=16)
-	Channel = models.CharField(db_column='channel', max_length=32)
+	Circuit = models.ForeignKey('Circuit', db_column='circuit_id', default=1)
 	Current = models.FloatField(db_column='current')
 	Energy = models.FloatField(db_column='energy')
 	MaxCurrent = models.FloatField(db_column='current-max')
@@ -33,15 +42,15 @@ class ChannelEntry(TimeseriesBase):
 	PowerFactor = models.FloatField(db_column='power-factor')
 
 	def __unicode__(self):
-		return u'%s::%s at %s' % (self.Panel, self.Channel, self.Time.strftime(datetime_out_format))
+		return u'%s at %s' % (str(self.Circuit), self.Time.strftime(datetime_out_format))
 
 	class Meta:
-		db_table = veris_sql_table_channel
-		unique_together = (('Time', 'Channel', 'Panel'),)
+		db_table = veris_sql_table_circuits
+		unique_together = (('Time', 'Circuit'),)
 
 class DeviceSummary(TimeseriesBase):
 
-	Panel = models.CharField(db_column='panel', max_length=16)
+	Panel = models.ForeignKey('Panel', db_column='panel_id', default=1)
 	Frequency = models.FloatField(db_column='frequency')
 	LineNeutral = models.FloatField(db_column='line_neutral_3ph')
 	LineLine = models.FloatField(db_column='line_line_3ph')
@@ -82,8 +91,23 @@ class DeviceSummary(TimeseriesBase):
 	MaxPower = models.FloatField(db_column='max_3ph_power')
 
 	def __unicode__(self):
-		return u'%s summary at %s' % (self.Panel, self.Time.strftime(datetime_out_format))
+		return u'%s summary at %s' % (str(self.Panel), self.Time.strftime(datetime_out_format))
 
 	class Meta:
 		db_table = veris_sql_table_device
 		unique_together = ('Time', 'Panel')
+
+# CUSTOM CALCULATED FIELDS
+class CalculatedStats(TimeseriesBase):
+	# Gross = total used
+	GrossPowerUsed = models.FloatField(null=True, verbose_name='Gross Power (Consumed)')
+	GrossPowerFactorUsed = models.FloatField(null=True, verbose_name='Gross Power Factor (Consumed)')
+	GrossEnergyUsed = models.FloatField(null=True, verbose_name='Gross Energy (Consumed)')
+	# Gross - total produced
+	GrossPowerProduced = models.FloatField(null=True, verbose_name='Gross Power (Produced)')
+	GrossPowerFactorProduced = models.FloatField(null=True, verbose_name='Gross Power Factor (Produced)')
+	GrossEnergyProduced = models.FloatField(null=True, verbose_name='Gross Energy (Produced)')
+	# Net = Gross - (energy produced)
+	NetPower = models.FloatField(null=True, verbose_name='Net Power')
+	NetPowerFactor = models.FloatField(null=True, verbose_name='Net Power Factor')
+	NetEnergy = models.FloatField(null=True, verbose_name='Net Energy')
