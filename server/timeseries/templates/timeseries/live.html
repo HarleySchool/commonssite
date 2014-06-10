@@ -5,53 +5,37 @@
 <script src="{% static "js/highcharts/highcharts.js" %}"></script>
 <script>
 	$(function(){
-		var power_series = {
-			'Electric' : {
-				'Electric Overview' : {
-					'columns' : ['TotalPower'],
-					'series' : {
-						'Panel' : [2,3,4]
-					}
-				}
+		var power_series = [
+			{	'system' : 'Electric',
+				'subystem' : 'Electric Overview',
+				'indexes' : [1,2,3],
+				'columns' : ['TotalPower']
 			}
-		};
+		];
 
-		var greenhouse_series = {
-			'Arduino' : {
-				'Greenhouse DHT' : {
-					'columns' : [],
-					'series' : {}
-				}
+		var greenhouse_series = [
+			{	'system' : 'Arduino',
+				'subystem' : 'Greenhouse DHT',
+				'indexes' : [],
+				'columns' : ['temp_east_chimney_low', 'temp_east_chimney_high', 'temp_west_chimney_low', 'temp_west_chimney_high']
 			}
 		}
 
-		var solar_series = {
-			'Solar' : {
-				'Solar Overview' : {
-					'columns' : ['TotalACPower'],
-					'series' : {}
-				}
+		var solar_series = [
+			{	'system' : 'Solar',
+				'subystem' : 'Solar Overview',
+				'indexes' : [],
+				'columns' : ['TotalACPower']
 			}
-		};
+		];
 
-		var weather_series = {
-			'Weather Station' : {
-				'Weather' : {
-					'columns' : ['outtemp'],
-					'series' : {}
-				}
+		var weather_series = [
+			{	'system' : 'Weather Station',
+				'subystem' : 'Weather',
+				'indexes' : [],
+				'columns' : ['outtemp']
 			}
-		};
-		// var greenhouse_series = {
-		// 	'HVAC' : {
-		// 		'VRF' : {
-		// 			'columns' : ['InletTemp'],
-		// 			'series' : {
-		// 				'Name' : [10]
-		// 			}
-		// 		}
-		// 	}
-		// };
+		];
 
 		var hour = 60;
 
