@@ -27,3 +27,4 @@ UPDATE `electric-circuits` SET `circuit`=(SELECT `id` FROM `electric_circuit` WH
 # ^  354250 rows affected (26.75 sec)
 
 # 0005 remove old string fields, update uniqueness constraints
+# 0006 add calculatedstats

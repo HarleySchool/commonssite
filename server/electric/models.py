@@ -1,6 +1,7 @@
 # ORM model for Electric/Veris data
 from timeseries.models import TimeseriesBase
 from django.db import models
+import re
 from commonssite.settings import veris_sql_table_circuits,	\
 	veris_sql_table_device,									\
 	datetime_out_format
@@ -17,8 +18,16 @@ class Circuit(models.Model):
 	veris_id = models.IntegerField()
 	name = models.CharField(max_length=32)
 
+	__re_default_name = re.compile(r'Channel \#\d+')
+
+	def __eq__(self, other):
+		return self.id == other.id and self.veris_id == other.veris_id
+
 	def __unicode__(self):
-		return u'%s::%s' % (unicode(self.panel), self.name)
+		if Circuit.__re_default_name.match(self.name):
+			return u'%s %s' % (unicode(self.panel), self.name)
+		else:
+			return u'%s' % self.name
 
 class CircuitEntry(TimeseriesBase):
 	
@@ -87,3 +96,18 @@ class DeviceSummary(TimeseriesBase):
 	class Meta:
 		db_table = veris_sql_table_device
 		unique_together = ('Time', 'Panel')
+
+# CUSTOM CALCULATED FIELDS
+class CalculatedStats(TimeseriesBase):
+	# Gross = total used
+	GrossPowerUsed = models.FloatField(null=True, verbose_name='Gross Power (Consumed)')
+	GrossPowerFactorUsed = models.FloatField(null=True, verbose_name='Gross Power Factor (Consumed)')
+	GrossEnergyUsed = models.FloatField(null=True, verbose_name='Gross Energy (Consumed)')
+	# Gross - total produced
+	GrossPowerProduced = models.FloatField(null=True, verbose_name='Gross Power (Produced)')
+	GrossPowerFactorProduced = models.FloatField(null=True, verbose_name='Gross Power Factor (Produced)')
+	GrossEnergyProduced = models.FloatField(null=True, verbose_name='Gross Energy (Produced)')
+	# Net = Gross - (energy produced)
+	NetPower = models.FloatField(null=True, verbose_name='Net Power')
+	NetPowerFactor = models.FloatField(null=True, verbose_name='Net Power Factor')
+	NetEnergy = models.FloatField(null=True, verbose_name='Net Energy')

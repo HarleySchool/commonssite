@@ -32,8 +32,9 @@ class ScraperBase(object):
 				continue
 			elif len(objects) == 1:
 				# edge-case: average is broken if there is only 1 object.
-				objects[0].temporary = False
-				objects[0].save()
+				objects[0]['temporary'] = False
+				model_obj = self._model(**objects[0])
+				model_obj.save()
 				continue
 			# adding timedelta here is a hack to prevent collisions with duplicate times
 			tend = objects[-1]['Time'] + datetime.timedelta(seconds=1)

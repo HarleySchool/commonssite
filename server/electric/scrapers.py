@@ -2,7 +2,7 @@ import requests, re, pytz, datetime
 from timeseries.scrapers import ScraperBase
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
 from commonssite.scrapers.xml_import import etree
-from commonssite.server.electric.models import CircuitEntry, DeviceSummary, Panel, Circuit
+from commonssite.server.electric.models import CircuitEntry, DeviceSummary, Panel, Circuit, CalculatedStats
 
 class ElectricServerInterface(object):
 	"""The class in charge of handling the network interface with the veris server"""
@@ -171,3 +171,47 @@ if __name__ == '__main__':
 
 	pprint(sc.get_data())
 	pprint(sps.get_data())
+
+class ScraperCalculatedStats(ScraperBase):
+
+	def get_data(self):
+		"""custom net- and gross-calculations based on latest circuits scrape
+		"""
+		latest_circuits = CircuitEntry.objects.filter(Time=CircuitEntry.latest(temporary=True))
+		if len(latest_circuits) == 0: return []
+
+		gross_power_used = 0
+		gross_energy_used = 0
+		gross_power_factor_used = 0
+		gross_power_produced = 0
+		gross_energy_produced = 0
+		gross_power_factor_produced = 0
+
+		# see mysql database or electric/fixtures/initial_data.json
+		# these correspond to panel #4 channels #8, #10, #12
+		solar_circuit_ids = [92, 94, 96]
+
+		for measurement in latest_circuits:
+			if measurement.id in solar_circuit_ids:
+				gross_power_produced += measurement.Power
+				gross_power_factor_produced += measurement.PowerFactor
+				gross_energy_produced += measurement.Energy
+			else:
+				gross_power_used += measurement.Power
+				gross_power_factor_used += measurement.PowerFactor
+				gross_energy_used += measurement.Energy
+
+		net_power = gross_power_produced - gross_power_used
+		net_energy = gross_energy_produced - gross_energy_used
+		net_power_factor = gross_power_factor_produced - gross_power_factor_used
+
+		return [CalculatedStats(Time=latest_circuits[0].Time,
+			NetPower=net_power,
+			NetPowerFactor=net_power_factor,
+			NetEnergy=net_energy,
+			GrossPowerUsed=gross_power_used,
+			GrossPowerFactorUsed=gross_power_factor_used,
+			GrossEnergyUsed=gross_energy_used,
+			GrossPowerProduced=gross_power_produced,
+			GrossPowerFactorProduced=gross_power_factor_produced,
+			GrossEnergyProduced=gross_energy_produced)]
