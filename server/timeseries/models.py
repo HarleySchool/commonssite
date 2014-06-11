@@ -2,6 +2,13 @@ from django.db import models
 import re
 import datetime
 import pytz
+import jsonfield
+import hashlib
+import base64
+from django.dispatch import receiver
+from django.db.models.signals import pre_save
+import json
+
 
 class TimeseriesBase(models.Model):
 	'''The minimum structure of a timeseries model. Other time-logging models should inherit from this class.
@@ -136,6 +143,7 @@ class ModelRegistry(models.Model):
 		schema = {
 			'system' : self.system,
 			'subsystem' : self.short_name,
+			'index_name' : model.get_index_column(),
 			'indexes' : model.get_latest_index_tuples() if model.get_index_column() else [],
 			'id' : self.make_id(),
 			'status' : self.status,
@@ -144,3 +152,53 @@ class ModelRegistry(models.Model):
 			'units' : {} # TODO
 		}
 		return schema
+
+class Series(models.Model):
+	"""This table saves pre-defined series
+	"""
+
+	spec = jsonfield.JSONField()
+	string_hash = models.CharField(max_length=24) # 24 is length of an md5 hash
+
+	@staticmethod
+	def make_hash(normalized_json_string):
+		return base64.urlsafe_b64encode(hashlib.md5(normalized_json_string).digest())
+
+	@classmethod
+	def lookup_or_save_series(cls, series_objects):
+		"""look up the given spec; return it if it exists, otherwise save it as a new one
+		"""
+		import timeseries.helpers as h
+		# here's how we normalize series objects so they can be compared:
+		# 1) only consider non-empty series
+		# 2) sort lists
+		nonempty_series = []
+		for obj in series_objects:
+			try:
+				reg = ModelRegistry.objects.get(system=obj['system'], short_name=obj['subsystem'])
+			except:
+				continue
+			model = h.get_registered_model(reg.model_class)
+			# check if this object specifies any series
+			if (model.get_index_column() is not None and obj['indexes']) and obj['columns']:
+				obj['indexes'].sort()
+				obj['columns'].sort()
+				nonempty_series.append(obj)
+		nonempty_series.sort(key=lambda o: '%s%s' % (o['system'],o['subsystem']))
+
+		try:
+			existing_series = cls.objects.get(spec=nonempty_series)
+			return existing_series
+		except:
+			new_series = Series(spec=nonempty_series)
+			new_series.save()
+			return new_series
+
+# this signal-receiver ensures that the string_hash is set whenever Series.save() is called
+@receiver(pre_save, sender=Series)
+def set_hash(sender, **kwargs):
+	obj = kwargs.get("instance")
+	if type(obj.spec) == str:
+		obj.string_hash = Series.make_hash(obj.spec)
+	else:
+		obj.string_hash = Series.make_hash(json.dumps(obj.spec))

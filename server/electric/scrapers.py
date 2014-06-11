@@ -178,7 +178,9 @@ class ScraperCalculatedStats(ScraperBase):
 		"""custom net- and gross-calculations based on latest circuits scrape
 		"""
 		latest_circuits = CircuitEntry.objects.filter(Time=CircuitEntry.latest(temporary=True))
-		if len(latest_circuits) == 0: return []
+		if len(latest_circuits) == 0:
+			self.status_comm_error()
+			return []
 
 		gross_power_used = 0.0
 		gross_energy_used = 0.0
@@ -200,6 +202,7 @@ class ScraperCalculatedStats(ScraperBase):
 		net_power = gross_power_used - gross_power_produced
 		net_energy = gross_energy_used - gross_energy_produced
 
+		self.status_ok()
 		return [CalculatedStats(Time=latest_circuits[0].Time,
 			NetPower=net_power,
 			NetEnergy=net_energy,

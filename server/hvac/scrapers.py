@@ -396,11 +396,12 @@ class ScraperERV(ScraperBase):
 					model = ErvEntry(Time=now, Name=name, **kargs)
 					models.append(model)
 			self.status_ok()
-		except requests.exceptions.RequestException:
+		except requests.exceptions.RequestException as e:
+			print "[ERROR - ERV]", e
 			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
-			self.status_comm_error()
+			self.status_format_error()
 		return models
 
 class ScraperVRF(ScraperBase):
@@ -423,11 +424,12 @@ class ScraperVRF(ScraperBase):
 					model = VrfEntry(Time=now, Name=name, **kargs)
 					models.append(model)
 			self.status_ok()
-		except requests.exceptions.RequestException:
+		except requests.exceptions.RequestException as e:
+			print "[ERROR - VRF]", e
 			self.status_comm_error()
 		except Exception:
 			# any other exception implies that the transaction took place but we weren't able to parse it
-			self.status_comm_error()
+			self.status_format_error()
 
 		return models
 

@@ -83,6 +83,15 @@ function server_to_highcharts_format(server_serieses){
 
 var Commons = {
 
+	live_intervals : [],
+
+	kill_live : function(){
+		for(var id in this.live_intervals){
+			clearInterval(id);
+		}
+		this.live_intervals = [];
+	},
+
 	csrf : function(){
 		return getCookie('csrftoken');
 	},
@@ -166,7 +175,7 @@ var Commons = {
 		var now = new Date();
 		this.create_chart(series, title, new Date(now - timespan_millis), now, container_selector, chart_type, true, false, function(chart_obj){
 			// set up updater function (new data every 10 seconds)
-			setInterval(function(){
+			var interval_id = setInterval(function(){
 				// query server for new data
 				$.ajax({
 					url : '/data/api/single/',
@@ -195,6 +204,7 @@ var Commons = {
 				});
 				}
 			, 10000);
+			this.live_intervals.push(interval_id);
 		});
 	}
 };

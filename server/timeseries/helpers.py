@@ -20,6 +20,7 @@ def systems_schema():
 		{
 			system: 'System Name',
 			subsystem: 'Subsystem Name',
+			index_name: 'Name of Index' or None,
 			id : 'CamelCaseId',
 			description : 'this is a really fancy and efficient subsystem',
 			status : 0, // 0, 1, or 2. see timeseries.models.ModelRegistry for what they mean.
