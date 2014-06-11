@@ -32,8 +32,10 @@ class ScraperBase(object):
 				continue
 			elif len(objects) == 1:
 				# edge-case: average is broken if there is only 1 object.
-				objects[0]['temporary'] = False
-				model_obj = self._model(**objects[0])
+				kwarg_dict = dict([(key, objects[0][key]) for key in self._model.get_field_names()])
+				kwarg_dict['temporary'] = False
+				kwarg_dict['Time'] = objects[0]['Time']
+				model_obj = self._model(**kwarg_dict)
 				model_obj.save()
 				continue
 			# adding timedelta here is a hack to prevent collisions with duplicate times
