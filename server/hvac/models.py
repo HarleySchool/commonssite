@@ -28,7 +28,7 @@ class FanDirections(models.Model):
 		return u'%s' % self.value
 
 class ErvEntry(TimeseriesBase):
-	Name = models.ForeignKey('Rooms', db_column='name', default=1)
+	Room = models.ForeignKey('Rooms', db_column='name', default=1)
 	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1)
 	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1)
 	Mode = models.ForeignKey('Modes', db_column='mode', default=1)
@@ -37,14 +37,14 @@ class ErvEntry(TimeseriesBase):
 	Running = models.NullBooleanField(db_column='running')
 
 	def __unicode__(self):
-		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
+		return u'%s at %s' % (self.Room, self.Time.strftime(datetime_out_format))
 
 	class Meta:
 		db_table=hvac_sql_table_erv
-		unique_together=('Time', 'Name')
+		unique_together=('Time', 'Room')
 
 class VrfEntry(TimeseriesBase):
-	Name = models.ForeignKey('Rooms', db_column='name', default=1)
+	Room = models.ForeignKey('Rooms', db_column='name', default=1)
 	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1)
 	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1)
 	Mode = models.ForeignKey('Modes', db_column='mode', default=1)
@@ -60,8 +60,8 @@ class VrfEntry(TimeseriesBase):
 	Running = models.NullBooleanField(db_column='running')
 
 	def __unicode__(self):
-		return u'%s at %s' % (self.Name, self.Time.strftime(datetime_out_format))
+		return u'%s at %s' % (self.Room, self.Time.strftime(datetime_out_format))
 	
 	class Meta:
 		db_table=hvac_sql_table_vrf
-		unique_together=('Time', 'Name')
+		unique_together=('Time', 'Room')

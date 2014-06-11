@@ -1,4 +1,5 @@
 <!-- seriespicker.html -->
+<div id="seriespicker">
 {# this is a drop-in file meant to be included by other templates, not extended! #}
 {# once included, Commons.seriespicker() becomes available, which defines a series in the proper format #}
 {% for system in systems %}
@@ -9,46 +10,50 @@
 <div class="well col-md-6 series-picker" style="display:table-row" id="{{system.id}}" data-system="{{system.system}}" data-subsystem="{{system.subsystem}}">
 {% endif %}
 	<h4><b>{{system.system}}</b>&nbsp;{{system.subsystem}}</h4>
-	{% if system.indexes %}
+	{% if system.index_name %}
 	<div class="index-picker" style="display:table-cell;">
-		<select multiple>
-		<option class='check_all'>(select all)</option>
-		<option class='uncheck_all' style='display:none'>(unselect all)</option>
-		{% for id, name in system.indexes %}
-		<option class='idx_option' data-indexid="{{id}}">{{name}}</option>
-		{% endfor %}
+		<select multiple="multiple" class="multiselect multiselect-index-{{ system.id }}" style="display:none;">
+			{% for id, name in system.indexes %}
+			<option class='idx_option' data-indexid="{{id}}">{{name}}</option>
+			{% endfor %}
 		</select>
+		<div class="btn-group">
+			<ul class="multiselect-container dropdown-menu" style="max-height: 150px; overflow-y: auto; overflow-x: hidden;"></ul>
+		</div>
 	</div>
 	{% endif %}
 	<div class="col-picker" style="display:table-cell;">
-		<select multiple>
-		<option class='check_all'>(select all)</option>
-		<option class='uncheck_all' style='display:none'>(unselect all)</option>
-		{% for id, name in system.numeric %}
-		<option class='col_option' data-colid="{{id}}">{{name}}</option>
-		{% endfor %}
-		{% for id, name in system.string %}
-		<option class='col_option' data-colid="{{id}}">{{name}}</option>
-		{% endfor %}
+		<select multiple="multiple" class="multiselect multiselect-{{ system.id }}" style="display:none;">
+			{% for id, name in system.numeric %}
+			<option class='col_option' data-colid="{{id}}">{{name}}</option>
+			{% endfor %}
+			{% for id, name in system.string %}
+			<option class='col_option' data-colid="{{id}}">{{name}}</option>
+			{% endfor %}
 		</select>
+		<div class="btn-group">
+			<ul class="multiselect-container dropdown-menu" style="max-height: 150px; overflow-y: auto; overflow-x: hidden;"></ul>
+		</div>
 	</div>
 </div>
 {% endfor %}
 
 <script>
 	$(function(){
-		// this handles when the "(select all)" options are checked
-		$(".check_all").click(function(){
-			$(this).siblings().prop("selected", true);
-			$(this).parent().find(".uncheck_all").css({display:""});
-			$(this).css({display:"none"});
+		{% for system in systems %}
+		{% if system.index_name %}
+		$("select.multiselect-index-{{ system.id }}").multiselect({
+			enableFiltering : true,
+			includeSelectAllOption : true,
+			nonSelectedText : "Choose {{ system.index_name }}s"
 		});
-		// this handles when the "(unselect all)" options are checked
-		$(".uncheck_all").click(function(){
-			$(this).siblings().prop("selected", false);
-			$(this).parent().find(".check_all").css({display:""});
-			$(this).css({display:"none"});
+		{% endif %}
+		$("select.multiselect-{{ system.id }}").multiselect({
+			enableFiltering : true,
+			includeSelectAllOption : true,
+			nonSelectedText : "Choose data types"
 		});
+		{% endfor %}
 	});
 
 	// extend the Commons object with a seriespicker function, which returns
@@ -74,4 +79,5 @@
 		return serieses;
 	}
 </script>
+</div>
 <!-- end SeriesPicker.html -->

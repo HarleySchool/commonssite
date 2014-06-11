@@ -1,13 +1,9 @@
 import csv
 import json
 import timeseries.helpers as h
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from functools import partial
-
-def makedownload(request):
-	return render(request, 'timeseries/download.html', {'systems' : h.systems_schema()})
 
 def download_csv(request):
 	# parse start and end times

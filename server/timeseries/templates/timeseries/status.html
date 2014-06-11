@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Systems Status{% endblock title %}
+{% block subtitle %}Systems Status{% endblock subtitle %}
+
 {% block scripts %}
 <script>
 	setInterval(function(){
@@ -9,9 +12,11 @@
 				var system = systems[i];
 				var status_html = '<span class="glyphicon glyphicon-ok-circle" style="color:#0C0;"></span>';
 				if(system['status'] == 2){
+					// communication error
 					status_html = '<span class="glyphicon glyphicon-remove-circle" style="color:#C00;"></span>';
 				}
 				else if(system['status'] == 1){
+					// format error
 					status_html = '<span class="glyphicon glyphicon-warning-sign" style="color:#CC0;"></span>';
 				}
 				$("#status_" + system['id']).html(status_html);

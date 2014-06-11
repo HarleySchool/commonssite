@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Data Analysis{% endblock title %}
+{% block subtitle %}Data Analysis{% endblock subtitle %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static "css/bootstrap-multiselect.css" %}" />
+{% endblock styles %}
+
+{% block scripts %}
+<script src="{% static "js/highcharts/highcharts.js" %}"></script>
+<script src="{% static "js/bootstrap-multiselect.js" %}"></script>
+<script>
+// thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
+var downloadURL = function downloadURL(url) {
+	var hiddenIFrameID = 'hiddenDownloader',
+		iframe = document.getElementById(hiddenIFrameID);
+	if (iframe === null) {
+		iframe = document.createElement('iframe');
+		iframe.id = hiddenIFrameID;
+		iframe.style.display = 'none';
+		document.body.appendChild(iframe);
+	}
+	iframe.src = url;
+};
+
+$(document).ready(function(){
+	$("div#charts-container").hide();
+	$("#editSeriesBtn").hide();
+	// callback
+	function download_csv(series_obj){
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+
+		var url = '/data/api/csv/?' + $.param({
+			'series' : series_obj,
+			'tstart' : start.toISOString(),
+			'tend' : end.toISOString()
+		});
+		downloadURL(url);
+	}
+
+	$("#downloadBtn").click(function(){
+		download_csv(JSON.stringify(Commons.seriespicker()));
+	});
+
+	// callback for making a graph
+	$("#makeStaticGraphBtn").click(function(){
+		
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+		var series = Commons.seriespicker();
+		Commons.create_chart(series, "", start, end, "div#charts-container");
+		$("#seriespicker").slideUp({
+			complete : function(){
+				$("div#charts-container").slideDown();
+			}
+		});
+		$(".btn-primary").hide();
+		$("#editSeriesBtn").show();
+	});
+	// callback for making a graph
+	$("#makeLiveGraphBtn").click(function(){
+		
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+		var series = Commons.seriespicker();
+		Commons.live_chart(series, "", "div#charts-container");
+		$("#seriespicker").slideUp({
+			complete : function(){
+				$("div#charts-container").slideDown();
+			}
+		});
+		$(".btn-primary").hide();
+		$("#editSeriesBtn").show();
+	});
+	$("#editSeriesBtn").click(function(){
+		$(".btn-primary").show();
+		$("#editSeriesBtn").hide();	
+		Commons.kill_live();
+
+		$("div#charts-container").slideUp({
+			complete : function(){
+				$("#seriespicker").slideDown();
+			}
+		});
+	});
+});
+</script>
+
+{% endblock scripts %}
+
+{% block content %}
+{# drop in the daterange UI #}
+{% include "timeseries/daterange.html" %}
+{# drop in the series picker UI #}
+{% include "timeseries/seriespicker.html" %}
+<div id="charts-container" class="col-md-12"></div>
+
+<button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
+<button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
+<button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
+<button class="btn btn-primary" id="editSeriesBtn">Edit Series</button>
+{% endblock content %}
