@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load jsonify %}
 {% block title %}Data Analysis{% endblock title %}
 {% block subtitle %}Data Analysis{% endblock subtitle %}
 
@@ -11,6 +12,14 @@
 <script src="{% static "js/highcharts/highcharts.js" %}"></script>
 <script src="{% static "js/bootstrap-multiselect.js" %}"></script>
 <script>
+// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 // thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
 var downloadURL = function downloadURL(url) {
 	var hiddenIFrameID = 'hiddenDownloader',
@@ -74,6 +83,22 @@ $(document).ready(function(){
 		$(".btn-primary").hide();
 		$("#editSeriesBtn").show();
 	});
+
+	$("#saveSeriesBtn").click(function(){
+		$.ajax({
+			url : '/data/api/save/',
+			type : 'POST',
+			contentType : 'json',
+			data : JSON.stringify(Commons.seriespicker()),
+		}).done(function(response){
+			// thanks to http://ilee.co.uk/changing-url-without-page-refresh/
+			// for how to set browser url without reloading page
+			var series_path = "/data/analyze/"+response.series_id;
+			if(window.location.pathname !== series_path)
+				history.pushState({}, document.title, series_path)
+		});
+	});
+
 	$("#editSeriesBtn").click(function(){
 		$(".btn-primary").show();
 		$("#editSeriesBtn").hide();	
@@ -85,6 +110,32 @@ $(document).ready(function(){
 			}
 		});
 	});
+	{% if preload_series %}
+	// set checked values for preloaded series
+	{% autoescape off %}
+	var preload_series = {{ preload_series|jsonify }};
+	{% endautoescape %}
+	Commons.load_seriespicker_state(preload_series);
+	{% endif %}
+	// The following was meant to reload the state of checkboxes
+	// when the user uses back/forward buttons.
+	// It's only broken because multiselect.js is complicated and doesn't update the styles properly.
+	// window.onpopstate = function(event){
+	// 	var path = window.location.pathname;
+	// 	var current_id = path.substring(path.lastIndexOf("/")+1);
+	// 	if(current_id !== ""){
+	// 		console.log("LOADING STATE");
+	// 		$.ajax({
+	// 			url : '/data/api/load/',
+	// 			type : 'POST',
+	// 			contentType : 'json',
+	// 			data : JSON.stringify({series_id : current_id})
+	// 		}).done(Commons.load_seriespicker_state);
+	// 	} else{
+	// 		console.log("CLEARING STATE");
+	// 		Commons.load_seriespicker_state([]);
+	// 	}
+	// };
 });
 </script>
 
@@ -100,5 +151,6 @@ $(document).ready(function(){
 <button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
 <button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
 <button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
+<button class="btn btn-primary" id="saveSeriesBtn">Save Series</button>
 <button class="btn btn-primary" id="editSeriesBtn">Edit Series</button>
 {% endblock content %}

@@ -1,12 +1,34 @@
 import json
+from timeseries.models import Series
 import timeseries.helpers as h
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 
 # step 1 of api communication: get information about what systems are available
 def systems(request):
 	# construct response
 	return HttpResponse(content_type='application/json', content=json.dumps(h.systems_schema()))
+
+# TODO use CSRF properly
+@csrf_exempt
+def save_series(request):
+	post = json.loads(request.body)
+	# TODO validate series
+	# save it
+	s = Series.lookup_or_save_series(post)
+	response_dict = {
+		'series_id' : s.string_hash
+	}
+	return HttpResponse(content_type='application/json', content=json.dumps(response_dict))
+
+@csrf_exempt
+def load_series(request):
+	post = json.loads(request.body)
+	try:
+		s = Series.objects.get(string_hash=post.get("series_id"))
+		return HttpResponse(content_type='application/json', content=json.dumps(s.spec))
+	except:
+		return HttpResponseNotFound()
 
 @csrf_exempt
 def series(request):
@@ -63,7 +85,6 @@ def series(request):
 	"""
 	if request.body:
 		post = json.loads(request.body)
-		print post
 		t_start = h.parse_time(post.get('from'))
 		t_end = h.parse_time(post.get('to'))
 		temp = post.get('temporary', False)
