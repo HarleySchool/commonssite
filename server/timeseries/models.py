@@ -180,7 +180,7 @@ class Series(models.Model):
 				continue
 			model = h.get_registered_model(reg.model_class)
 			# check if this object specifies any series
-			if (model.get_index_column() is not None and obj['indexes']) and obj['columns']:
+			if (model.get_index_column() is None or obj['indexes']) and obj['columns']:
 				obj['indexes'].sort()
 				obj['columns'].sort()
 				nonempty_series.append(obj)

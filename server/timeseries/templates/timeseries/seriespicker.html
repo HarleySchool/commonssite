@@ -54,6 +54,12 @@
 			nonSelectedText : "Choose data types"
 		});
 		{% endfor %}
+
+		$("select.multiselect").change(function(){
+			// thanks to http://ilee.co.uk/changing-url-without-page-refresh/
+			// for how to set browser url without reloading page
+			history.pushState({}, document.title, "/data/analyze/")
+		});
 	});
 
 	// extend the Commons object with a seriespicker function, which returns
@@ -77,7 +83,25 @@
 			});
 		});
 		return serieses;
-	}
+	};
+
+	Commons.load_seriespicker_state = function(state_objects){
+		// clear <select>s
+		$("div#seriespicker").find("option").prop("selected", false);
+		for(var i=0; i<state_objects.length; i++){
+			var state = state_objects[i];
+			// get the div which wraps the <select>s for this system
+			var series_div = $("div#seriespicker").find("div[data-system='"+state['system']+"'][data-subsystem='"+state['subsystem']+"']");
+			// add back in selected indexes
+			for(var j=0; j<state["indexes"].length; j++){
+				series_div.find("option[data-indexid='"+state["indexes"][j]+"']").prop("selected", true);
+			}
+			// add back in selected columns
+			for(var j=0; j<state["columns"].length; j++){
+				series_div.find("option[data-colid='"+state["columns"][j]+"']").prop("selected", true);
+			}
+		}
+	};
 </script>
 </div>
 <!-- end SeriesPicker.html -->
