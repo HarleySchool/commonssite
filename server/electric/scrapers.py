@@ -182,10 +182,8 @@ class ScraperCalculatedStats(ScraperBase):
 
 		gross_power_used = 0.0
 		gross_energy_used = 0.0
-		gross_power_factor_used = 0.0
 		gross_power_produced = 0.0
 		gross_energy_produced = 0.0
-		gross_power_factor_produced = 0.0
 
 		# see mysql database or electric/fixtures/initial_data.json
 		# these correspond to panel #4 channels #8, #10, #12
@@ -194,18 +192,10 @@ class ScraperCalculatedStats(ScraperBase):
 		for measurement in latest_circuits:
 			if measurement.Circuit.id in solar_circuit_ids:
 				gross_power_produced += abs(measurement.Power)
-				gross_power_factor_produced += abs(measurement.PowerFactor)
 				gross_energy_produced += abs(measurement.Energy)
 			else:
 				gross_power_used += abs(measurement.Power)
-				gross_power_factor_used += abs(measurement.PowerFactor)
 				gross_energy_used += abs(measurement.Energy)
-
-		n_produce = len(solar_circuit_ids)
-		n_consume = len(latest_circuits) - n_produce
-
-		gross_power_factor_used /= n_consume
-		gross_power_factor_produced /= n_produce
 
 		net_power = gross_power_used - gross_power_produced
 		net_energy = gross_energy_used - gross_energy_produced
@@ -214,8 +204,6 @@ class ScraperCalculatedStats(ScraperBase):
 			NetPower=net_power,
 			NetEnergy=net_energy,
 			GrossPowerUsed=gross_power_used,
-			GrossPowerFactorUsed=gross_power_factor_used,
 			GrossEnergyUsed=gross_energy_used,
 			GrossPowerProduced=gross_power_produced,
-			GrossPowerFactorProduced=gross_power_factor_produced,
 			GrossEnergyProduced=gross_energy_produced)]

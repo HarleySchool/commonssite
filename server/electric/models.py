@@ -101,11 +101,9 @@ class DeviceSummary(TimeseriesBase):
 class CalculatedStats(TimeseriesBase):
 	# Gross = total used
 	GrossPowerUsed = models.FloatField(null=True, verbose_name='Gross Power (Consumed)')
-	GrossPowerFactorUsed = models.FloatField(null=True, verbose_name='Gross Power Factor (Consumed)')
 	GrossEnergyUsed = models.FloatField(null=True, verbose_name='Gross Energy (Consumed)')
 	# Gross - total produced
 	GrossPowerProduced = models.FloatField(null=True, verbose_name='Gross Power (Produced)')
-	GrossPowerFactorProduced = models.FloatField(null=True, verbose_name='Gross Power Factor (Produced)')
 	GrossEnergyProduced = models.FloatField(null=True, verbose_name='Gross Energy (Produced)')
 	# Net = Gross - (energy produced)
 	NetPower = models.FloatField(null=True, verbose_name='Net Power')
