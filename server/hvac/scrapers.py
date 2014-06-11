@@ -400,7 +400,6 @@ class ScraperERV(ScraperBase):
 					model_fields.remove("AirDirection_id")
 					model_fields.remove("FanSpeed_id")
 					kargs = dict(izip(model_fields, [data[HvacServerInterface.map_model_to_bulk(f)] for f in model_fields]))
-					print kargs
 					model = ErvEntry(Time=now, Room=room_object, Mode=mode_object, AirDirection=direction_object, FanSpeed=fanspeed_object, **kargs)
 					models.append(model)
 			self.status_ok()
@@ -437,7 +436,6 @@ class ScraperVRF(ScraperBase):
 					model_fields.remove("AirDirection_id")
 					model_fields.remove("FanSpeed_id")
 					kargs = dict(izip(model_fields, [data[HvacServerInterface.map_model_to_bulk(f)] for f in model_fields]))
-					print kargs
 					model = VrfEntry(Time=now, Room=room_object, Mode=mode_object, AirDirection=direction_object, FanSpeed=fanspeed_object, **kargs)
 					models.append(model)
 			self.status_ok()
