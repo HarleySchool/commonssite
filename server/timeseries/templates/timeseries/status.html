@@ -5,18 +5,16 @@
 <script>
 	setInterval(function(){
 		Commons.get_systems(function(systems){
-			for(var sys in systems){
-				for(var subsys in systems[sys]){
-					var specs = systems[sys][subsys];
-					var status_html = '<span class="glyphicon glyphicon-ok-circle" style="color:#0C0;"></span>';
-					if(specs['status'] == 2){
-						status_html = '<span class="glyphicon glyphicon-remove-circle" style="color:#C00;"></span>';
-					}
-					else if(specs['status'] == 1){
-						status_html = '<span class="glyphicon glyphicon-warning-sign" style="color:#CC0;"></span>';
-					}
-					$("#status_" + specs['id']).html(status_html);
+			for(var i=0; i<systems.length; i++){
+				var system = systems[i];
+				var status_html = '<span class="glyphicon glyphicon-ok-circle" style="color:#0C0;"></span>';
+				if(system['status'] == 2){
+					status_html = '<span class="glyphicon glyphicon-remove-circle" style="color:#C00;"></span>';
 				}
+				else if(system['status'] == 1){
+					status_html = '<span class="glyphicon glyphicon-warning-sign" style="color:#CC0;"></span>';
+				}
+				$("#status_" + system['id']).html(status_html);
 			}
 		});
 	}, 10000);
@@ -33,22 +31,20 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for sys, subs in systems.items %}
-		{% for subsys, specs in subs.items %}
+		{% for system in systems %}
 		<tr>
-			<td>{{ sys }}</td>
-			<td>{{ subsys }}</td>
-			<td id="status_{{ specs.id }}">
-			{% if specs.status == 2 %}
+			<td>{{ system.system }}</td>
+			<td>{{ system.subsystem }}</td>
+			<td id="status_{{ system.id }}">
+			{% if system.status == 2 %}
 			<span class="glyphicon glyphicon-remove-circle" style="color:#C00;"></span>
-			{% elif specs.status == 1 %}
+			{% elif system.status == 1 %}
 			<span class="glyphicon glyphicon-warning-sign" style="color:#CC0;"></span>
 			{% else %}
 			<span class="glyphicon glyphicon-ok-circle" style="color:#0C0;"></span>
 			{% endif %}
 			</td>
 		</tr>
-		{% endfor %}
 		{% endfor %}
 	</tbody>
 </table>
