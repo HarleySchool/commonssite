@@ -169,7 +169,7 @@ var Commons = {
 
 	live_chart : function(series, title, container_selector, timespan_mins, chart_type){
 		// default arguments
-		timespan_mins = timespan_mins || 60*24*7; // default to one week
+		timespan_mins = timespan_mins || 60*3; // default to three hours 
 		var timespan_millis = timespan_mins * 60000;
 		// make a chart of data up till now
 		var now = new Date();
@@ -204,7 +204,7 @@ var Commons = {
 				});
 				}
 			, 10000);
-			this.live_intervals.push(interval_id);
+			Commons.live_intervals.push(interval_id);
 		});
 	}
 };
