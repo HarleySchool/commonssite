@@ -111,10 +111,13 @@
 			type : 'POST',
 			contentType : 'json',
 			data : JSON.stringify({series_id : s_id})
-		}).done(Commons.load_seriespicker_state);
-		if(typeof(callback) !== "undefined")
-			callback();
+		}).done(function(series_objects){
+			Commons.load_seriespicker_state(series_objects);
+			if(typeof(callback) !== "undefined")
+				callback();
+		});
 	};
 </script>
 </div>
 <!-- end SeriesPicker.html -->
+

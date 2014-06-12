@@ -54,6 +54,7 @@ var downloadURL = function downloadURL(url) {
 
 $(document).ready(function(){
 	$("div#charts-container").hide();
+	$("#daterange_and_seriespicker").hide();
 	$("#editSeriesBtn").hide();
 	$("#shareSeriesBtn").hide();
 
@@ -70,14 +71,17 @@ $(document).ready(function(){
 		downloadURL(url);
 	}
 
-	$("#downloadBtn").click(function(){
+	function showDownload(auto_laod){
 		download_csv(JSON.stringify(Commons.seriespicker()));
-		updateShareUrl('download');
+		if(!auto_load) updateShareUrl('download');		
+	}
+
+	$("#downloadBtn").click(function(){
+		showDownload(false);
 	});
 
 	// callback for making a graph
-	$("#makeStaticGraphBtn").click(function(){
-		
+	function showStatic(auto_load){
 		var start = Commons.daterange()[0];
 		var end = Commons.daterange()[1];
 		var series = Commons.seriespicker();
@@ -90,20 +94,23 @@ $(document).ready(function(){
 		$(".btn-primary").hide();
 		$("#editSeriesBtn").show();
 		$("#shareSeriesBtn").show();
-		updateShareUrl('static');
+		if(!auto_load) updateShareUrl('static');
+	}
+	$("#makeStaticGraphBtn").click(function(){
+		showStatic(false);
 	});
 	// callback for making a graph
-	$("#makeLiveGraphBtn").click(function(){
-		var start = Commons.daterange()[0];
+	function showLive(auto_load){
+		var start = Commons.daterange_object.startDate;
 		var end = new Date();
 		var hours_span = (end - start) / (1000*60*60);
 		var confirm_ok = true;
-		if(hours_span > 3.1){
+		if(hours_span > 3.1 && !auto_load){
 			confirm_ok = confirm("To not stress your browser, live graphs should not go back more than 3 hours. Continue anyway?");
 		}
 		if(!confirm_ok) return;
 		var series = Commons.seriespicker();
-		Commons.live_chart(series, "", "div#charts-container", hours_span);
+		Commons.live_chart(series, "", "div#charts-container", hours_span*60);
 		$("#daterange_and_seriespicker").slideUp({
 			complete : function(){
 				$("div#charts-container").slideDown();
@@ -112,7 +119,10 @@ $(document).ready(function(){
 		$(".btn-primary").hide();
 		$("#editSeriesBtn").show();
 		$("#shareSeriesBtn").show();
-		updateShareUrl('live');
+		if(!auto_load) updateShareUrl('live');
+	}
+	$("#makeLiveGraphBtn").click(function(){
+		showLive(false);
 	});
 
 	function updateShareUrl(analysis_type){
@@ -185,17 +195,20 @@ $(document).ready(function(){
 			Commons.daterange_object.updateInputText();
 			switch(analysis_type){
 				case "download":
-					$("#downloadBtn").click();
+					showDownload(true);
 					break;
 				case "static":
-					$("#makeStaticGraphBtn").click();
+					showStatic(true);
 					break;
 				case "live":
-					$("#makeLiveGraphBtn").click();
+					showLive(true);
 					break;
 			};
 		});
+	} else{
+		$("#daterange_and_seriespicker").slideDown();
 	}
 });
 </script>
 {% endblock content %}
+
