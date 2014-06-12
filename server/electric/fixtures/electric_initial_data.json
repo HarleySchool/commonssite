@@ -1,0 +1,647 @@
+[
+{
+	"model" : "electric.Panel",
+	"pk" : 1,
+	"fields" : {"name" : "Panel 2", "veris_id" : 2}
+},
+{
+	"model" : "electric.Panel",
+	"pk" : 2,
+	"fields" : {"name" : "Panel 3", "veris_id" : 3}
+},
+{
+	"model" : "electric.Panel",
+	"pk" : 3,
+	"fields" : {"name" : "Panel 4", "veris_id" : 4}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 1,
+	"fields" : { "panel" : 1, "name" : "Channel #1", "veris_id" : 1}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 2,
+	"fields" : { "panel" : 1, "name" : "Channel #2", "veris_id" : 2}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 3,
+	"fields" : { "panel" : 1, "name" : "Channel #3", "veris_id" : 3}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 4,
+	"fields" : { "panel" : 1, "name" : "Channel #4", "veris_id" : 4}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 5,
+	"fields" : { "panel" : 1, "name" : "Channel #5", "veris_id" : 5}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 6,
+	"fields" : { "panel" : 1, "name" : "Channel #6", "veris_id" : 6}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 7,
+	"fields" : { "panel" : 1, "name" : "Channel #7", "veris_id" : 7}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 8,
+	"fields" : { "panel" : 1, "name" : "Channel #8", "veris_id" : 8}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 9,
+	"fields" : { "panel" : 1, "name" : "Channel #9", "veris_id" : 9}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 10,
+	"fields" : { "panel" : 1, "name" : "Channel #10", "veris_id" : 10}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 11,
+	"fields" : { "panel" : 1, "name" : "Channel #11", "veris_id" : 11}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 12,
+	"fields" : { "panel" : 1, "name" : "Channel #12", "veris_id" : 12}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 13,
+	"fields" : { "panel" : 1, "name" : "Channel #13", "veris_id" : 13}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 14,
+	"fields" : { "panel" : 1, "name" : "Channel #14", "veris_id" : 14}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 15,
+	"fields" : { "panel" : 1, "name" : "Channel #15", "veris_id" : 15}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 16,
+	"fields" : { "panel" : 1, "name" : "Channel #16", "veris_id" : 16}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 17,
+	"fields" : { "panel" : 1, "name" : "Channel #17", "veris_id" : 17}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 18,
+	"fields" : { "panel" : 1, "name" : "Channel #18", "veris_id" : 18}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 19,
+	"fields" : { "panel" : 1, "name" : "Channel #19", "veris_id" : 19}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 20,
+	"fields" : { "panel" : 1, "name" : "Channel #20", "veris_id" : 20}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 21,
+	"fields" : { "panel" : 1, "name" : "Channel #21", "veris_id" : 21}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 22,
+	"fields" : { "panel" : 1, "name" : "Channel #22", "veris_id" : 22}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 23,
+	"fields" : { "panel" : 1, "name" : "Channel #23", "veris_id" : 23}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 24,
+	"fields" : { "panel" : 1, "name" : "Channel #24", "veris_id" : 24}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 25,
+	"fields" : { "panel" : 1, "name" : "Channel #25", "veris_id" : 25}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 26,
+	"fields" : { "panel" : 1, "name" : "Channel #26", "veris_id" : 26}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 27,
+	"fields" : { "panel" : 1, "name" : "Channel #27", "veris_id" : 27}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 28,
+	"fields" : { "panel" : 1, "name" : "Channel #28", "veris_id" : 28}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 29,
+	"fields" : { "panel" : 1, "name" : "Channel #29", "veris_id" : 29}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 30,
+	"fields" : { "panel" : 1, "name" : "Channel #30", "veris_id" : 30}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 31,
+	"fields" : { "panel" : 1, "name" : "Channel #31", "veris_id" : 31}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 32,
+	"fields" : { "panel" : 1, "name" : "Channel #32", "veris_id" : 32}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 33,
+	"fields" : { "panel" : 1, "name" : "Channel #33", "veris_id" : 33}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 34,
+	"fields" : { "panel" : 1, "name" : "Channel #34", "veris_id" : 34}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 35,
+	"fields" : { "panel" : 1, "name" : "Channel #35", "veris_id" : 35}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 36,
+	"fields" : { "panel" : 1, "name" : "Channel #36", "veris_id" : 36}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 37,
+	"fields" : { "panel" : 1, "name" : "Channel #37", "veris_id" : 37}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 38,
+	"fields" : { "panel" : 1, "name" : "Channel #38", "veris_id" : 38}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 39,
+	"fields" : { "panel" : 1, "name" : "Channel #39", "veris_id" : 39}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 40,
+	"fields" : { "panel" : 1, "name" : "Channel #40", "veris_id" : 40}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 41,
+	"fields" : { "panel" : 1, "name" : "Channel #41", "veris_id" : 41}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 42,
+	"fields" : { "panel" : 1, "name" : "Channel #42", "veris_id" : 42}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 43,
+	"fields" : { "panel" : 2, "name" : "Channel #1", "veris_id" : 1}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 44,
+	"fields" : { "panel" : 2, "name" : "Channel #2", "veris_id" : 2}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 45,
+	"fields" : { "panel" : 2, "name" : "Channel #3", "veris_id" : 3}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 46,
+	"fields" : { "panel" : 2, "name" : "Channel #4", "veris_id" : 4}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 47,
+	"fields" : { "panel" : 2, "name" : "Channel #5", "veris_id" : 5}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 48,
+	"fields" : { "panel" : 2, "name" : "Channel #6", "veris_id" : 6}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 49,
+	"fields" : { "panel" : 2, "name" : "Channel #7", "veris_id" : 7}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 50,
+	"fields" : { "panel" : 2, "name" : "Channel #8", "veris_id" : 8}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 51,
+	"fields" : { "panel" : 2, "name" : "Channel #9", "veris_id" : 9}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 52,
+	"fields" : { "panel" : 2, "name" : "Channel #10", "veris_id" : 10}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 53,
+	"fields" : { "panel" : 2, "name" : "Channel #11", "veris_id" : 11}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 54,
+	"fields" : { "panel" : 2, "name" : "Channel #12", "veris_id" : 12}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 55,
+	"fields" : { "panel" : 2, "name" : "Channel #13", "veris_id" : 13}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 56,
+	"fields" : { "panel" : 2, "name" : "Channel #14", "veris_id" : 14}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 57,
+	"fields" : { "panel" : 2, "name" : "Channel #15", "veris_id" : 15}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 58,
+	"fields" : { "panel" : 2, "name" : "Channel #16", "veris_id" : 16}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 59,
+	"fields" : { "panel" : 2, "name" : "Channel #17", "veris_id" : 17}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 60,
+	"fields" : { "panel" : 2, "name" : "Channel #18", "veris_id" : 18}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 61,
+	"fields" : { "panel" : 2, "name" : "Channel #19", "veris_id" : 19}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 62,
+	"fields" : { "panel" : 2, "name" : "Channel #20", "veris_id" : 20}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 63,
+	"fields" : { "panel" : 2, "name" : "Channel #21", "veris_id" : 21}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 64,
+	"fields" : { "panel" : 2, "name" : "Channel #22", "veris_id" : 22}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 65,
+	"fields" : { "panel" : 2, "name" : "Channel #23", "veris_id" : 23}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 66,
+	"fields" : { "panel" : 2, "name" : "Channel #24", "veris_id" : 24}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 67,
+	"fields" : { "panel" : 2, "name" : "Channel #25", "veris_id" : 25}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 68,
+	"fields" : { "panel" : 2, "name" : "Channel #26", "veris_id" : 26}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 69,
+	"fields" : { "panel" : 2, "name" : "Channel #27", "veris_id" : 27}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 70,
+	"fields" : { "panel" : 2, "name" : "Channel #28", "veris_id" : 28}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 71,
+	"fields" : { "panel" : 2, "name" : "Channel #29", "veris_id" : 29}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 72,
+	"fields" : { "panel" : 2, "name" : "Channel #30", "veris_id" : 30}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 73,
+	"fields" : { "panel" : 2, "name" : "Channel #31", "veris_id" : 31}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 74,
+	"fields" : { "panel" : 2, "name" : "Channel #32", "veris_id" : 32}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 75,
+	"fields" : { "panel" : 2, "name" : "Channel #33", "veris_id" : 33}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 76,
+	"fields" : { "panel" : 2, "name" : "Channel #34", "veris_id" : 34}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 77,
+	"fields" : { "panel" : 2, "name" : "Channel #35", "veris_id" : 35}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 78,
+	"fields" : { "panel" : 2, "name" : "Channel #36", "veris_id" : 36}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 79,
+	"fields" : { "panel" : 2, "name" : "Channel #37", "veris_id" : 37}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 80,
+	"fields" : { "panel" : 2, "name" : "Channel #38", "veris_id" : 38}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 81,
+	"fields" : { "panel" : 2, "name" : "Channel #39", "veris_id" : 39}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 82,
+	"fields" : { "panel" : 2, "name" : "Channel #40", "veris_id" : 40}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 83,
+	"fields" : { "panel" : 2, "name" : "Channel #41", "veris_id" : 41}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 84,
+	"fields" : { "panel" : 2, "name" : "Channel #42", "veris_id" : 42}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 85,
+	"fields" : { "panel" : 3, "name" : "Channel #1", "veris_id" : 1}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 86,
+	"fields" : { "panel" : 3, "name" : "Channel #2", "veris_id" : 2}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 87,
+	"fields" : { "panel" : 3, "name" : "Channel #3", "veris_id" : 3}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 88,
+	"fields" : { "panel" : 3, "name" : "Channel #4", "veris_id" : 4}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 89,
+	"fields" : { "panel" : 3, "name" : "Channel #5", "veris_id" : 5}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 90,
+	"fields" : { "panel" : 3, "name" : "Channel #6", "veris_id" : 6}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 91,
+	"fields" : { "panel" : 3, "name" : "Channel #7", "veris_id" : 7}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 92,
+	"fields" : { "panel" : 3, "name" : "Channel #8", "veris_id" : 8}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 93,
+	"fields" : { "panel" : 3, "name" : "Channel #9", "veris_id" : 9}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 94,
+	"fields" : { "panel" : 3, "name" : "Channel #10", "veris_id" : 10}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 95,
+	"fields" : { "panel" : 3, "name" : "Channel #11", "veris_id" : 11}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 96,
+	"fields" : { "panel" : 3, "name" : "Channel #12", "veris_id" : 12}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 97,
+	"fields" : { "panel" : 3, "name" : "Channel #13", "veris_id" : 13}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 98,
+	"fields" : { "panel" : 3, "name" : "Channel #14", "veris_id" : 14}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 99,
+	"fields" : { "panel" : 3, "name" : "Channel #15", "veris_id" : 15}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 100,
+	"fields" : { "panel" : 3, "name" : "Channel #16", "veris_id" : 16}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 101,
+	"fields" : { "panel" : 3, "name" : "Channel #17", "veris_id" : 17}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 102,
+	"fields" : { "panel" : 3, "name" : "Channel #18", "veris_id" : 18}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 103,
+	"fields" : { "panel" : 3, "name" : "Channel #19", "veris_id" : 19}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 104,
+	"fields" : { "panel" : 3, "name" : "Channel #20", "veris_id" : 20}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 105,
+	"fields" : { "panel" : 3, "name" : "Channel #21", "veris_id" : 21}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 106,
+	"fields" : { "panel" : 3, "name" : "Channel #22", "veris_id" : 22}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 107,
+	"fields" : { "panel" : 3, "name" : "Channel #23", "veris_id" : 23}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 108,
+	"fields" : { "panel" : 3, "name" : "Channel #24", "veris_id" : 24}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 109,
+	"fields" : { "panel" : 3, "name" : "Channel #25", "veris_id" : 25}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 110,
+	"fields" : { "panel" : 3, "name" : "Channel #26", "veris_id" : 26}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 111,
+	"fields" : { "panel" : 3, "name" : "Channel #27", "veris_id" : 27}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 112,
+	"fields" : { "panel" : 3, "name" : "Channel #28", "veris_id" : 28}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 113,
+	"fields" : { "panel" : 3, "name" : "Channel #29", "veris_id" : 29}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 114,
+	"fields" : { "panel" : 3, "name" : "Channel #30", "veris_id" : 30}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 115,
+	"fields" : { "panel" : 3, "name" : "Channel #31", "veris_id" : 31}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 116,
+	"fields" : { "panel" : 3, "name" : "Channel #32", "veris_id" : 32}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 117,
+	"fields" : { "panel" : 3, "name" : "Channel #33", "veris_id" : 33}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 118,
+	"fields" : { "panel" : 3, "name" : "Channel #34", "veris_id" : 34}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 119,
+	"fields" : { "panel" : 3, "name" : "Channel #35", "veris_id" : 35}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 120,
+	"fields" : { "panel" : 3, "name" : "Channel #36", "veris_id" : 36}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 121,
+	"fields" : { "panel" : 3, "name" : "Channel #37", "veris_id" : 37}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 122,
+	"fields" : { "panel" : 3, "name" : "Channel #38", "veris_id" : 38}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 123,
+	"fields" : { "panel" : 3, "name" : "Channel #39", "veris_id" : 39}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 124,
+	"fields" : { "panel" : 3, "name" : "Channel #40", "veris_id" : 40}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 125,
+	"fields" : { "panel" : 3, "name" : "Channel #41", "veris_id" : 41}
+},
+{
+	"model" : "electric.Circuit",
+	"pk" : 126,
+	"fields" : { "panel" : 3, "name" : "Channel #42", "veris_id" : 42}
+}
+]

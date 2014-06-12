@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% load static %}
+{% load jsonify %}
+{% block title %}Data Analysis{% endblock title %}
+{% block subtitle %}Data Analysis{% endblock subtitle %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static "css/bootstrap-multiselect.css" %}" />
+{% endblock styles %}
+
+{% block scripts %}
+<script src="{% static "js/highcharts/highcharts.js" %}"></script>
+<script src="{% static "js/bootstrap-multiselect.js" %}"></script>
+{% endblock scripts %}
+
+{% block content %}
+{# drop in the daterange UI #}
+{% include "timeseries/daterange.html" %}
+{# drop in the series picker UI #}
+{% include "timeseries/seriespicker.html" %}
+<div id="charts-container" class="col-md-12"></div>
+
+<button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
+<button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
+<button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
+<button class="btn btn-primary" id="editSeriesBtn">Edit</button>
+
+
+<!-- this script is placed after daterange and seriespicker so that it can have access to content
+	that is set inside them -->
+<script>
+// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+// thanks to http://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
+var downloadURL = function downloadURL(url) {
+	var hiddenIFrameID = 'hiddenDownloader',
+		iframe = document.getElementById(hiddenIFrameID);
+	if (iframe === null) {
+		iframe = document.createElement('iframe');
+		iframe.id = hiddenIFrameID;
+		iframe.style.display = 'none';
+		document.body.appendChild(iframe);
+	}
+	iframe.src = url;
+};
+
+$(document).ready(function(){
+	$("div#charts-container").hide();
+	$("#editSeriesBtn").hide();
+	$("#shareSeriesBtn").hide();
+
+	// callback when 'download' is clicked
+	function download_csv(series_obj){
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+
+		var url = '/data/api/csv/?' + $.param({
+			'series' : series_obj,
+			'tstart' : start.toISOString(),
+			'tend' : end.toISOString()
+		});
+		downloadURL(url);
+	}
+
+	$("#downloadBtn").click(function(){
+		download_csv(JSON.stringify(Commons.seriespicker()));
+		updateShareUrl('download');
+	});
+
+	// callback for making a graph
+	$("#makeStaticGraphBtn").click(function(){
+		
+		var start = Commons.daterange()[0];
+		var end = Commons.daterange()[1];
+		var series = Commons.seriespicker();
+		Commons.create_chart(series, "", start, end, "div#charts-container");
+		$("#seriespicker").slideUp({
+			complete : function(){
+				$("div#charts-container").slideDown();
+			}
+		});
+		$(".btn-primary").hide();
+		$("#editSeriesBtn").show();
+		$("#shareSeriesBtn").show();
+		updateShareUrl('static');
+	});
+	// callback for making a graph
+	$("#makeLiveGraphBtn").click(function(){
+		var start = Commons.daterange()[0];
+		var end = new Date();
+		var hours_span = (end - start) / 1000*60*60;
+		var confirm_ok = true;
+		if(hours_span > 3.1){
+			confirm_ok = confirm("To not stress your browser, live graphs should not go back more than 3 hours. Continue anyway?");
+		}
+		if(!confirm_ok) return;
+		var series = Commons.seriespicker();
+		Commons.live_chart(series, "", "div#charts-container", hours_span);
+		$("#seriespicker").slideUp({
+			complete : function(){
+				$("div#charts-container").slideDown();
+			}
+		});
+		$(".btn-primary").hide();
+		$("#editSeriesBtn").show();
+		$("#shareSeriesBtn").show();
+		updateShareUrl('live');
+	});
+
+	function updateShareUrl(analysis_type){
+		$.ajax({
+			url : '/data/api/save/',
+			type : 'POST',
+			contentType : 'json',
+			data : JSON.stringify(Commons.seriespicker()),
+		}).done(function(response){
+			// thanks to http://ilee.co.uk/changing-url-without-page-refresh/
+			// for how to set browser url without reloading page
+			var params = {
+				series_id : response.series_id,
+				type : analysis_type,
+				tstart : Commons.daterange_object.startDate.toISOString(),
+				tend : Commons.daterange_object.endDate.toISOString(),
+			};
+			var series_path = "/data/analyze?"+$.param(params);
+			history.replaceState({}, document.title, series_path)
+		});
+	};
+
+	$("#editSeriesBtn").click(function(){
+		$(".btn-primary").show();
+		$("#editSeriesBtn").hide();	
+		Commons.kill_live();
+
+		$("div#charts-container").slideUp({
+			complete : function(){
+				$("#seriespicker").slideDown();
+			}
+		});
+	});
+
+	// check for params in url
+	// (delayed so that other loading may finish)
+	var series_id = getParameterByName("series_id");
+	if(series_id){
+		Commons.load_seriespicker_by_id(series_id, function(){
+			// load the rest of everything after loading the seriespicker.
+			// otherwise, we would get syncrhony problems
+			var start_date = getParameterByName("tstart");
+			if(start_date)
+				Commons.daterange_object.setStartDate(new Date(start_date));
+			var end_date = getParameterByName("tend");
+			if(end_date)
+				Commons.daterange_object.setEndDate(new Date(end_date));
+			Commons.daterange_object.updateInputText();
+			var analysis_type = getParameterByName("type");
+			switch(analysis_type){
+				case "download":
+					$("#downloadBtn").click();
+					break;
+				case "static":
+					$("#makeStaticGraphBtn").click();
+					break;
+				case "live":
+					$("#makeLiveGraphBtn").click();
+					break;
+			};
+		});
+	}
+});
+</script>
+{% endblock content %}

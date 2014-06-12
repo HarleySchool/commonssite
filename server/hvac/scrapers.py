@@ -1,7 +1,9 @@
 import datetime, string, requests, pytz
+from timeseries.scrapers import ScraperBase
 from commonssite.settings import hvac_host, hvac_port
 from commonssite.scrapers.xml_import import etree
-from commonssite.server.hvac.models import ErvEntry, VrfEntry
+from commonssite.server.hvac.models import ErvEntry, VrfEntry, Rooms, FanDirections, FanSpeeds, Modes
+from itertools import izip
 
 # bulk-parsing lookup tables
 bulk_lookup_table = {
@@ -25,7 +27,7 @@ bulk_lookup_table = {
 		9: "PANECOOL",
 		10: "PANEHEAT",
 		11: "OUTCOOL",
-		12: "DEFLOST",
+		12: "DEFROST",
 		128: "HEATRECOVERY",
 		129: "BYPASS",
 		130: "LC_AUTO"
@@ -350,7 +352,7 @@ class HvacServerInterface(object):
 			'Content-type': 'text/xml',
 			'Accept': 'text/html, image/gif, image/jpeg, *;'
 		}
-		req = requests.post(full_url, data=body, headers=headers)
+		req = requests.post(full_url, data=body, headers=headers, timeout=5.0)
 		return str(req.text)
 
 	def status_dict(self, groups=[], values=[], units={}):
@@ -367,45 +369,84 @@ class HvacServerInterface(object):
 		return group_status
 
 	@classmethod
-	def map_from_model(cls, name):
+	def map_model_to_bulk(cls, name):
 		mapping = {
 			'Running' : 'Drive'
 		}
 		# get mapped name (or default to the given name)
 		return mapping.get(name, name)
 
-class ScraperERV(object):
+class ScraperERV(ScraperBase):
+
+	def __init__(self, model, registry_instance):
+		super(ScraperERV, self).__init__(model, registry_instance)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
 
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		models = []
-		dict_data = hsi.status_dict(groups=groups, units=units)
-		for (name, data) in dict_data.iteritems():
-			# check if VRF or ERV
-			if name.find('ERV') > -1:
-				model_fields = ErvEntry.get_field_names()
-				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
-				model = ErvEntry(Time=now, Name=name, **kargs)
-				models.append(model)
+		try:
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			models = []
+			dict_data = hsi.status_dict(groups=groups, units=units)
+			for (room_name, data) in dict_data.iteritems():
+				# check if VRF or ERV
+				if room_name.find('ERV') > -1:
+					room_object = Rooms.objects.get(name=room_name)
+					mode_object = Modes.objects.get(value=data.pop("Mode"))
+					fanspeed_object = FanSpeeds.objects.get(value=data.pop("FanSpeed"))
+					direction_object = FanDirections.objects.get(value=data.pop("AirDirection"))
+					model_fields = self._model.get_field_names()
+					model_fields.remove("Mode_id")
+					model_fields.remove("AirDirection_id")
+					model_fields.remove("FanSpeed_id")
+					kargs = dict(izip(model_fields, [data[HvacServerInterface.map_model_to_bulk(f)] for f in model_fields]))
+					model = ErvEntry(Time=now, Room=room_object, Mode=mode_object, AirDirection=direction_object, FanSpeed=fanspeed_object, **kargs)
+					models.append(model)
+			self.status_ok()
+		except requests.exceptions.RequestException as e:
+			print "[COMM ERROR - ERV]", e
+			self.status_comm_error()
+		except Exception as e:
+			print "[ERROR - ERV]", e
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_format_error()
 		return models
 
-class ScraperVRF(object):
+class ScraperVRF(ScraperBase):
+
+	def __init__(self, model, registry_instance):
+		super(ScraperVRF, self).__init__(model, registry_instance)
 
 	def get_data(self, groups=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], units={'temp' : 'degF', 'text' : 'upper'}):
 		hsi = HvacServerInterface()
 
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		models = []
-		dict_data = hsi.status_dict(groups=groups, units=units)
-		for (name, data) in dict_data.iteritems():
-			# check if VRF or ERV
-			if name.find('ERV') == -1:
-				model_fields = VrfEntry.get_field_names()
-				kargs = dict(zip(model_fields, [data[HvacServerInterface.map_from_model(f)] for f in model_fields]))
-				model = VrfEntry(Time=now, Name=name, **kargs)
-				models.append(model)
+		try:
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			models = []
+			dict_data = hsi.status_dict(groups=groups, units=units)
+			for (room_name, data) in dict_data.iteritems():
+				# check if VRF or ERV
+				if room_name.find('ERV') == -1:
+					room_object = Rooms.objects.get(name=room_name)
+					mode_object = Modes.objects.get(value=data.pop("Mode"))
+					fanspeed_object = FanSpeeds.objects.get(value=data.pop("FanSpeed"))
+					direction_object = FanDirections.objects.get(value=data.pop("AirDirection"))
+					model_fields = self._model.get_field_names()
+					model_fields.remove("Mode_id")
+					model_fields.remove("AirDirection_id")
+					model_fields.remove("FanSpeed_id")
+					kargs = dict(izip(model_fields, [data[HvacServerInterface.map_model_to_bulk(f)] for f in model_fields]))
+					model = VrfEntry(Time=now, Room=room_object, Mode=mode_object, AirDirection=direction_object, FanSpeed=fanspeed_object, **kargs)
+					models.append(model)
+			self.status_ok()
+		except requests.exceptions.RequestException as e:
+			print "[COMM ERROR - VRF]", e
+			self.status_comm_error()
+		except Exception as e:
+			print "[ERROR - VRF]", e
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_format_error()
+
 		return models
 
 if __name__ == '__main__':
