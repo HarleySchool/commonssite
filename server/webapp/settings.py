@@ -47,7 +47,9 @@ INSTALLED_APPS = (
     'electric',
     'solar',
     'south',
-    'weather'
+    'weather',
+    'arduino',
+    'water'
 )
 
 MIDDLEWARE_CLASSES = (

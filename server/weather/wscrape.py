@@ -1,17 +1,19 @@
 import datetime
 from timeseries.scrapers import ScraperBase
 from commonssite.settings import weather_host
+from timeseries.models import ModelRegistry
 import pytz
 import os, sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0,os.path.join(BASE_DIR, 'weather'))
 from weewx.drivers.vantage import Vantage
+import weewx
 from commonssite.server.weather.models import WeatherData
 
 class Weather(ScraperBase):
 	
-	def __init__(self, model):
-		super(Weather, self).__init__(model)
+	def __init__(self, model, registry_instance):
+		super(Weather, self).__init__(model, registry_instance)
 		self.dict_key_map = {
 			'UV' : 'uv',
 			'barometer' : 'barometer',
@@ -38,7 +40,7 @@ class Weather(ScraperBase):
 			'yearET': 'yearet',
 			'yearRain' : 'yearrain'
 		}
-		self.v = Vantage(type='ethernet', host=weather_host, max_retries=8)
+		self.v = Vantage(type='ethernet', host=weather_host, max_retries=4, wait_before_retry=2.4)
 
 	def doParse(self, data):
 		parsed = {}
@@ -47,14 +49,30 @@ class Weather(ScraperBase):
 		return parsed
 
 	def get_data(self):
-		data = next(self.v.genDavisLoopPackets())
-		parsed = self.doParse(data)
-		now = pytz.UTC.localize(datetime.datetime.utcnow())
-		model = WeatherData(Time=now, **parsed)
-		return [model]
+		try:
+			data = next(self.v.genDavisLoopPackets())
+			parsed = self.doParse(data)
+			now = pytz.UTC.localize(datetime.datetime.utcnow())
+			model = WeatherData(Time=now, **parsed)
+			self.status_ok()
+			return [model]
+		except weewx.WakeupError:
+			print "Weather parser wakeup issues. resetting connection."
+			self.v.closePort()
+			self.v = Vantage(type='ethernet', host=weather_host, max_retries=4, wait_before_retry=2.0)
+			self.status_comm_error()
+		except Exception as e:
+			print "Weather parser error:"
+			print e
+			# any other exception implies that the transaction took place but we weren't able to parse it
+			self.status_format_error()
+		return []
 
 if __name__ == '__main__':
 	from pprint import pprint
-	w = Weather()
+	r = ModelRegistry.objects.get(short_name='Weather')
+	w = Weather(WeatherData,r)
 	data = w.doParse(next(w.v.genDavisLoopPackets()))
 	pprint(data)
+	w.v.closePort()
+	w.v = Vantage(type='ethernet',host=weather_host, max_retries=4, wait_before_retry=2.0)

@@ -7,7 +7,13 @@
 	<form class="form-horizontal">
 		<fieldset>
 			<div class="control-group">
-				<label class="control-label" for="datarangetime">Choose start and end times</label>
+				<label class="control-label" for="datarangetime">
+					<b>Choose Timespan</b>
+					<button class="btn btn-default btn-xs" id="daterange_hour" style="margin-left:20px">1 hour</button>
+					<button class="btn btn-default btn-xs" id="daterange_3hour">3 hours</button>
+					<button class="btn btn-default btn-xs" id="daterange_day">1 day</button>
+					<button class="btn btn-default btn-xs" id="daterange_week">1 week</button>
+				</label>
 				<div class="controls">
 					<div class="input-prepend input-group">
 						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
@@ -37,7 +43,36 @@ $(function(){
 
 		return [daterange.startDate, daterange.endDate];
 	}
+	Commons.daterange_object = daterange;
 	daterange.updateInputText(); // force update of input text when page loads
+
+	function setTimeSpan(hours){
+		var now = new Date();
+		var then = new Date(now - hours*3600000);
+		daterange.setStartDate(then);
+		daterange.setEndDate(now);
+		daterange.updateInputText();
+	}
+
+	$("#daterange_hour").click(function(e){
+		e.preventDefault();
+		setTimeSpan(1);
+	});
+
+	$("#daterange_3hour").click(function(e){
+		e.preventDefault();
+		setTimeSpan(3);
+	});
+
+	$("#daterange_day").click(function(e){
+		e.preventDefault();
+		setTimeSpan(24);
+	});
+
+	$("#daterange_week").click(function(e){
+		e.preventDefault();
+		setTimeSpan(168);
+	});
 });
 
 </script>

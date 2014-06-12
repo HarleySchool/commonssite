@@ -1,49 +1,44 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}Live Data{% endblock title %}
+{% block subtitle %}Live Data{% endblock subtitle %}
+
 {% block scripts %}
 <script src="{% static "js/highcharts/highcharts.js" %}"></script>
 <script>
 	$(function(){
-		var power_series = {
-			'Electric' : {
-				'Electric Overview' : {
-					'columns' : ['TotalPower'],
-					'series' : {
-						'Panel' : ['Panel 2', 'Panel 3', 'Panel 4']
-					}
-				}
+		var power_series = [
+			{	'system' : 'Electric',
+				'subsystem' : 'Gross and Net',
+				'indexes' : [],
+				'columns' : ['GrossPowerUsed', 'GrossPowerProduced', 'NetPower']
 			}
-		};
+		];
 
-		var solar_series = {
-			'Solar' : {
-				'Solar Overview' : {
-					'columns' : ['TotalACPower'],
-					'series' : {}
-				}
+		var greenhouse_series = [
+			{	'system' : 'Arduino',
+				'subsystem' : 'Greenhouse DHT',
+				'indexes' : [],
+				'columns' : ['temp_east_chimney_low', 'temp_east_chimney_high', 'temp_west_chimney_low', 'temp_west_chimney_high']
 			}
-		};
+		];
 
-		var weather_series = {
-			'Weather Station' : {
-				'Weather' : {
-					'columns' : ['outtemp'],
-					'series' : {}
-				}
+		var solar_series = [
+			{	'system' : 'Solar',
+				'subsystem' : 'Solar Overview',
+				'indexes' : [],
+				'columns' : ['TotalACPower']
 			}
-		};
+		];
 
-		var greenhouse_series = {
-			'HVAC' : {
-				'VRF' : {
-					'columns' : ['InletTemp'],
-					'series' : {
-						'Name' : ['Mezzanine']
-					}
-				}
+		var weather_series = [
+			{	'system' : 'Weather Station',
+				'subsystem' : 'Weather',
+				'indexes' : [],
+				'columns' : ['outtemp']
 			}
-		};
+		];
 
 		var hour = 60;
 

@@ -1,3 +1,7 @@
-from data_api import systems, series, single
-from data_download import download_csv, makedownload
-from data_charts import live, makechart
+from data_api import systems, series, single, save_series, load_series
+from data_analysis import download_csv, analyze
+from admin_pages import status
+import timeseries.helpers as h
+
+def live(request):
+	return render(request, 'timeseries/live.html', {'systems' : h.systems_schema()})
