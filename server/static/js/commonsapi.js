@@ -204,7 +204,7 @@ var Commons = {
 				});
 				}
 			, 10000);
-			this.live_intervals.push(interval_id);
+			Commons.live_intervals.push(interval_id);
 		});
 	}
 };
