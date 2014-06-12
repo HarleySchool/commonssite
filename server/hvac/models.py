@@ -29,12 +29,12 @@ class FanDirections(models.Model):
 
 class ErvEntry(TimeseriesBase):
 	Room = models.ForeignKey('Rooms', db_column='name', default=1)
-	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1)
-	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1)
-	Mode = models.ForeignKey('Modes', db_column='mode', default=1)
-	ErrorSign = models.BooleanField(db_column='error')
+	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1, verbose_name=u'Air Direction')
+	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1, verbose_name=u'Fan Speed')
+	Mode = models.ForeignKey('Modes', db_column='mode', default=1, verbose_name=u'Mode')
+	ErrorSign = models.BooleanField(db_column='error', verbose_name=u'Errors')
 	InletTemp = models.FloatField(db_column='measured temp', verbose_name=u'Measured Temperature')
-	Running = models.NullBooleanField(db_column='running')
+	Running = models.NullBooleanField(db_column='running', verbose_name=u'On or Off')
 
 	def __unicode__(self):
 		return u'%s at %s' % (self.Room, self.Time.strftime(datetime_out_format))
@@ -45,19 +45,19 @@ class ErvEntry(TimeseriesBase):
 
 class VrfEntry(TimeseriesBase):
 	Room = models.ForeignKey('Rooms', db_column='name', default=1)
-	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1)
-	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1)
-	Mode = models.ForeignKey('Modes', db_column='mode', default=1)
-	ErrorSign = models.BooleanField(db_column='error')
+	AirDirection = models.ForeignKey('FanDirections', db_column='air direction', default=1, verbose_name=u'Air Direction')
+	FanSpeed = models.ForeignKey('FanSpeeds', db_column='fan speed', default=1, verbose_name=u'Fan Speed')
+	Mode = models.ForeignKey('Modes', db_column='mode', default=1, verbose_name=u'Mode')
+	ErrorSign = models.BooleanField(db_column='error', verbose_name=u'Errors')
 	InletTemp = models.FloatField(db_column='measured temp', verbose_name=u'Measured Temperature')
-	HeatMax = models.FloatField(db_column='heat max')
-	HeatMin = models.FloatField(db_column='heat min')
-	CoolMax = models.FloatField(db_column='cool max')
-	CoolMin = models.FloatField(db_column='cool min')
-	AutoMax = models.FloatField(db_column='auto max')
-	AutoMin = models.FloatField(db_column='auto min')
+	HeatMax = models.FloatField(db_column='heat max', verbose_name=u'Heat-Mode Limit (Max)')
+	HeatMin = models.FloatField(db_column='heat min', verbose_name=u'Heat-Mode Limit (Min)')
+	CoolMax = models.FloatField(db_column='cool max', verbose_name=u'Cool-Mode Limit (Max)')
+	CoolMin = models.FloatField(db_column='cool min', verbose_name=u'Cool-Mode Limit (Min)')
+	AutoMax = models.FloatField(db_column='auto max', verbose_name=u'Auto-Mode Limit (Max)')
+	AutoMin = models.FloatField(db_column='auto min', verbose_name=u'Auto-Mode Limit (Min)')
 	SetTemp = models.FloatField(db_column='set temp', verbose_name=u'Set Temperature')
-	Running = models.NullBooleanField(db_column='running')
+	Running = models.NullBooleanField(db_column='running', verbose_name=u'On or Off')
 
 	def __unicode__(self):
 		return u'%s at %s' % (self.Room, self.Time.strftime(datetime_out_format))
