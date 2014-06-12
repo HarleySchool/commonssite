@@ -14,10 +14,12 @@
 {% endblock scripts %}
 
 {% block content %}
+<div id="daterange_and_seriespicker">
 {# drop in the daterange UI #}
 {% include "timeseries/daterange.html" %}
 {# drop in the series picker UI #}
 {% include "timeseries/seriespicker.html" %}
+</div>
 <div id="charts-container" class="col-md-12"></div>
 
 <button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
@@ -80,7 +82,7 @@ $(document).ready(function(){
 		var end = Commons.daterange()[1];
 		var series = Commons.seriespicker();
 		Commons.create_chart(series, "", start, end, "div#charts-container");
-		$("#seriespicker").slideUp({
+		$("#daterange_and_seriespicker").slideUp({
 			complete : function(){
 				$("div#charts-container").slideDown();
 			}
@@ -94,7 +96,7 @@ $(document).ready(function(){
 	$("#makeLiveGraphBtn").click(function(){
 		var start = Commons.daterange()[0];
 		var end = new Date();
-		var hours_span = (end - start) / 1000*60*60;
+		var hours_span = (end - start) / (1000*60*60);
 		var confirm_ok = true;
 		if(hours_span > 3.1){
 			confirm_ok = confirm("To not stress your browser, live graphs should not go back more than 3 hours. Continue anyway?");
@@ -102,7 +104,7 @@ $(document).ready(function(){
 		if(!confirm_ok) return;
 		var series = Commons.seriespicker();
 		Commons.live_chart(series, "", "div#charts-container", hours_span);
-		$("#seriespicker").slideUp({
+		$("#daterange_and_seriespicker").slideUp({
 			complete : function(){
 				$("div#charts-container").slideDown();
 			}
@@ -122,12 +124,23 @@ $(document).ready(function(){
 		}).done(function(response){
 			// thanks to http://ilee.co.uk/changing-url-without-page-refresh/
 			// for how to set browser url without reloading page
-			var params = {
-				series_id : response.series_id,
-				type : analysis_type,
-				tstart : Commons.daterange_object.startDate.toISOString(),
-				tend : Commons.daterange_object.endDate.toISOString(),
-			};
+			var params;
+			var start = Commons.daterange_object.startDate;
+			var end = Commons.daterange_object.endDate;
+			if(analysis_type === 'live'){
+				params = {
+					series_id : response.series_id,
+					type : analysis_type,
+					tspan : (new Date() - start) // record the timespan relative to now
+				};
+			} else{
+				params = {
+					series_id : response.series_id,
+					type : analysis_type,
+					tstart : Commons.daterange_object.startDate.toISOString(),
+					tend : Commons.daterange_object.endDate.toISOString(),
+				};
+			}
 			var series_path = "/data/analyze?"+$.param(params);
 			history.replaceState({}, document.title, series_path)
 		});
@@ -140,7 +153,7 @@ $(document).ready(function(){
 
 		$("div#charts-container").slideUp({
 			complete : function(){
-				$("#seriespicker").slideDown();
+				$("#daterange_and_seriespicker").slideDown();
 			}
 		});
 	});
@@ -152,14 +165,24 @@ $(document).ready(function(){
 		Commons.load_seriespicker_by_id(series_id, function(){
 			// load the rest of everything after loading the seriespicker.
 			// otherwise, we would get syncrhony problems
-			var start_date = getParameterByName("tstart");
-			if(start_date)
-				Commons.daterange_object.setStartDate(new Date(start_date));
-			var end_date = getParameterByName("tend");
-			if(end_date)
-				Commons.daterange_object.setEndDate(new Date(end_date));
-			Commons.daterange_object.updateInputText();
 			var analysis_type = getParameterByName("type");
+			// load start/end date from params
+			if(analysis_type === 'live'){
+				// load timespan relative to now
+				var tspan = getParameterByName("tspan");
+				if(tspan){
+					var now = new Date();
+					Commons.daterange_object.setStartDate(new Date(now - tspan));
+					Commons.daterange_object.setEndDate(now);
+				}
+			} else{
+				// load absolute times
+				var start_date = getParameterByName("tstart");
+				if(start_date) Commons.daterange_object.setStartDate(new Date(start_date));
+				var end_date = getParameterByName("tend");
+				if(end_date) Commons.daterange_object.setEndDate(new Date(end_date));
+			}
+			Commons.daterange_object.updateInputText();
 			switch(analysis_type){
 				case "download":
 					$("#downloadBtn").click();
