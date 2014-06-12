@@ -4,6 +4,11 @@ import timeseries.helpers as h
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
 from functools import partial
+from django.shortcuts import render, redirect
+from timeseries.models import Series
+
+def analyze(request):
+	return render(request, 'timeseries/analyze.html', {'systems' : h.systems_schema()})
 
 def download_csv(request):
 	# parse start and end times

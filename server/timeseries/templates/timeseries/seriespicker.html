@@ -101,6 +101,19 @@
 				series_div.find("option[data-colid='"+state["columns"][j]+"']").prop("selected", true);
 			}
 		}
+		// refresh ui
+		$("div#seriespicker").find("select.multiselect").multiselect("refresh");
+	};
+
+	Commons.load_seriespicker_by_id = function(s_id, callback){
+		$.ajax({
+			url : '/data/api/load/',
+			type : 'POST',
+			contentType : 'json',
+			data : JSON.stringify({series_id : s_id})
+		}).done(Commons.load_seriespicker_state);
+		if(typeof(callback) !== "undefined")
+			callback();
 	};
 </script>
 </div>

@@ -11,6 +11,23 @@
 {% block scripts %}
 <script src="{% static "js/highcharts/highcharts.js" %}"></script>
 <script src="{% static "js/bootstrap-multiselect.js" %}"></script>
+{% endblock scripts %}
+
+{% block content %}
+{# drop in the daterange UI #}
+{% include "timeseries/daterange.html" %}
+{# drop in the series picker UI #}
+{% include "timeseries/seriespicker.html" %}
+<div id="charts-container" class="col-md-12"></div>
+
+<button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
+<button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
+<button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
+<button class="btn btn-primary" id="editSeriesBtn">Edit</button>
+
+
+<!-- this script is placed after daterange and seriespicker so that it can have access to content
+	that is set inside them -->
 <script>
 // http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
 function getParameterByName(name) {
@@ -36,7 +53,9 @@ var downloadURL = function downloadURL(url) {
 $(document).ready(function(){
 	$("div#charts-container").hide();
 	$("#editSeriesBtn").hide();
-	// callback
+	$("#shareSeriesBtn").hide();
+
+	// callback when 'download' is clicked
 	function download_csv(series_obj){
 		var start = Commons.daterange()[0];
 		var end = Commons.daterange()[1];
@@ -51,6 +70,7 @@ $(document).ready(function(){
 
 	$("#downloadBtn").click(function(){
 		download_csv(JSON.stringify(Commons.seriespicker()));
+		updateShareUrl('download');
 	});
 
 	// callback for making a graph
@@ -67,14 +87,21 @@ $(document).ready(function(){
 		});
 		$(".btn-primary").hide();
 		$("#editSeriesBtn").show();
+		$("#shareSeriesBtn").show();
+		updateShareUrl('static');
 	});
 	// callback for making a graph
 	$("#makeLiveGraphBtn").click(function(){
-		
 		var start = Commons.daterange()[0];
-		var end = Commons.daterange()[1];
+		var end = new Date();
+		var hours_span = (end - start) / 1000*60*60;
+		var confirm_ok = true;
+		if(hours_span > 3.1){
+			confirm_ok = confirm("To not stress your browser, live graphs should not go back more than 3 hours. Continue anyway?");
+		}
+		if(!confirm_ok) return;
 		var series = Commons.seriespicker();
-		Commons.live_chart(series, "", "div#charts-container");
+		Commons.live_chart(series, "", "div#charts-container", hours_span);
 		$("#seriespicker").slideUp({
 			complete : function(){
 				$("div#charts-container").slideDown();
@@ -82,9 +109,11 @@ $(document).ready(function(){
 		});
 		$(".btn-primary").hide();
 		$("#editSeriesBtn").show();
+		$("#shareSeriesBtn").show();
+		updateShareUrl('live');
 	});
 
-	$("#saveSeriesBtn").click(function(){
+	function updateShareUrl(analysis_type){
 		$.ajax({
 			url : '/data/api/save/',
 			type : 'POST',
@@ -93,11 +122,16 @@ $(document).ready(function(){
 		}).done(function(response){
 			// thanks to http://ilee.co.uk/changing-url-without-page-refresh/
 			// for how to set browser url without reloading page
-			var series_path = "/data/analyze/"+response.series_id;
-			if(window.location.pathname !== series_path)
-				history.pushState({}, document.title, series_path)
+			var params = {
+				series_id : response.series_id,
+				type : analysis_type,
+				tstart : Commons.daterange_object.startDate.toISOString(),
+				tend : Commons.daterange_object.endDate.toISOString(),
+			};
+			var series_path = "/data/analyze?"+$.param(params);
+			history.replaceState({}, document.title, series_path)
 		});
-	});
+	};
 
 	$("#editSeriesBtn").click(function(){
 		$(".btn-primary").show();
@@ -110,47 +144,35 @@ $(document).ready(function(){
 			}
 		});
 	});
-	{% if preload_series %}
-	// set checked values for preloaded series
-	{% autoescape off %}
-	var preload_series = {{ preload_series|jsonify }};
-	{% endautoescape %}
-	Commons.load_seriespicker_state(preload_series);
-	{% endif %}
-	// The following was meant to reload the state of checkboxes
-	// when the user uses back/forward buttons.
-	// It's only broken because multiselect.js is complicated and doesn't update the styles properly.
-	// window.onpopstate = function(event){
-	// 	var path = window.location.pathname;
-	// 	var current_id = path.substring(path.lastIndexOf("/")+1);
-	// 	if(current_id !== ""){
-	// 		console.log("LOADING STATE");
-	// 		$.ajax({
-	// 			url : '/data/api/load/',
-	// 			type : 'POST',
-	// 			contentType : 'json',
-	// 			data : JSON.stringify({series_id : current_id})
-	// 		}).done(Commons.load_seriespicker_state);
-	// 	} else{
-	// 		console.log("CLEARING STATE");
-	// 		Commons.load_seriespicker_state([]);
-	// 	}
-	// };
+
+	// check for params in url
+	// (delayed so that other loading may finish)
+	var series_id = getParameterByName("series_id");
+	if(series_id){
+		Commons.load_seriespicker_by_id(series_id, function(){
+			// load the rest of everything after loading the seriespicker.
+			// otherwise, we would get syncrhony problems
+			var start_date = getParameterByName("tstart");
+			if(start_date)
+				Commons.daterange_object.setStartDate(new Date(start_date));
+			var end_date = getParameterByName("tend");
+			if(end_date)
+				Commons.daterange_object.setEndDate(new Date(end_date));
+			Commons.daterange_object.updateInputText();
+			var analysis_type = getParameterByName("type");
+			switch(analysis_type){
+				case "download":
+					$("#downloadBtn").click();
+					break;
+				case "static":
+					$("#makeStaticGraphBtn").click();
+					break;
+				case "live":
+					$("#makeLiveGraphBtn").click();
+					break;
+			};
+		});
+	}
 });
 </script>
-
-{% endblock scripts %}
-
-{% block content %}
-{# drop in the daterange UI #}
-{% include "timeseries/daterange.html" %}
-{# drop in the series picker UI #}
-{% include "timeseries/seriespicker.html" %}
-<div id="charts-container" class="col-md-12"></div>
-
-<button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
-<button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
-<button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
-<button class="btn btn-primary" id="saveSeriesBtn">Save Series</button>
-<button class="btn btn-primary" id="editSeriesBtn">Edit Series</button>
 {% endblock content %}
