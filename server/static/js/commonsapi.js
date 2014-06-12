@@ -169,7 +169,7 @@ var Commons = {
 
 	live_chart : function(series, title, container_selector, timespan_mins, chart_type){
 		// default arguments
-		timespan_mins = timespan_mins || 60*3; // default to three hours 
+		timespan_mins = timespan_mins || 60*3; // default to 3 hours
 		var timespan_millis = timespan_mins * 60000;
 		// make a chart of data up till now
 		var now = new Date();
