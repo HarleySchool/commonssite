@@ -130,12 +130,15 @@ class SMAScraperBase(ScraperBase):
 			'GriPwr' : 'TotalACPower',
 			'GriEgyTdy' : 'TotalEnergyToday',
 			'GriEgyTot' : 'TotalEnergy',
-			'Msg' : 'Message',
+			#'Msg' : 'Message',
 		},
 		'weather' : {
-			'ExlSolIrr' : 'InternalSolarIrradation',
+			# note: this is not a typo. it was before, but now we're rolling with it.
+			# there is no "external sensor". the "internal sensor" is, however, measuring
+			# radiation outside. so Int does indeed map to 'External' 
+			#'ExlSolIrr' : '',
 			'IntSolIrr' : 'ExternalSolarIrradation',
-			'TmpAmb C' : 'AmbientTemprature',
+			#'TmpAmb C' : 'AmbientTemprature',
 			'TmpMdul C' : 'ModuleTemprature',
 			'WindVel m/s' : 'WindVelocity',
 		},
@@ -167,13 +170,13 @@ class SMAScraperBase(ScraperBase):
 			'GridMs.W.phsA' : 'GridPhase1Power',
 			'GridMs.W.phsB' : 'GridPhase2Power',
 			'GridMs.W.phsC' : 'GridPhase3Power',
-			'Inv.TmpLimStt' : 'Derating',
-			'InvCtl.Stt' :'DeviceControlStatus',
-			'Op.Health' : 'OperationHealth',
-			'E-Total' : 'TotalYield',
+			#'Inv.TmpLimStt' : 'Derating',
+			#'InvCtl.Stt' :'DeviceControlStatus',
+			#'Op.Health' : 'OperationHealth',
+			#'E-Total' : 'TotalYield',
 			'Iso.FltA' : 'ResidualCurrent',
 			'Mt.TotOpTmh' : 'FeedInTime',
-			'Mt.TotTmh' : 'OperatingTime',
+			#'Mt.TotTmh' : 'OperatingTime',
 
 			# 'Op.EvtCntIstl' : 
 			# 'Op.EvtCntUsr' : 
