@@ -25,8 +25,8 @@
 <button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
 <button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
 <button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
+<button class="btn btn-primary" id="clearBtn">Clear</button>
 <button class="btn btn-primary" id="editSeriesBtn">Edit</button>
-
 
 <!-- this script is placed after daterange and seriespicker so that it can have access to content
 	that is set inside them -->
@@ -71,9 +71,9 @@ $(document).ready(function(){
 		downloadURL(url);
 	}
 
-	function showDownload(auto_laod){
-		download_csv(JSON.stringify(Commons.seriespicker()));
+	function showDownload(auto_load){
 		if(!auto_load) updateShareUrl('download');		
+		download_csv(JSON.stringify(Commons.seriespicker()));
 	}
 
 	$("#downloadBtn").click(function(){
@@ -156,10 +156,26 @@ $(document).ready(function(){
 		});
 	};
 
+	$("#clearBtn").click(function(){
+		history.replaceState({}, document.title, "/data/analyze/");
+		Commons.load_seriespicker_state([]);
+	});
+
 	$("#editSeriesBtn").click(function(){
+		// show buttons and animate page
 		$(".btn-primary").show();
 		$("#editSeriesBtn").hide();	
 		Commons.kill_live();
+
+		// clear current graph
+		var index=$("div#charts-container").data("highchartsChart");
+		var chart=Highcharts.charts[index];
+		if(typeof(chart) !== "undefined"){
+			while(chart.series.length > 0){
+				chart.series[0].remove(false);
+			}
+			chart.redraw();
+		}
 
 		$("div#charts-container").slideUp({
 			complete : function(){
@@ -196,6 +212,7 @@ $(document).ready(function(){
 			switch(analysis_type){
 				case "download":
 					showDownload(true);
+					$("#daterange_and_seriespicker").slideDown();
 					break;
 				case "static":
 					showStatic(true);
@@ -203,6 +220,8 @@ $(document).ready(function(){
 				case "live":
 					showLive(true);
 					break;
+				default:
+					$("#daterange_and_seriespicker").slideDown();
 			};
 		});
 	} else{
