@@ -10,7 +10,7 @@ urlpatterns = patterns('',
 	# Examples:
 	url(r'^$', IndexView.as_view()),
 	url(r'^admin/', include(admin.site.urls)),
-	url(r'^electric/', include('electric.urls')),
+	#url(r'^electric/', include('electric.urls')),
 	#url(r'^hvac/', include('hvac.urls')),
 	url(r'^(timeseries|data)/', include('timeseries.urls')),
 	url(r'^status/', 'timeseries.views.status')
