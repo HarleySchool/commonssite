@@ -6,6 +6,7 @@ from django.http import HttpResponseBadRequest
 from functools import partial
 from django.shortcuts import render, redirect
 from timeseries.models import Series
+from commonssite.settings import datetime_out_format
 
 def analyze(request):
 	return render(request, 'timeseries/analyze.html', {'systems' : h.systems_schema()})
@@ -30,7 +31,7 @@ def download_csv(request):
 		return HttpResponseBadRequest("To download data, a series must be specified")
 	
 	# use helper file to fetch and format data
-	serieses = h.series_filter(series, tstart, tend)
+	serieses = h.series_filter(series, tstart, tend, dateformat=datetime_out_format)
 	
 	# set up the CSV writer
 	response = HttpResponse(content_type='text/csv')

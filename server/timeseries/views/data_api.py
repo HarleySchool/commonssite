@@ -91,7 +91,7 @@ def series(request):
 		avg = post.get('averages', True)
 		if t_start is None or t_end is None:
 			return HttpResponseBadRequest("series request error: 'from' and 'to' range are required and must be specified as an ISO-formatted string")
-		data = h.series_filter(post.get('series'), t_start, t_end, include_temporary=temp, include_averages=avg, isoformat=True)
+		data = h.series_filter(post.get('series'), t_start, t_end, include_temporary=temp, include_averages=avg, dateformat='ISO')
 		return HttpResponse(content_type='application/json', content=json.dumps(data))
 	else:
 		return HttpResponseBadRequest()
@@ -102,7 +102,7 @@ def single(request):
 	"""
 	if request.body:
 		post = json.loads(request.body)
-		data = h.live_filter(post.get('series'), isoformat=True)
+		data = h.live_filter(post.get('series'), dateformat='ISO')
 		return HttpResponse(content_type='application/json', content=json.dumps(data))
 	else:
 		return HttpResponseBadRequest()

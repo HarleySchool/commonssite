@@ -35,7 +35,7 @@ def systems_schema():
 	"""
 	return [registry.schema() for registry in ModelRegistry.objects.all()]
 
-def split_on_indexes(queryset, column_filter=None, isoformat=False):
+def split_on_indexes(queryset, column_filter=None, dateformat=None):
 	"""given a queryset of TimeseriesBase objects, return a dict mapping from each unique index to the list of
 	objects which share that index
 
@@ -44,8 +44,10 @@ def split_on_indexes(queryset, column_filter=None, isoformat=False):
 	for obj in queryset:
 		ind = obj.index_tuple() # index_tuple() method is defined in TimeseriesBase. May be None.
 		filtered_obj_dict = vars(obj) if not column_filter else dict((key, vars(obj)[key]) for key in column_filter)
-		if isoformat:
+		if dateformat is 'ISO':
 			filtered_obj_dict['Time'] = filtered_obj_dict['Time'].isoformat()
+		elif dateformat:
+			filtered_obj_dict['Time'] = filtered_obj_dict['Time'].strftime(dateformat)
 		index_lookup[ind] = index_lookup.get(ind, []) + [filtered_obj_dict] # append the current object to this list
 	# sort data by time
 	for index, data in index_lookup.iteritems():
@@ -101,13 +103,13 @@ def parse_time(isostring):
 		dt = dt.replace(tzinfo=tzlocal())
 	return dt
 
-def __query_data(sys, subsys, model, filter_kwargs, columns, isoformat=False):
+def __query_data(sys, subsys, model, filter_kwargs, columns, dateformat=None):
 	"""this private function handles the output formatting specified by series_filter
 	"""
 	# make the query according to all given filters
 	Q = model.objects.filter(**filter_kwargs)
 	Q = Q.select_related() # follow foreign key references
-	indexes_split = split_on_indexes(Q, column_filter=columns, isoformat=isoformat)
+	indexes_split = split_on_indexes(Q, column_filter=columns, dateformat=dateformat)
 
 	return [{
 			'system' : sys,
@@ -116,7 +118,7 @@ def __query_data(sys, subsys, model, filter_kwargs, columns, isoformat=False):
 			'data' : objects
 			} for idx, objects in indexes_split.iteritems()]
 
-def series_filter(filter_objs, tstart, tend, include_temporary=False, include_averages=True, isoformat=False):
+def series_filter(filter_objs, tstart, tend, include_temporary=False, include_averages=True, dateformat=None):
 	"""Given the definition of some serieses, return a list of dicts with the data.
 
 	filter definition is as follows:
@@ -177,11 +179,11 @@ def series_filter(filter_objs, tstart, tend, include_temporary=False, include_av
 		filter_kwargs['Time__gte'] = tstart
 		filter_kwargs['Time__lt']  = tend
 
-		retlist.extend(__query_data(sys, subsys, model, filter_kwargs, columns, isoformat))
+		retlist.extend(__query_data(sys, subsys, model, filter_kwargs, columns, dateformat))
 
 	return retlist
 
-def live_filter(filter_objs, isoformat=False):
+def live_filter(filter_objs, dateformat=None):
 	"""see series_filter for api (identical). instead of returning data across a timespan, this returns only the latest point for each series"""
 	retlist = []
 	for specs in filter_objs:
@@ -206,5 +208,5 @@ def live_filter(filter_objs, isoformat=False):
 		# non-temporary vals are averages, and we don't want those live.
 		filter_kwargs = {'Time' : model.latest(temporary=True)}
 
-		retlist.extend(__query_data(sys, subsys, model, filter_kwargs, columns, isoformat))
+		retlist.extend(__query_data(sys, subsys, model, filter_kwargs, columns, dateformat))
 	return retlist
