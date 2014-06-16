@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load jsonify %}
 
 {% block title %}Live Data{% endblock title %}
 {% block subtitle %}Live Data{% endblock subtitle %}
@@ -8,51 +9,37 @@
 <script src="{% static "js/highcharts/highcharts.js" %}"></script>
 <script>
 	$(function(){
-		var power_series = [
-			{	'system' : 'Electric',
-				'subsystem' : 'Gross and Net',
-				'indexes' : [],
-				'columns' : ['GrossPowerUsed', 'GrossPowerProduced', 'NetPower']
-			}
-		];
-
-		var greenhouse_series = [
-			{	'system' : 'Arduino',
-				'subsystem' : 'Greenhouse DHT',
-				'indexes' : [],
-				'columns' : ['temp_east_chimney_low', 'temp_east_chimney_high', 'temp_west_chimney_low', 'temp_west_chimney_high']
-			}
-		];
-
-		var solar_series = [
-			{	'system' : 'Solar',
-				'subsystem' : 'Solar Overview',
-				'indexes' : [],
-				'columns' : ['TotalACPower']
-			}
-		];
-
-		var weather_series = [
-			{	'system' : 'Weather Station',
-				'subsystem' : 'Weather',
-				'indexes' : [],
-				'columns' : ['outtemp']
-			}
-		];
-
-		var hour = 60;
-
-		Commons.live_chart(solar_series, "Solar Energy Production (W)", "#solar", hour, "spline");
-		Commons.live_chart(weather_series, "Outside Temperature", "#weather", hour, "spline");
-		Commons.live_chart(power_series, "Total Power Use (kW)", "#power", hour, "spline");
-		Commons.live_chart(greenhouse_series, "Greenhouse Temperature (F)", "#greenhouse-temp", hour, "spline");
+		{% for id, chart in charts_table.iteritems %}
+		var series{{ chart.location }} = {% autoescape off %}{{ chart.series }};{% endautoescape %}
+		Commons.live_chart(series{{ chart.location }}, "{{chart.title}}", "div#chart{{ chart.location }}", 60, "spline");
+		{% endfor %}
 	});
 </script>
 {% endblock scripts %}
 
 {% block content %}
-<div id="solar" class="col-lg-6" style="height:300px;"></div>
-<div id="weather" class="col-lg-6" style="height:300px;"></div>
-<div id="power" class="col-lg-6" style="height:300px;"></div>
-<div id="greenhouse-temp" class="col-lg-6" style="height:300px;"></div>
+<table style="width:100%;">
+	<tr>
+		<td colspan="{{ charts_table.00.colspan }}" rowspan="{{ charts_table.00.rowspan }}">
+			<div id="chart0"></div>
+		</td>
+		{% if "01" in charts_table %}
+		<td colspan="{{ charts_table.01.colspan }}" rowspan="{{ charts_table.01.rowspan }}">
+			<div id="chart1"></div>
+		</td>
+		{% endif %}
+	</tr>
+	<tr>
+		{% if "10" in charts_table %}
+		<td colspan="{{ charts_table.10.colspan }}" rowspan="{{ charts_table.10.rowspan }}">
+			<div id="chart2"></div>
+		</td>
+		{% endif %}
+		{% if "11" in charts_table %}
+		<td colspan="{{ charts_table.11.colspan }}" rowspan="{{ charts_table.11.rowspan }}">
+			<div id="chart3"></div>
+		</td>
+		{% endif %}
+	</tr>
+</table>
 {% endblock content %}

@@ -153,12 +153,28 @@ class ModelRegistry(models.Model):
 		}
 		return schema
 
+class Live(models.Model):
+	"""keep track of the 4-or-fewer series for the kiosk page (decoupled from models and gives admin control)
+	"""
+
+	series = models.ForeignKey('Series')
+	title = models.CharField(max_length=40)
+	location = models.IntegerField(choices=((0, 'Top Left'),(1, 'Top Right'),(2, 'Bottom Left'),(3, 'Bottom Right')))
+	colspan = models.IntegerField(choices=((1,1),(2,2)))
+	rowspan = models.IntegerField(choices=((1,1),(2,2)))
+
+	def __unicode__(self):
+		return u'%s' % self.title
+
 class Series(models.Model):
 	"""This table saves pre-defined series
 	"""
 
 	spec = jsonfield.JSONField()
 	string_hash = models.CharField(max_length=24) # 24 is length of an md5 hash
+
+	def __unicode__(self):
+		return u'%s' % self.string_hash
 
 	@staticmethod
 	def make_hash(normalized_json_string):

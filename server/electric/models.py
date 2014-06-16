@@ -36,7 +36,7 @@ class CircuitEntry(TimeseriesBase):
 	Energy = models.FloatField(db_column='energy', verbose_name=u'Energy (kWh)')
 	MaxCurrent = models.FloatField(db_column='current-max', verbose_name=u'Max Current over 15 min (A)')
 	Demand = models.FloatField(db_column='demand', verbose_name=u'Current Demand (A)')
-	Power = models.FloatField(db_column='power')
+	Power = models.FloatField(db_column='power', verbose_name=u'Power (kW)')
 	MaxPower = models.FloatField(db_column='power-max', verbose_name=u'Max Power over 15 min (kW)')
 	PowerDemand = models.FloatField(db_column='power-demand', verbose_name=u'Power Demand (kW)')
 	PowerFactor = models.FloatField(db_column='power-factor', verbose_name=u'Power Factor')
