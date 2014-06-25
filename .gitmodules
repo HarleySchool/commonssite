@@ -1,0 +1,3 @@
+[submodule "server/arduino/NetworkSensor"]
+	path = server/arduino/NetworkSensor
+	url = git@github.com:HarleySchool/NetworkSensor
