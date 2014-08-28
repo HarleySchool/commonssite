@@ -49,8 +49,8 @@ INSTALLED_APPS = (
     'south',
     'weather',
     'arduino',
-    'water'
-)
+    'water',
+    'dummy')
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
