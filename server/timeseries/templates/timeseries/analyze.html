@@ -21,7 +21,7 @@
 {% include "timeseries/seriespicker.html" %}
 </div>
 <div id="charts-container" class="col-md-12"></div>
-
+<div style="clear:both"></div> <!-- this clears out any overflow or underflow issues before the row of buttons -->
 <button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
 <button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
 <button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>

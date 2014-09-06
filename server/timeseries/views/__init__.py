@@ -10,7 +10,7 @@ def live(request):
 	charts_table = {}
 	for chart in Live.objects.all():
 		col = chart.location % 2
-		row = chart.location / 2
+		row = int(chart.location / 2)
 		charts_table['%d%d' % (row,col)] = {
 			'location' : chart.location,
 			'rowspan' : chart.rowspan,
