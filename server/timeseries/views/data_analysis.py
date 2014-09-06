@@ -3,13 +3,15 @@ import json
 import timeseries.helpers as h
 from django.http import HttpResponse
 from django.http import HttpResponseBadRequest
+from django.http import StreamingHttpResponse
 from functools import partial
+from django.template import Context
 from django.shortcuts import render, redirect
 from timeseries.models import Series
 from commonssite.settings import datetime_out_format
 
 def analyze(request):
-	return render(request, 'timeseries/analyze.html', {'systems' : h.systems_schema()})
+	return render(request, 'timeseries/analyze.html', {})
 
 def download_csv(request):
 	# parse start and end times

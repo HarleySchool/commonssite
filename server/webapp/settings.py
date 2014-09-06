@@ -58,7 +58,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -69,7 +69,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages")
+    "django.contrib.messages.context_processors.messages",
+    "timeseries.context_processors.systems_schema",
+    "timeseries.context_processors.theme",)
 
 ROOT_URLCONF = 'webapp.urls'
 

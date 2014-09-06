@@ -1,57 +1,51 @@
-
-.text-muted {
-  color: #66AD85;
+html, body{
+  height: 100%;
 }
 
-.buttons-container button {
-    margin: 0 2px;
-
+.splash img{
+  margin-top:50px; /* because nav bar is fixed */
+  width:100%;
 }
 
-a:link {color:#66AD85;}
-a:visited {color:#66AD85;}
-
-/* Space out content a bit */
-body {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  background-color: #FCFBF2;
+.left-nav{
+  border-right: 2px solid #DDD;
 }
 
-/* Everything but the jumbotron gets side spacing for mobile first views */
-.header,
-.marketing,
-.footer {
-  padding-right: 15px;
-  padding-left: 15px;
+.left-nav a{
+  display:block;
 }
 
-/* Custom page header */
-.header {
-  border-bottom: 1px solid #8C8C8C;
-}
-/* Make the masthead heading the same height as the navigation */
-.header h3 {
-  padding-bottom: 19px;
-  margin-top: 0;
-  margin-bottom: 0;
-  line-height: 40px;
+#content-wrapper p{
+  font-size: 1.3em;
 }
 
-/* Custom page footer */
-.footer {
-  padding-top: 19px;
-  color: #777;
-  border-top: 1px solid #8C8C8C;
+/* FOOTER (sticky footer css courtesy of http://getbootstrap.com/2.3.2/examples/sticky-footer.html) */
+
+#stickyfooter-push, footer{
+  height:60px;
 }
 
-/* Supporting marketing content */
-.marketing {
-  margin: 40px 0;
+#stickyfooter-wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by it's height */
+  margin: 0 auto -60px;
 }
-.marketing p + h4 {
-  margin-top: 28px;
+
+footer{
+  display:table;
+  width:100%;
+  background: #222;
+  color:#555;
 }
+
+footer .row{
+  display:table-cell;
+  vertical-align: middle;
+}
+
+/* MEDIA TAGS */
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
@@ -65,16 +59,13 @@ body {
   /* Space out the masthead */
   .header {
     margin-bottom: 30px;
-  }z/* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-  /* Remove the padding we set earlier */
-  .header,
-  .marketing,
-  .footer {
-    padding-right: 0;
-    padding-left: 0;
   }
-  /* Space out the masthead */
-  .header {
-    margin-bottom: 30px;
+}
+@media (max-width: 767px) {
+  #stickyfooter-footer {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
+}

@@ -4,6 +4,7 @@ from dateutil.tz import tzlocal
 import operator
 
 # refer to https://docs.djangoproject.com/en/dev/ref/models/fields/#field-types
+# this dict controls which ORM field types are returned in the systems_schema function
 model_types = {
 	'numeric' : [u'FloatField', u'IntegerField', u'BigIntegerField', u'DecimalField', u'PositiveIntegerField', u'PositiveSmallIntegerField', u'SmallIntegerField' ],
 	'string' : [u'CharField', u'BooleanField', u'TextField']
@@ -36,10 +37,11 @@ def systems_schema():
 	return [registry.schema() for registry in ModelRegistry.objects.all()]
 
 def split_on_indexes(queryset, column_filter=None, dateformat=None):
-	"""given a queryset of TimeseriesBase objects, return a dict mapping from each unique index to the list of
+	"""given a queryset of TimeseriesBase objects, return a dict mapping _from_ each unique index _to_ the list of
 	objects which share that index
 
-	column_filter behaves like QuerySet.values(); instead of a list of objects, a list of object-like dictionaries will be returned"""
+	column_filter behaves like QuerySet.values(); instead of a list of objects, a list of object-like dictionaries will be returned
+	where column_filter is a list of the keys for that dict"""
 	index_lookup = {}
 	for obj in queryset:
 		ind = obj.index_tuple() # index_tuple() method is defined in TimeseriesBase. May be None.
@@ -111,15 +113,15 @@ def __query_data(sys, subsys, model, filter_kwargs, columns, dateformat=None):
 	Q = Q.select_related() # follow foreign key references
 	indexes_split = split_on_indexes(Q, column_filter=columns, dateformat=dateformat)
 
-	return [{
+	return ({
 			'system' : sys,
 			'subsystem' : subsys,
 			'index' : idx[1] if idx else None,
 			'data' : objects
-			} for idx, objects in indexes_split.iteritems()]
+			} for idx, objects in indexes_split.iteritems())
 
 def series_filter(filter_objs, tstart, tend, include_temporary=False, include_averages=True, dateformat=None):
-	"""Given the definition of some serieses, return a list of dicts with the data.
+	"""Given the definition of some serieses, return a (generator) list of dicts with the data.
 
 	filter definition is as follows:
 	[
@@ -180,7 +182,6 @@ def series_filter(filter_objs, tstart, tend, include_temporary=False, include_av
 		filter_kwargs['Time__lt']  = tend
 
 		retlist.extend(__query_data(sys, subsys, model, filter_kwargs, columns, dateformat))
-
 	return retlist
 
 def live_filter(filter_objs, dateformat=None):
