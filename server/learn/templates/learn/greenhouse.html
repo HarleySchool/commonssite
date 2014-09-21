@@ -7,14 +7,239 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/figures.css'%}" />
+
+<style>
+
+.wiretable{
+	border:1px solid;
+}
+
+.wiretable td, .wiretable th{
+	border:1px solid;
+	text-align: center;
+	padding:0px 4px;
+}
+
+</style>
+
 {% endblock styles %}
 
 {% block content %}
 <h3>Hydroponics</h3>
 <hr />
-<p></p>
+<figure class="right tall">
+	<img src="{% static 'images/greenhouse.jpg' %}" alt="plants growing in the greenhouse"/>
+	<figcaption>Spiral design by the 7th grade science class, and a basil table in the background</figcaption>
+</figure>
+
+<p>Hydroponics is growing plants <b>without soil</b>. Instead, they are placed in a spongey case or nutrient-free pebbles and fed directly by water. Growers need to be careful that the water has just the right balance of nutrients. Middle and high-school science students do nutrient and pH testing multiple times each week to ensure that the plants stay healthy!</p>
+
+<p>One of the interesting challenges faced in the greenhouse is where to put things; it is a very tall room without a lot of floor space. To address this, the seventh grade science classes each prototyped and built their own concepts for "vertical" hydroponics. The spiral design in the picture is one of the class's full-scale prototypes.</p>
+
+<p>Between the Commons greenhouse and the microfarm, an early goal will be to grow on site all of the lettuce for the salad bar at lunch, year round!</p>
+
+<div class="clear"></div>
 <h3>Solar Chimneys</h3>
 <hr />
-<p></p>
+
+<figure class="wide right">
+	<img src="{% static 'images/louver_bottom.jpg' %}" alt="bottom louver" />
+	<figcaption>Low louver on the east chimney</figcaption>
+</figure>
+
+<p>Solar chimneys are a form of <b>passive ventilation</b>. Instead of fans, they use hot air and vents to push and pull air around between rooms. There are two solar chimneys in the greenhouse: one on the east (near the project space and CMEE) and one on the west (near the workshop and BCCE). Each one has a vent at the top and bottom, called "louvers," and four vents into the different floors, controlled by vents which we call "dampers."</p>
+
+<p>Opening and closing the vents is done from the control room. The <b>louvers</b> are controlled via the white light switch squares. On each, the leftmost button closes the lover and the next opens it. The right two buttons aren't used. If the light is on underneath the switch, the louver is closed. The light on the left was removed because of a fried relay inside the control box. The <b>dampers</b> are opened and closed using the toggle switches on the top row.</p>
+
+<figure class="wide right">
+	<img src="{% static 'images/solar_chimney_control_front.jpg' %}" alt="bottom louver" />
+	<figcaption>Solar Chimney control box</figcaption>
+</figure>
+
+<p>Unfortunately, the solar chimney controls are not yet integrated into the website. Any experiments involving the solar chimneys need to include careful, manual tracking of when each louver and damper is open. Or, using the same code as the Temperature and Humidity Sensors (see below), someone could build their own "sensor" for the control box pretty easily!</p>
+
+<p>The motors which power the louvers are powered by the outlet where the control box is plugged in. The dampers are powered by the solar-charged battery in the corner of the control room. One issue with the dampers is that they are powered-open and spring-closed. That means that as long as the vent is open, the motor is exerting energy just to hold it open! (But that energy is completely off the grid)</p>
+
+<div class="row">
+	<div class="col-md-4">
+		<figure class="center wide">
+			<img src="{% static 'images/solar_chimney_wires_box.jpg' %}" alt="" />
+			<figcaption>Numbered red wires from the control box run through conduits up to the louvers and dampers</figcaption>
+		</figure>
+	</div>
+	<div class="col-md-4">
+		<figure class="center wide">
+			<img src="{% static 'images/actuator.jpg' %}" alt="" />
+			<figcaption>One of the damper actuators</figcaption>
+		</figure>
+	</div>
+	<div class="col-md-4">
+		<figure class="center wide">
+			<img src="{% static 'images/solar_chimney_control_back.jpg' %}" alt="" />
+			<figcaption>The inside of the control box uses four commercial window controllers</figcaption>
+		</figure>
+	</div>
+</div>
+
+<div class="clear"></div>
+<h3>Temperature and Humidity Sensors</h3>
+<hr />
+
+<figure class="tall right">
+	<img src="{% static 'images/arduino_closeup.jpg' %}" alt="sensor hub"/>
+	<figcaption>Arduino circuit controlling the sensors</figcaption>
+</figure>
+
+<figure class="tall right">
+	<img src="{% static 'images/dhc.jpg' %}" alt="A DHC22 temperature/humidity sensor"/>
+	<figcaption>A temperature/humidity sensor with wires and fancy sunlight shield</figcaption>
+</figure>
+
+<p>There are seven custom-installed temperature/humidity sensors in the greenhouse. Four are in the solar chimneys (top and bottom each side). The other three are at table height, mezzanine height, and ceiling height. It should be easy to install more (up to 16 total); keep reading for details.</p>
+
+<p>The sensors themselves are called <a href="http://www.adafruit.com/products/385">DHT22s</a>. They come with code that will allow an <a href="http://www.arduino.cc/">Arduino</a> to read data from them. (An arduino is like a tiny programmable circuit and computer for hobbyists). The picture on the right shows a DHT22 after it has had wires soldered on and been stuck inside one of the PVC sunlight shields (can you guess why they need to be sheilded?)</p>
+
+<p><b>How they're wired:</b></p>
+
+<p>The Arduino Uno has only 14 digital data pins for communication. When using ethernet (which we need to send data back over the internet), two of those pins become unavailable. That leaves only 12 slots for sensors, but we want to be able to install more than that in the long run. The solution is to use <i>multiplexers</i>. A multiplexer is like a switch on a train track. This circuit uses two 8:1 multiplexers, giving us a total of 16 possible routes. It is possible to "fan out" multiplexers one after the other. With 9 of them, we would have 64 differnt "tracks." Because of the way binary numbers work, it takes 3 wires to specify which of the 8 tracks you want on a single multiplexer (they are 000, 001, 010, 011, 100, 101, 110, and 111). It takes 4 bits to specify which of 16 tracks you want. Add in one <i>shared</i> wire for communication, and you can talk to 16 sensors with just 5 wires!</p>
+<figure class="tall right">
+	<img src="{% static 'images/dhc_splice.jpg' %}" alt="A spliced-open ethernet cable"/>
+	<figcaption>A sensor being spliced into the ethernet cable.</figcaption>
+</figure>
+
+
+<p>This circuit was built using ethernet cables, because they come with 8 small colored wires inside: Blue, White-Blue, Green, White-Green, Orange, White-Orange, Brown, White-Brown. Keep in mind that the use of ethernet cables has <i>nothing</i> to do with whether they are connected to the internet! Any bundle of small wires would have worked. To keep the sensors from getting in each others way, they each need their own dedicated data wire. They also each need two power wires, but that can be shared. Because of the way the multiplexers work, it was convenient to bundle together 4 groups of 4 data lines. Only 3 are used so far, so there are 3 ethernet cables carrying data back from the sensors to the arduino.</p>
+
+<p>The following table shows the job of the wire colors inside each cable correspond. The four cables are named <b>alpha</b>, <b>bravo</b>, <b>charlie</b>, and <b>delta</b> (because other convenient letters and numbers had run out)</p>
+<center>
+<table class="wiretable">
+	<thead>
+		<tr>
+			<th>Mux Pin</th>
+			<th>Tape</th>
+			<th>Cable Name</th>
+			<th>Wire Color</th>
+			<th>Sensor Location</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>A0</td>
+			<td>black</td>
+			<td rowspan="4">Alpha</td>
+			<td>brown</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>A1</td>
+			<td>green</td>
+			<td>green</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>A2</td>
+			<td>orange</td>
+			<td>orange</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>A3</td>
+			<td>(none)</td>
+			<td>white-green</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>A4</td>
+			<td>black</td>
+			<td rowspan="4">Bravo</td>
+			<td>brown</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>A5</td>
+			<td>green</td>
+			<td>green</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>A6</td>
+			<td>orange</td>
+			<td>orange</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>A7</td>
+			<td>(none)</td>
+			<td>white-green</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B0</td>
+			<td>black</td>
+			<td rowspan="4">Charlie</td>
+			<td>brown</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B1</td>
+			<td>green</td>
+			<td>green</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B2</td>
+			<td>orange</td>
+			<td>orange</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B3</td>
+			<td>(none)</td>
+			<td>white-green</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B4</td>
+			<td>black</td>
+			<td rowspan="4">Delta</td>
+			<td>brown</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B5</td>
+			<td>green</td>
+			<td>green</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B6</td>
+			<td>orange</td>
+			<td>orange</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td>B7</td>
+			<td>(none)</td>
+			<td>white-green</td>
+			<td></td>
+		</tr>
+		<tr style="background-color:#CCC">
+			<td>+5V</td>
+			<td>red</td>
+			<td>all four</td>
+			<td>blue</td>
+			<td>N/A</td>
+		</tr>
+		<tr style="background-color:#CCC">
+			<td>Ground</td>
+			<td>(black wire)</td>
+			<td>all four</td>
+			<td>white-blue</td>
+			<td>N/A</td>
+		</tr>
+	</tbody>
+</table>
+</center>
+<br>
 </div>
 {% endblock content %}
