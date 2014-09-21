@@ -9,6 +9,9 @@ html, body{
 
 .left-nav{
   border-right: 2px solid #DDD;
+  position:fixed;
+  top:50px;
+  z-index:1000;
 }
 
 .left-nav a{
@@ -16,7 +19,11 @@ html, body{
 }
 
 #content-wrapper p{
-  font-size: 1.3em;
+  font-size: 1.15em;
+}
+
+.clear{
+  clear:both;
 }
 
 /* FOOTER (sticky footer css courtesy of http://getbootstrap.com/2.3.2/examples/sticky-footer.html) */
@@ -34,15 +41,29 @@ html, body{
 }
 
 footer{
+  position:relative;
   display:table;
   width:100%;
   background: #222;
   color:#555;
+  z-index: 1001;
 }
 
 footer .row{
   display:table-cell;
   vertical-align: middle;
+}
+
+.clear50{
+  height:50px;
+}
+
+/* clever trick thanks to http://stackoverflow.com/a/18330040/1935085 */
+li.disabled.nav-header > a {
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 /* MEDIA TAGS */

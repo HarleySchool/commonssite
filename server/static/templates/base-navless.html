@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+{% load static %}
+{% load active_page %}
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>{% block title %}Commons Control - The Harley School{% endblock %}</title>
+	  <!--[if lt IE 9]>
+	<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <link rel='stylesheet' href="{% static 'css/bootstrap.min.css'%}" type ='text/css'/>
+  <link rel='stylesheet' href="{% static 'css/harley.css'%}" type ='text/css'/>
+  {% block styles %}
+  {% endblock styles %}
+  <!-- Javascript sources -->
+  <script src="{% static "js/jquery.js" %}"></script>
+  <script src="{% static "js/commonsapi.js" %}"></script>
+  <script src="{% static "js/bootstrap.min.js" %}"></script>
+  {% block scripts %}
+  {% endblock scripts %}
+</head>
+<body>
+
+  <div class="container-fluid" id="stickyfooter-wrap">
+    <!-- Header -->
+    <div id="top-nav" class="row navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/"><b>The Harley School</b> Commons Control</a>
+      </div>
+      <div class="navbar-collapse collapse" style="padding-right:30px">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#">Admin <span class="caret"></span>
+            </a>                  
+            <ul class="dropdown-menu" role="menu">
+              <li><a role="menuitem" href="/admin">Settings (this site)</a></li>
+              <li><a role="menuitem" href="/status">Scrapers status</a></li>
+              <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/electric/">Veris Dashboard</a></li>
+              <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/hvac/en/administrator.html">HVAC Manager</a></li>
+              <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/hvac/g-50/en/administrator.html">HVAC Initial</a></li>
+              <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/solar/">Solar Dashboard</a></li>
+              <li><a role="menuitem" href="http://sunnyportal.com">Sunny Portal</a></li>
+              <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/tv1/">Lobby TV</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div> <!-- /navbar-collapse-->
+    </div> <!-- /navbar-->
+    <!-- /Header -->    
+    <!-- Content -->
+    {% block content %}
+    {% endblock content %}
+    <!-- /Content -->
+    <div id="stickyfooter-push"></div>
+  </div>
+  <footer class="text-center container-fluid">
+    <div class="row">&copy;2014 The Harley School :: Website created by Richard Lange
+    </div>
+  </footer>
+  {% block postscript %}
+  <!-- this is where page-specific <script> tags should go -->
+  {% endblock postscript %}
+
+</body>
+</html>

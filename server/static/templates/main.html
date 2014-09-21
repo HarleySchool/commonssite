@@ -1,0 +1,93 @@
+{% extends "base-navless.html" %}
+{% load static %}
+
+{% block styles%}
+<style type="text/css">
+@media screen and (min-width: 768px) {
+	.fullscreen-center{
+		text-align: center;
+	}
+	.fullscreen-right{
+		text-align: right;
+	}
+	.commons-snow{
+		margin-top:-65px;
+		height:65px;
+	}
+}
+
+.quick-links{
+	position: absolute;
+	top:60px;
+	width:100%;
+	color:#000;
+	font-size: 1.5em;
+}
+
+.page-links{
+	font-size: 1.3em;
+}
+.quick-links a, .page-links a{
+	color: #333;
+}
+
+.quick-links a:hover, .page-links a:hover{
+	color: #000;
+	text-decoration: underline;
+}
+
+</style>
+{% endblock styles%}
+
+{% block content %}
+<!-- splash image -->
+<div class="row splash">
+	<img src="{% static "images/commons.exterior960x400.jpg"%}" />
+</div>
+
+<div class="row quick-links">
+	<div class="col-xs-4">
+		<a href="/learn">About the Building</a>
+	</div>
+	<div class="col-xs-4 fullscreen-center">
+		<a href="/data/analyze">Analyze Data</a>
+	</div>
+	<div class="col-xs-4 fullscreen-right">
+		<a href="/projects">Student Projects</a>
+	</div>
+</div>
+<div class="row commons-snow page-links">
+	<div class="col-sm-3 col-sm-offset-1" style="display:table">
+		<h3 style="font-weight:bold;display:table-cell;vertical-align:middle">Building Systems</h3>
+	</div>
+	<div class="col-sm-7">
+		<div class="row">
+			<div class="col-sm-3" data-theme="greenhouse">
+				<a href="/learn/greenhouse">Greenhouse</a>
+			</div>
+			<div class="col-sm-3" data-theme="hvac">
+				<a href="/learn/hvac">HVAC</a>
+			</div>
+			<div class="col-sm-3" data-theme="weather">
+				<a href="/learn/weather">Weather</a>
+			</div>
+			<div class="col-sm-3" data-theme="solar">
+				<a href="/learn/solar">Solar</a>
+			</div>
+			<div class="col-sm-3" data-theme="geothermal">
+				<a href="/learn/geothermal">Geothermal</a>
+			</div>
+			<div class="col-sm-3" data-theme="electric">
+				<a href="/learn/electric">Electric</a>
+			</div>
+			<div class="col-sm-3" data-theme="solarwater">
+				<a href="/learn/solarwater">Solar Hot Water</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}
+
+{% block postscript %}
+{% endblock postscript %}

@@ -1,0 +1,34 @@
+figure{
+	margin:10px;
+}
+
+figure.right{
+	float:right;	
+}
+
+figure.center{
+	width:100%;
+	clear:both;
+	text-align: center;
+}
+
+figure.tall{
+	height: 300px;
+}
+
+figure.tall img{
+	height: 280px;
+}
+
+figure.wide{
+	width: 300px;
+}
+
+figure.wide img{
+	width: 280px;
+}
+
+figcaption{
+	word-wrap:break-word;
+	margin-top:-1em;
+}
