@@ -3,7 +3,8 @@ figure{
 }
 
 figure.right{
-	float:right;	
+	float:right;
+	text-align: right
 }
 
 figure.left{	
