@@ -6,6 +6,10 @@ figure.right{
 	float:right;	
 }
 
+figure.left{	
+	float:left;	
+}
+
 figure.center{
 	width:100%;
 	clear:both;
@@ -30,5 +34,4 @@ figure.wide img{
 
 figcaption{
 	word-wrap:break-word;
-	margin-top:-1em;
 }
