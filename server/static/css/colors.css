@@ -1,0 +1,181 @@
+/*
+Theme Names
+-----------
+home
+projects
+analyze
+greenhouse
+solarwater
+weather
+solar
+geothermal
+electric
+hvac
+*/
+
+/* each color can be applied as font color, background color, border, etc. 
+	each needs its own class because that's how CSS works
+
+	The server decides which theme to apply to each page by pattern-matching the url.
+	This happens in timeseries.context_processors.theme() */
+
+.theme-home-bg{
+	background-color: #D8F0FC;
+}
+
+.theme-home{
+	color: #D8F0FC;
+}
+
+.theme-home-border{
+	border:2px solid #D8F0FC;
+}
+
+.theme-home-underline{
+	border-bottom:4px solid #D8F0FC;
+}
+
+.theme-projects-bg{
+	background-color: #A3D5F4;
+}
+
+.theme-projects{
+	color: #A3D5F4;
+}
+
+.theme-projects-border{
+	border:2px solid #A3D5F4;
+}
+
+.theme-projects-underline{
+	border-bottom:4px solid #A3D5F4;
+}
+
+.theme-analyze-bg{
+	background-color: #96ADB2;
+}
+
+.theme-analyze{
+	color: #96ADB2;
+}
+
+.theme-analyze-border{
+	border:2px solid #96ADB2;
+}
+
+.theme-analyze-underline{
+	border-bottom:4px solid #96ADB2;
+}
+
+.theme-greenhouse-bg{
+	background-color: #5D9EBD;
+}
+
+.theme-greenhouse{
+	color: #5D9EBD;
+}
+
+.theme-greenhouse-border{
+	border:2px solid #5D9EBD;
+}
+
+.theme-greenhouse-underline{
+	border-bottom:4px solid #5D9EBD;
+}
+
+.theme-solarwater-bg{
+	background-color: #B09160;
+}
+
+.theme-solarwater{
+	color: #B09160;
+}
+
+.theme-solarwater-border{
+	border:2px solid #B09160;
+}
+
+.theme-solarwater-underline{
+	border-bottom:4px solid #B09160;
+}
+
+.theme-weather-bg{
+	background-color: #3C7391;
+}
+
+.theme-weather{
+	color: #3C7391;
+}
+
+.theme-weather-border{
+	border:2px solid #3C7391;
+}
+
+.theme-weather-underline{
+	border-bottom:4px solid #3C7391;
+}
+
+.theme-solar-bg{
+	background-color: #374E60;
+}
+
+.theme-solar{
+	color: #374E60;
+}
+
+.theme-solar-border{
+	border:2px solid #374E60;
+}
+
+.theme-solar-underline{
+	border-bottom:4px solid #374E60;
+}
+
+.theme-geothermal-bg{
+	background-color: #541C41;
+}
+
+.theme-geothermal{
+	color: #541C41;
+}
+
+.theme-geothermal-border{
+	border:2px solid #541C41;
+}
+
+.theme-geothermal-underline{
+	border-bottom:4px solid #541C41;
+}
+
+.theme-electric-bg{
+	background-color: #EAAB5C;
+}
+
+.theme-electric{
+	color: #EAAB5C;
+}
+
+.theme-electric-border{
+	border:2px solid #EAAB5C;
+}
+
+.theme-electric-underline{
+	border-bottom:4px solid #EAAB5C;
+}
+
+.theme-hvac-bg{
+	background-color: #B4404D;
+}
+
+.theme-hvac{
+	color: #B4404D;
+}
+
+.theme-hvac-border{
+	border:2px solid #B4404D;
+}
+
+.theme-hvac-underline{
+	border-bottom:4px solid #B4404D;
+}
+
