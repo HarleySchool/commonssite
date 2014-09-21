@@ -51,8 +51,8 @@ INSTALLED_APPS = (
     'arduino',
     'water',
     'learn',
-    'projects',
-    'dummy')
+    'projects'
+    )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
