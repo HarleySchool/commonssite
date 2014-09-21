@@ -50,8 +50,15 @@
     <div class="clear50"></div>
     <!-- /Header -->
     <div class="row">
-     <div class="col-md-2 left-nav">
-      <!-- left navigation -->
+     <div class="col-sm-2 left-nav">
+      <!-- left navigation (small screens, collapsed) -->
+      <div class="navbar-header">
+       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        Pages <span class="caret"></span>
+       </button>
+     </div>
+     <!-- left navigation -->
+     <div class="collapse navbar-collapse" style="margin:auto -15px;">
       <ul class="nav nav-pills nav-stacked" style="margin:auto -15px;">
         <li class="nav-header">Projects + Data</li>
         <li {% url_search request '^/projects' 'class="active"' %}><a href="/projects">Student Projects</a></li>
@@ -68,15 +75,16 @@
         <li {% url_search request '^/learn/weather' 'class="active"' %}><a href="/learn/weather">Weather Station</a></li>
       </ul>
     </div>
-    <!-- /left-nav -->
-    <div class="col-md-10" id="content-wrapper">
-      {% block content %}
+  </div>
+  <!-- /left-nav -->
+  <div class="col-sm-10" id="content-wrapper">
+    {% block content %}
 
-      {% endblock content %}
-    </div>
-  </div> <!-- /row -->
-  <!-- /Content -->
-  <div id="stickyfooter-push"></div>
+    {% endblock content %}
+  </div>
+</div> <!-- /row -->
+<!-- /Content -->
+<div id="stickyfooter-push"></div>
 </div>
 <footer class="text-center container-fluid">
   <div class="row">&copy;2014 The Harley School :: Website created by Richard Lange

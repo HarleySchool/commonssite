@@ -23,6 +23,13 @@ html, body{
   border-right: 2px solid #DDD;
 }
 
+.left-nav button.navbar-toggle{
+  background-color: #FFF;
+  color:#222;
+  float:left;
+  font-weight: bold;
+}
+
 /* FOOTER (sticky footer css courtesy of http://getbootstrap.com/2.3.2/examples/sticky-footer.html) */
 
 #stickyfooter-push, footer{
