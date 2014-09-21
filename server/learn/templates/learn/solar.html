@@ -12,6 +12,19 @@
 {% block content %}
 <h3>Solar Panels</h3>
 <hr />
-<p>The roof of the commons has </p>
+
+<figure class="wide right">
+	<img src="{% static 'images/aerial_photo.jpg' %}" alt="aerial shot" />
+	<figcaption></figcaption>
+</figure>
+
+<p>The roof of the commons has 86 solar panels. Two are dedicated to charging the batteries that run the solar chimney vents, and the rest output their power through an inverter (which converts DC to AC) and directly into the grid. Any time that the solar panels are generating more power than the Commons is consuming, the excess power can overflow to the old building and offset energy use there.</p>
+
+<p>Data about the solar panels come from two places. First, there is a small device on the wall which has its own webpages, <a target="new" href="http://commonscontrol.harleyschool.org/solar/">Sunny WebBox</a>. Authorized users can also view data at <a target="new" href="http://sunnyportal.com">sunnyportal.com</a>. The other place we get data about solar power is through the <a href="/learn/electric">Veris</a> data, since the inverter feeds current directly into the high-voltage panel.</p>
+
+<p>The solar data is divided into two banks, A and B. We don't know right now which panels are in which bank, so always look at both A and B!</p>
+
+<p>Looking at the data, you might also notice some weather information in the solar category. That is because in addition to our full-size <a href="/learn/weather">weather station</a>, there are simple weather devices on the roof of the Commons that were installed with the solar panels.</p>
+
 </div>
 {% endblock content %}
