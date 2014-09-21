@@ -6,57 +6,12 @@
 {% endblock scripts %}
 
 {% block styles %}
-<style type="text/css">
-	.threecolumn > p{
-		text-align: justify
-	}
-</style>
+<link rel="stylesheet" href="{% static 'css/figures.css'%}" />
 {% endblock styles %}
 
 {% block content %}
-<h1>A Sustainable Building</h1>
+<h3>Retaining Solar Heat</h3>
 <hr />
-<p>A lot of work has gone into making the Commons a sustainable building. The goal is to be <b>net zero</b> or better with energy - to make more energy than we use!</p>
-<div id="graph-target"></div>
-<hr />
-<div class="row">
-	<div class="col-sm-4 threecolumn">
-		<center>
-			<h2><span class="glyphicon glyphicon-plus"></span></h2>
-			<p>Generation</p>
-		</center>
-		<p>No matter how careful we are, the building will always use some energy. In order to achive net-zero, then, we must produce energy of our own! The Commons is outfitted with <b>solar panels</b> on the roof which generate electricity and direclty offset energy used.</p>
-		<p>The <b>Greenhouse</b> is another kind of production! By growing our own food, we are more self-sufficient and have less of an impact on farmland. As an added bonus, plants are watered using rainwater that we collect off the roof.</p>
-		<p>Even the <b>hot water</b> in the commons is a self-contained system, using solar energy to keep the hot water tank warm.</p>
-	</div>
-	<div class="col-sm-4 threecolumn">
-		<center>
-			<h2><span class="glyphicon glyphicon-unchecked"></span></h2>
-			<p>Moderation</p>
-		</center>
-		<p>This is the reduction step of the common phrase "reduce, re-use recycle."</p>
-		<p>Everything in the Commons is designed to use as little energy as possible. Overhead lights are all low-power <b>LEDs</b>, the <b>HVAC</b> system wastes no heat, and even the restrooms use minimal water.</p>
-	</div>
-	<div class="col-sm-4 threecolumn">
-		<center>
-			<h2><span class="glyphicon glyphicon-minus"></span></h2>
-			<p>Omission</p>
-		</center>
-		<p>A wise architect once said, "the most sustainable building material is the one you never use."</p>
-		<p>To continue adding efficient systems is to continue using resources. To this end, the Commons was built largely using <b>recycled materials</b>. If the interior appears bare, that is because flooring and paint were liberally omitted!</p>
-	</div>
+<p></p>
 </div>
 {% endblock content %}
-
-{% block postscript%}
-<script>
-$(document).ready(function(){
-	Commons.live_chart([{
-		"system" : "dummy",
-		"subsystem" : "dummy", 
-		"indexes" : [],
-		"columns" : ["interestingness", "fudge_factor"]
-	}], "", "#graph-target", 180);
-});
-</script>
-{% endblock postscript%}
