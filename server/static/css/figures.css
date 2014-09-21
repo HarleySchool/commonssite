@@ -1,5 +1,7 @@
 figure{
+	display:table;
 	margin:10px;
+	width:1px; /* ensures that figcaption does not get bigger than the image */
 }
 
 figure.right{
@@ -35,4 +37,8 @@ figure.wide img{
 
 figcaption{
 	word-wrap:break-word;
+}
+
+figcaption, figure img{
+	display: table-row;
 }
