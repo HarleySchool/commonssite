@@ -6,6 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
 	# Examples:
 	url(r'^/?$', TemplateView.as_view(template_name="main.html")),
+	url(r'^projects/', include('projects.urls')),
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^learn/', include('learn.urls')),
 	url(r'^(timeseries|data)/', include('timeseries.urls')),
