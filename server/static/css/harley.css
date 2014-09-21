@@ -7,13 +7,6 @@ html, body{
   width:100%;
 }
 
-.left-nav{
-  border-right: 2px solid #DDD;
-  position:fixed;
-  top:50px;
-  z-index:1000;
-}
-
 .left-nav a{
   display:block;
 }
@@ -24,6 +17,10 @@ html, body{
 
 .clear{
   clear:both;
+}
+
+.left-nav{
+  border-right: 2px solid #DDD;
 }
 
 /* FOOTER (sticky footer css courtesy of http://getbootstrap.com/2.3.2/examples/sticky-footer.html) */
@@ -59,11 +56,16 @@ footer .row{
 }
 
 /* clever trick thanks to http://stackoverflow.com/a/18330040/1935085 */
-li.disabled.nav-header > a {
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
+li.nav-header {
+  padding-top: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.navbar-header{
+  width:100%;
 }
 
 /* MEDIA TAGS */
@@ -82,6 +84,7 @@ li.disabled.nav-header > a {
     margin-bottom: 30px;
   }
 }
+/* smaller than 'md' devices */
 @media (max-width: 767px) {
   #stickyfooter-footer {
     margin-left: -20px;
