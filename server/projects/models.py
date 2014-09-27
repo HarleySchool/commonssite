@@ -13,3 +13,6 @@ class Project(models.Model):
 	classroom = models.CharField(max_length=128, verbose_name='Class')
 	date_created = models.DateTimeField()
 	content = models.TextField()
+
+	def __unicode__(self):
+		return self.title

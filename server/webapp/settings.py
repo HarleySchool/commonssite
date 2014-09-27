@@ -42,7 +42,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'markdown_deux',
     'timeseries',
     'hvac',
     'electric',
@@ -53,6 +52,8 @@ INSTALLED_APPS = (
     'water',
     'learn',
     'projects',
+    'markdown_deux', # allows templates to filter text through markdown parser
+    'haystack', # 3rd party search engine. used to search for projects.
     'dummy')
 
 MARKDOWN_DEUX_STYLES = {
@@ -64,6 +65,14 @@ MARKDOWN_DEUX_STYLES = {
         # (NOTE: not safe for general user input, but OK for admin-generated content!)
         "safe_mode": False
     },
+}
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        # whoosh is a 3rd-party text indexer. makes things searchable by haystack.
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH' : os.path.join(BASE_DIR, 'whoosh_index')
+    }
 }
 
 MIDDLEWARE_CLASSES = (

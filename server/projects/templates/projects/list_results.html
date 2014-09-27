@@ -3,9 +3,23 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/projects.css' %}" />
+<style>
+.search-box{
+	padding:8px;
+}
+</style>
 {% endblock styles %}
 
 {% block content %}
+<div class="row">
+	<div class="col-xs-12 search-box">
+		<form method="GET" action="">
+			<input type="text" value="{{ search_query|default_if_none:"" }}" name="q"></input>
+			<button type="submit">Search</button>
+		</form>
+	</div>
+</div>
+
 {% for p in projects %}
 <div class="project-entry row" data-project="{{ p.slug }}">
 	<div class="col-md-3">
@@ -16,6 +30,9 @@
 		
 	</div>
 </div>
+{% empty %}
+{# this is what is called if there were no objects to loop over #}
+<h4>Sorry, the search &quot;{{ search_query }}&quot; found no results</h4>
 {% endfor %}
 {% endblock content %}
 

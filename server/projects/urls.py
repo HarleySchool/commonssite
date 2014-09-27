@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
 
-from projects.views import list_recent, view_project
+from projects.views import search_project, view_project
 
 urlpatterns = patterns('',
-	url(r'^$', list_recent),
-	url(r'^(?P<slug>[\w\d\-]+)/?$', view_project),
+	url(r'^/?$', search_project),
+	url(r'^(?P<slug>[\w\d\-]+)/?', view_project),
 )
