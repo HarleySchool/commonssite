@@ -24,13 +24,13 @@ def search_project(request):
 	if no search terms are specified, it shows the most recent projects
 	"""
 	search_query = request.GET.get("q")
+	print "DEBUG: QUERY ", search_query
 	search_results = None
 	if search_query:
 		haystack_search = ProjectSearch({"q" : search_query})
 		search_results = haystack_search.search()
 	if search_results is None:
-		print "DEBUG: invalid search with q='%s'" % search_query
-		search_results = Project.objects.order_by("date_created").reverse()
+		search_results = Project.objects.order_by("-date_created")
 	# request may have a "page" attribute. 10 results per page is default
 	# but there may be a "page_size" also
 	page_size = request.GET.get("page_size")

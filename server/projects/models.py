@@ -12,6 +12,7 @@ class Project(models.Model):
 	# class name
 	classroom = models.CharField(max_length=128, verbose_name='Class')
 	date_created = models.DateTimeField()
+	thumbnail = models.CharField(max_length=128)
 	content = models.TextField()
 
 	def __unicode__(self):

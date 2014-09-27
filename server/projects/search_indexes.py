@@ -10,6 +10,8 @@ class ProjectIndex(indexes.SearchIndex, indexes.Indexable):
 	students = indexes.CharField(model_attr='students')
 	content = indexes.CharField(model_attr='content')
 	classroom = indexes.CharField(model_attr='classroom')
+	slug = indexes.CharField(model_attr='slug', indexed=False)
+	thumbnail = indexes.CharField(model_attr='thumbnail', indexed=False)
 	date_created = indexes.DateTimeField(model_attr='date_created')
 
 	def get_model(self):
