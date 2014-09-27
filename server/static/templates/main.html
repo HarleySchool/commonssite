@@ -10,10 +10,27 @@
 	.fullscreen-right{
 		text-align: right;
 	}
-	.commons-snow{
-		margin-top:-65px;
-		height:65px;
+	.commons-image-bottom{
+		position:relative;
+		margin-top:-85px;
+		height:85px;
+		background-color: rgba(255,255,255,0.6);
+		z-index: 12;
 	}
+
+	.splash img{
+		margin-top:-100px;
+	}
+}
+
+.splash img{
+	width:100%;
+}
+
+.splash{
+	position:relative;
+	z-index:10;
+	overflow:hidden;
 }
 
 .quick-links{
@@ -22,11 +39,18 @@
 	width:100%;
 	color:#000;
 	font-size: 1.5em;
+	z-index:11;
 }
 
 .page-links{
 	font-size: 1.3em;
 }
+
+.credit{
+	margin-top:8px;
+	font-size:.8em;
+}
+
 .quick-links a, .page-links a{
 	color: #333;
 }
@@ -42,7 +66,7 @@
 {% block content %}
 <!-- splash image -->
 <div class="row splash">
-	<img src="{% static "images/commons.exterior960x400.jpg"%}" />
+	<img src="{% static "images/commons.exterior.fall.highres.jpg"%}" />
 </div>
 
 <div class="row quick-links">
@@ -56,11 +80,12 @@
 		<a href="/projects">Student Projects</a>
 	</div>
 </div>
-<div class="row commons-snow page-links">
-	<div class="col-sm-3 col-sm-offset-1" style="display:table">
+
+<div class="row commons-image-bottom page-links">
+	<div class="col-md-3 col-md-offset-1" style="display:table">
 		<h3 style="font-weight:bold;display:table-cell;vertical-align:middle">Building Systems</h3>
 	</div>
-	<div class="col-sm-7">
+	<div class="col-md-7 ">
 		<div class="row">
 			<div class="col-sm-3" data-theme="greenhouse">
 				<a href="/learn/greenhouse">Greenhouse</a>
@@ -85,9 +110,11 @@
 			</div>
 		</div>
 	</div>
+	<div class="col-xs-12 credit">
+		<center>
+			Photo credit: <a href="http://www.designimagingstudios.com">Design Imaging Studios</a>
+		</center>
+	</div>
 </div>
 
 {% endblock content %}
-
-{% block postscript %}
-{% endblock postscript %}

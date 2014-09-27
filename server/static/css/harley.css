@@ -2,11 +2,6 @@ html, body{
   height: 100%;
 }
 
-.splash img{
-  margin-top:50px; /* because nav bar is fixed */
-  width:100%;
-}
-
 .left-nav a{
   display:block;
 }
@@ -69,10 +64,15 @@ li.nav-header {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
+  width: 100%;
 }
 
 .navbar-header{
   width:100%;
+}
+
+.navbar-header ul.nav li{
+  float:right;
 }
 
 /* MEDIA TAGS */

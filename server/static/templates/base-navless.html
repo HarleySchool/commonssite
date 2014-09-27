@@ -31,6 +31,19 @@
         <div class="pull-right" style="padding-right:30px">
           <ul class="nav navbar-nav">
             <li class="dropdown">
+              <a class="dropdown-toggle admin-dropdown" role="button" data-toggle="dropdown" href="#">Admin <span class="caret"></span></a>
+              <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                <li><a role="menuitem" href="/admin">Settings (this site)</a></li>
+                <li><a role="menuitem" href="/status">Scrapers status</a></li>
+                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/electric/">Veris Dashboard</a></li>
+                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/hvac/en/administrator.html">HVAC Manager</a></li>
+                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/hvac/g-50/en/administrator.html">HVAC Initial</a></li>
+                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/solar/">Solar Dashboard</a></li>
+                <li><a role="menuitem" href="http://sunnyportal.com">Sunny Portal</a></li>
+                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/tv1/">Lobby TV</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
               <a class="dropdown-toggle admin-dropdown" role="button" data-toggle="dropdown" href="#">Pages <span class="caret"></span></a>
               <ul class="dropdown-menu dropdown-menu-right" role="menu">
                 <li class="nav-header">Projects + Data</li>
@@ -46,19 +59,6 @@
                 <li {% url_search request '^/learn/geothermal' 'class="active"' %}><a role="menuitem" href="/learn/geothermal">Geothermal</a></li>
                 <li {% url_search request '^/learn/solarwater' 'class="active"' %}><a role="menuitem" href="/learn/solarwater">Solar Hot Water</a></li>
                 <li {% url_search request '^/learn/weather' 'class="active"' %}><a role="menuitem" href="/learn/weather">Weather Station</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a class="dropdown-toggle admin-dropdown" role="button" data-toggle="dropdown" href="#">Admin <span class="caret"></span></a>
-              <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                <li><a role="menuitem" href="/admin">Settings (this site)</a></li>
-                <li><a role="menuitem" href="/status">Scrapers status</a></li>
-                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/electric/">Veris Dashboard</a></li>
-                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/hvac/en/administrator.html">HVAC Manager</a></li>
-                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/hvac/g-50/en/administrator.html">HVAC Initial</a></li>
-                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/solar/">Solar Dashboard</a></li>
-                <li><a role="menuitem" href="http://sunnyportal.com">Sunny Portal</a></li>
-                <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/tv1/">Lobby TV</a></li>
               </ul>
             </li>
           </ul>
