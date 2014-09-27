@@ -1,0 +1,17 @@
+{% extends "base-leftnav.html" %}
+{% load static %}
+{% load markdown_deux_tags %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/projects.css' %}" />
+{% endblock styles %}
+
+{% block content %}
+<div class="row">
+	<div class="col-sm-12 project-single">
+		<h2>{{ project.title }}</h2>
+		<p>{{ project.date_created|date:"N d Y" }}</p>
+		{{ project.content|markdown }}
+	</div>
+</div>
+{% endblock content %}

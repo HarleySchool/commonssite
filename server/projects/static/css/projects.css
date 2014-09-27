@@ -1,0 +1,9 @@
+.project-entry:hover{
+	cursor:pointer;
+	background-color: #c6dcef;
+}
+
+.project-single img{
+	max-width: 400px;
+	max-height: 400px;
+}

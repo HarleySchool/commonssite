@@ -28,7 +28,7 @@ TEMPLATE_DEBUG = True
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'static/templates/'),
-)
+    )
 
 ALLOWED_HOSTS = []
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'markdown_deux',
     'timeseries',
     'hvac',
     'electric',
@@ -54,6 +55,17 @@ INSTALLED_APPS = (
     'projects',
     'dummy')
 
+MARKDOWN_DEUX_STYLES = {
+    "default": {
+        "extras": {
+            "code-friendly": None,
+        },
+        # Allow raw HTML
+        # (NOTE: not safe for general user input, but OK for admin-generated content!)
+        "safe_mode": False
+    },
+}
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,7 +73,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware'
-)
+    )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
@@ -92,15 +104,15 @@ with open(s.sql_credentials, 'r') as f:
     pw = f.readline().strip()
     socket = f.readline().strip()
 
-DATABASES = {
+    DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST' : socket,
-        'NAME' : 'commons',
-        'USER' : un,
-        'PASSWORD' : pw
+    'ENGINE': 'django.db.backends.mysql',
+    'HOST' : socket,
+    'NAME' : 'commons',
+    'USER' : un,
+    'PASSWORD' : pw
     }
-}
+    }
 
 
 # Internationalization
@@ -123,5 +135,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
-)
+    )
 STATIC_ROOT = os.path.join(BASE_DIR, "static-collected/")

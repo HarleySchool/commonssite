@@ -1,0 +1,34 @@
+{% extends "base-leftnav.html" %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/projects.css' %}" />
+{% endblock styles %}
+
+{% block content %}
+{% for p in projects %}
+<div class="project-entry row" data-project="{{ p.slug }}">
+	<div class="col-md-3">
+		<h3>{{ p.title }}</h3>
+		<p>{{ p.date_created|date:"N d Y" }}</p>
+	</div>
+	<div class="col-md-9">
+		
+	</div>
+</div>
+{% endfor %}
+{% endblock content %}
+
+{% block postscript %}
+<script>
+$(document).ready(function(){
+	var proj_divs = $("div.project-entry");
+	proj_divs.click(function(){
+		var slug_target = $(this).data("project");
+		console.log(slug_target);
+		if(typeof(slug_target) !== "undefined")
+			window.location = "/projects/" + slug_target;
+	});
+});
+</script>
+{% endblock postscript %}

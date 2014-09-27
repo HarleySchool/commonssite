@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, url
-from django.views.generic import TemplateView
+
+from projects.views import list_recent, view_project
 
 urlpatterns = patterns('',
-	url(r'^$', TemplateView.as_view(template_name="projects/temporary.html")),
-	url(r'^',  TemplateView.as_view(template_name="projects/temporary.html")),
+	url(r'^$', list_recent),
+	url(r'^(?P<slug>[\w\d\-]+)/?$', view_project),
 )
