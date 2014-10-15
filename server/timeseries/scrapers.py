@@ -30,14 +30,6 @@ class ScraperBase(object):
 		for index_tuple, objects in indexed_objects.iteritems():
 			if len(objects) == 0:
 				continue
-			elif len(objects) == 1:
-				# edge-case: average is broken if there is only 1 object.
-				kwarg_dict = dict([(key, objects[0][key]) for key in self._model.get_field_names()])
-				kwarg_dict['temporary'] = False
-				kwarg_dict['Time'] = objects[0]['Time']
-				model_obj = self._model(**kwarg_dict)
-				model_obj.save()
-				continue
 			# adding timedelta here is a hack to prevent collisions with duplicate times
 			tend = objects[-1]['Time'] + datetime.timedelta(seconds=1)
 			# we will construct the object from a kwarg dict
@@ -45,37 +37,65 @@ class ScraperBase(object):
 			# set the index value for this group of objects
 			index_col = self._model.get_index_column()
 			if index_col: kwargs[index_col+'_id'] = index_tuple[0]
-			# numeric types are averaged; all others are plurality vote
+			# numeric types are averaged (see note below); all others are plurality vote
 			# note that the interval is NOT assumed to be regular; votes and averages are weighted by the span of
 			# time between any two measurements
 			# running average is computed using the formula for the area of a trapezoid (we assume that a linear fit between points is good enough)
-			prev_point = objects[0] # the 'previous' value in the loop
-			total_span = 0.0
-			value_fields = [(f.get_attname(), f.get_internal_type(), f.null) for f in self._model._meta.fields if f.get_attname() in self._model.get_field_names()]
+			#
+			# NOTE about numeric averages: if the model allows for null values, we need to be careful not to do arithmetic on `None`, but rather
+			# wait patiently for the next not-None value, which requires storing the time of the last value _separately for each attribute_
+
+			# value_fields is a list of tuples of (model attribute, type of attribute)
+			value_fields = [(f.get_attname(), f.get_internal_type()) for f in self._model._meta.fields if f.get_attname() in self._model.get_field_names()]
+
 			# model_average is a map from attributes => (current average or votes)
-			# initialize averages according to the 0th object
-			model_average = dict([(nm, 0.0 if typ in h.model_types['numeric'] and not isnull else {prev_point[nm] : 1}) for nm, typ, isnull in value_fields])
-			for curr_point in objects[1:]:
-				span_seconds = h.timedelta_seconds(curr_point['Time'] - prev_point['Time'])
-				total_span += span_seconds
-				for nm, typ, isnull in value_fields:
-					val = curr_point[nm]
-					prev_val = prev_point[nm]
-					# NUMERIC NON-NULL TYPES: running average
-					if typ in h.model_types['numeric'] and not isnull:
-						if prev_val != None:
-							mean_in_span = (val + prev_val) / 2.0
-							model_average[nm] += (mean_in_span - model_average[nm]) * span_seconds / total_span
-					# ALL OTHER TYPES: plurality vote
+			# with initial values according to the 0th object in our list of objects
+			model_average = dict([(nm, None if typ in h.model_types['numeric'] else {}) for nm, typ in value_fields])
+
+			# get an average for each field
+			for nm, typ in value_fields:
+				# numeric types: simple average.
+				# non-numeric types: dictionary mapping values to vote counts
+				num = typ in h.model_types['numeric']
+				running_avg = None if num else {}
+				total_time = 0.0
+				last_valid_point = None
+
+				for data_point in objects:
+					val = data_point[nm]
+					if val is not None:
+						# got valid data.. check if it's the first oen
+						if last_valid_point is None:
+							# this is the first valid point
+							if num:
+								running_avg = val
+							else:
+								# somewhat arbitrary choice that first point gets 1-second of weight
+								running_avg[val] = 1
+
+						else:
+							# there is a valid data point before this one
+							span_seconds = h.timedelta_seconds(data_point['Time'] - last_valid_point['Time'])
+							total_time += span_seconds
+							# weight this point based on time elapsed since last point
+							if num:
+								# count trapezoidal area
+								mean_in_span = (val + last_valid_point[nm]) / 2.0
+								running_avg += (mean_in_span - running_avg) * span_seconds / total_time
+							else:
+								# each elapsed seconds counts as 1 vote
+								running_avg[val] = running_avg.get(val, 0) + span_seconds
+						last_valid_point = data_point
 					else:
-						# count occurances of val by mapping val:count
-						# but count is actually span_seconds so that values with longer spans get more votes
-						model_average[nm][val] = model_average[nm].get(val, 0) + span_seconds
-				prev_point = curr_point
+						# data invalid.. no update
+						continue
+
+				model_average[nm] = running_avg
+
 			# at this point, all numeric types are averaged and all non-numeric types have a vote tally.
 			# now we must get the plurality winners for non-numeric types. Results are put into kwargs.
-			for nm, typ, isnull in value_fields:
-				if typ in h.model_types['numeric'] and not isnull:
+			for nm, typ in value_fields:
+				if typ in h.model_types['numeric']:
 					kwargs[nm] = model_average[nm]
 				elif len(model_average[nm]) > 0:
 					# http://stackoverflow.com/a/268285/1935085
