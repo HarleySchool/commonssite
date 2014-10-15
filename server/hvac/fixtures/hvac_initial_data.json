@@ -76,82 +76,82 @@
 {
 	"model" : "hvac.Modes",
 	"pk" : 1,
-	"fields" : {"value" : "FAN"}
-},
-{
-	"model" : "hvac.Modes",
-	"pk" : 2,
 	"fields" : {"value" : "COOL"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 3,
+	"pk" : 2,
 	"fields" : {"value" : "HEAT"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 4,
+	"pk" : 3,
 	"fields" : {"value" : "DRY"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 5,
+	"pk" : 4,
 	"fields" : {"value" : "AUTO"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 6,
+	"pk" : 5,
 	"fields" : {"value" : "BAHP"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 7,
+	"pk" : 6,
 	"fields" : {"value" : "AUTOCOOL"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 8,
+	"pk" : 7,
 	"fields" : {"value" : "AUTOHEAT"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 9,
+	"pk" : 8,
 	"fields" : {"value" : "VENTILATE"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 10,
+	"pk" : 9,
 	"fields" : {"value" : "PANECOOL"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 11,
+	"pk" : 10,
 	"fields" : {"value" : "PANEHEAT"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 12,
+	"pk" : 11,
 	"fields" : {"value" : "OUTCOOL"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 13,
+	"pk" : 12,
 	"fields" : {"value" : "DEFROST"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 14,
+	"pk" : 13,
 	"fields" : {"value" : "HEATRECOVERY"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 15,
+	"pk" : 14,
 	"fields" : {"value" : "BYPASS"}
 },
 {
 	"model" : "hvac.Modes",
-	"pk" : 16,
+	"pk" : 15,
 	"fields" : {"value" : "LC_AUTO"}
+},
+{
+	"model" : "hvac.Modes",
+	"pk" : 16,
+	"fields" : {"value" : "FAN"}
 },
 {
 	"model" : "hvac.FanSpeeds",
