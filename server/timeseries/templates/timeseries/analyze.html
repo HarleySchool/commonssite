@@ -100,7 +100,10 @@ $(document).ready(function(){
 	// share button: copy link
 	$("#shareSeriesBtn").click(function(){
 		$("#share-link-text").val(window.location);
-		$("#share-link-text").select();
+	});
+
+	$("#share-link-text").focus(function(){
+		this.select();
 	});
 
 	// callback when 'download' is clicked
