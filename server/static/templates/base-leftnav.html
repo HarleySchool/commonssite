@@ -27,7 +27,7 @@
     <!-- Header -->
     <div id="top-nav" class="row navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="navbar-header">
-        <a class="navbar-brand" href="/"><b>The Harley School</b> Commons Control</a>
+        <a class="navbar-brand" href="/"><b>The Harley School</b> {% block subtitle %}Commons Control{% endblock subtitle%}</a>
         <div class="pull-right" style="padding-right:30px">
           <ul class="nav navbar-nav">
             <li class="dropdown">
@@ -41,6 +41,24 @@
                 <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/solar/">Solar Dashboard</a></li>
                 <li><a role="menuitem" href="http://sunnyportal.com">Sunny Portal</a></li>
                 <li><a role="menuitem" href="http://commonscontrol.harleyschool.org/tv1/">Lobby TV</a></li>
+              </ul>
+            </li>
+            <li class="dropdown">
+              <a class="dropdown-toggle admin-dropdown" role="button" data-toggle="dropdown" href="#">Pages <span class="caret"></span></a>
+              <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                <li class="nav-header">Projects + Data</li>
+                <li {% url_search request '^/projects' 'class="active"' %}><a role="menuitem" href="/projects">Student Projects</a></li>
+                <li {% url_search request '^/data/analyze' 'class="active"' %}><a role="menuitem" href="/data/analyze">Analyze Data</a></li>
+                <li {% url_search request '^/data/live' 'class="active"' %}><a role="menuitem" href="/data/live">Live Graphs</a></li>
+                <li class="nav-header">Learn</li>
+                <li {% url_search request '^/learn/?$' 'class="active"' %}><a role="menuitem" href="/learn">About the Building</a></li>
+                <li {% url_search request '^/learn/electric' 'class="active"' %}><a role="menuitem" href="/learn/electric">Electricity</a></li>
+                <li {% url_search request '^/learn/solar' 'class="active"' %}><a role="menuitem" href="/learn/solar">Solar Power</a></li>
+                <li {% url_search request '^/learn/greenhouse' 'class="active"' %}><a role="menuitem" href="/learn/greenhouse">Greenhouse</a></li>
+                <li {% url_search request '^/learn/hvac' 'class="active"' %}><a role="menuitem" href="/learn/hvac">HVAC</a></li>
+                <li {% url_search request '^/learn/geothermal' 'class="active"' %}><a role="menuitem" href="/learn/geothermal">Geothermal</a></li>
+                <li {% url_search request '^/learn/solarwater' 'class="active"' %}><a role="menuitem" href="/learn/solarwater">Solar Hot Water</a></li>
+                <li {% url_search request '^/learn/weather' 'class="active"' %}><a role="menuitem" href="/learn/weather">Weather Station</a></li>
               </ul>
             </li>
           </ul>
@@ -63,7 +81,7 @@
         <li class="nav-header">Projects + Data</li>
         <li {% url_search request '^/projects' 'class="active"' %}><a href="/projects">Student Projects</a></li>
         <li {% url_search request '^/data/analyze' 'class="active"' %}><a href="/data/analyze">Analyze Data</a></li>
-        <li {% url_search request '^/data/live' 'class="active"' %}><a href="/data/live">Live Kiosk</a></li>
+        <li {% url_search request '^/data/live' 'class="active"' %}><a href="/data/live">Live Graphs</a></li>
         <li class="nav-header">Learn</li>
         <li {% url_search request '^/learn/?$' 'class="active"' %}><a href="/learn">About the Building</a></li>
         <li {% url_search request '^/learn/electric/?$' 'class="active"' %}><a href="/learn/electric">Electricity</a></li>
