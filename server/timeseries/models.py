@@ -154,7 +154,7 @@ class ModelRegistry(models.Model):
 		return schema
 
 class Live(models.Model):
-	"""keep track of the 4-or-fewer series for the kiosk page (decoupled from models and gives admin control)
+	"""keep track of the 4-or-fewer series for the kiosk (AKA live-data) page (decoupled from models and gives admin control)
 	"""
 
 	series = models.ForeignKey('Series')
