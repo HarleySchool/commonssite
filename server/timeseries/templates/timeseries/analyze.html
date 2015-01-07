@@ -6,6 +6,17 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static "css/bootstrap-multiselect.css" %}" />
+<style type="text/css">
+	.popover-help{
+		font-size: 14pt;
+		color:#AAA;
+		cursor:help;
+	}
+
+	#share-link-text{
+		width:100%;
+	}
+</style>
 {% endblock styles %}
 
 {% block scripts %}
@@ -14,18 +25,38 @@
 {% endblock scripts %}
 
 {% block content %}
+{# The bootstrap 'modal' is like an HTML popup box. this one is used to display the sharable link#}
+<div class="modal fade" id="link-modal" role="dialog" aria-labelledby="" aria-hidden="true">
+	<div class="modal-dialog bs-example-modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			</div>
+			<div class="modal-body">
+				<p>Copy/paste this link to share</p>
+				<input type="text" id="share-link-text" value="#" />
+			</div>
+		</div>
+	</div>
+</div>
+{# <h2>Analyze Data</h2><p>Use the forms below to make a quick graph or to download data for any of the building systems</p> #}
 <div id="daterange_and_seriespicker">
 {# drop in the daterange UI #}
+<h3 class="step-label">1. Choose timespan <span class="glyphicon glyphicon-question-sign popover-help" data-toggle="popover" data-content="Click <b>1 hour</b>, <b>3 hours</b>, <b>1 day</b>, or <b>1 week</b> to look at recent data. To look at any other range of times, click in the text box and use the calendars to choose a start and end time, then click <b>Apply</b>"></h3>
 {% include "timeseries/daterange.html" %}
+
 {# drop in the series picker UI #}
+<h3 class="step-label">2. Select one or more series <span class="glyphicon glyphicon-question-sign popover-help" data-toggle="popover" data-content="Use the checkboxes in the drop-down menus to select which data series to use. You may select more than one series, even from differnet categories.<br />Some systems have an additional list of sub-categories (the ones with two drop-down menus). At least one sub-category must be selected in order to use those systems."></h3>
 {% include "timeseries/seriespicker.html" %}
+<button class="btn btn-primary" id="clearBtn">Clear All</button>
 </div>
 <div id="charts-container" class="col-md-12"></div>
 <div style="clear:both"></div> <!-- this clears out any overflow or underflow issues before the row of buttons -->
-<button class="btn btn-primary" id="makeStaticGraphBtn">Make Static Graph</button>
-<button class="btn btn-primary" id="makeLiveGraphBtn">Make Live Graph</button>
+<h3 class="step-label" id="step3">3. Graph or Download <span class="glyphicon glyphicon-question-sign popover-help" data-toggle="popover" data-content="<b>static graph</b> will show a graph of the selected series that does not change<br /><b>live graph</b> will show a graph that updates with new data every 30 seconds<br /><b>download spreadsheet</b> will start the process of downloading a file that can opened in Excel"></h3>
+<button class="btn btn-primary" id="makeStaticGraphBtn">Static Graph</button>
+<button class="btn btn-primary" id="makeLiveGraphBtn">Live Graph</button>
 <button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
-<button class="btn btn-primary" id="clearBtn">Clear</button>
+<button class="btn btn-primary" id="shareSeriesBtn" data-toggle="modal" data-target="#link-modal">Share</button>
 <button class="btn btn-primary" id="editSeriesBtn">Edit</button>
 
 <!-- this script is placed after daterange and seriespicker so that it can have access to content
@@ -58,6 +89,23 @@ $(document).ready(function(){
 	$("#editSeriesBtn").hide();
 	$("#shareSeriesBtn").hide();
 
+	// helpful tooltips
+	$("span.popover-help").popover({
+		placement:'auto',
+		trigger:'click hover',
+		html:true,
+		container:'body'
+	});
+
+	// share button: copy link
+	$("#shareSeriesBtn").click(function(){
+		$("#share-link-text").val(window.location);
+	});
+
+	$("#share-link-text").focus(function(){
+		this.select();
+	});
+
 	// callback when 'download' is clicked
 	function download_csv(series_obj){
 		var start = Commons.daterange()[0];
@@ -74,6 +122,7 @@ $(document).ready(function(){
 	function showDownload(auto_load){
 		if(!auto_load) updateShareUrl('download');		
 		download_csv(JSON.stringify(Commons.seriespicker()));
+		$("#shareSeriesBtn").show();
 	}
 
 	$("#downloadBtn").click(function(){
@@ -93,6 +142,7 @@ $(document).ready(function(){
 		});
 		$(".btn-primary").hide();
 		$("#editSeriesBtn").show();
+		$("#step3").hide();
 		$("#shareSeriesBtn").show();
 		if(!auto_load) updateShareUrl('static');
 	}
@@ -118,6 +168,7 @@ $(document).ready(function(){
 		});
 		$(".btn-primary").hide();
 		$("#editSeriesBtn").show();
+		$("#step3").hide();
 		$("#shareSeriesBtn").show();
 		if(!auto_load) updateShareUrl('live');
 	}
@@ -159,12 +210,15 @@ $(document).ready(function(){
 	$("#clearBtn").click(function(){
 		history.replaceState({}, document.title, "/data/analyze/");
 		Commons.load_seriespicker_state([]);
+		$("#shareSeriesBtn").hide();
 	});
 
 	$("#editSeriesBtn").click(function(){
 		// show buttons and animate page
 		$(".btn-primary").show();
+		$("#step3").show();
 		$("#editSeriesBtn").hide();	
+		$("#shareSeriesBtn").hide();	
 		Commons.kill_live();
 
 		// clear current graph
@@ -212,7 +266,7 @@ $(document).ready(function(){
 			switch(analysis_type){
 				case "download":
 					showDownload(true);
-					$("#daterange_and_seriespicker").slideDown();
+					$("#daterange_and_seriespicker").show();
 					break;
 				case "static":
 					showStatic(true);
@@ -221,11 +275,11 @@ $(document).ready(function(){
 					showLive(true);
 					break;
 				default:
-					$("#daterange_and_seriespicker").slideDown();
+					$("#daterange_and_seriespicker").show();
 			};
 		});
 	} else{
-		$("#daterange_and_seriespicker").slideDown();
+		$("#daterange_and_seriespicker").show();
 	}
 });
 </script>

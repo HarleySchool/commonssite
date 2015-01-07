@@ -75,6 +75,16 @@ li.nav-header {
   float:right;
 }
 
+ul.dropdown-menu li{
+  width:100%;
+}
+
+.dropdown-limited {
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 /* MEDIA TAGS */
 
 /* Responsive: Portrait tablets and up */
@@ -98,5 +108,9 @@ li.nav-header {
     margin-right: -20px;
     padding-left: 20px;
     padding-right: 20px;
+  }
+
+  .left-nav{
+    display:none;
   }
 }

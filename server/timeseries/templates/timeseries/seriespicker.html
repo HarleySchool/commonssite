@@ -9,7 +9,7 @@
 {% else %}
 <div class="well col-md-6 series-picker" style="display:table-row" id="{{system.id}}" data-system="{{system.system}}" data-subsystem="{{system.subsystem}}">
 {% endif %}
-	<h4><b>{{system.system}}</b>&nbsp;{{system.subsystem}}</h4>
+	<h4><b>{{system.subsystem}}</b></h4>
 	{% if system.index_name %}
 	<div class="index-picker" style="display:table-cell;">
 		<select multiple="multiple" class="multiselect multiselect-index-{{ system.id }}" style="display:none;">
@@ -51,7 +51,7 @@
 		$("select.multiselect-{{ system.id }}").multiselect({
 			enableFiltering : true,
 			includeSelectAllOption : true,
-			nonSelectedText : "Choose data types"
+			nonSelectedText : "(click to select)"
 		});
 		{% endfor %}
 
