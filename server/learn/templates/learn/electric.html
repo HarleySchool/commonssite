@@ -9,6 +9,8 @@
 <link rel="stylesheet" href="{% static 'css/figures.css'%}" />
 {% endblock styles %}
 
+{% block subtitle %}Electricity{% endblock subtitle %}
+
 {% block content %}
 <h3>Electricity and Power</h3>
 <hr />
@@ -24,11 +26,11 @@
 	<figcaption></figcaption>
 </figure>
 
-<p>Electrical usage in the Commons is measured by sensors inside the circuit breakers, or panels. There are three circuit breakers (confusingly numbered 2, 3, and 4). Panels 2 and 3 are "low-voltage," meaning they handle 120 Volt electricity. Panel 4 is "high-voltage," dealing in the 220~240V range. The high-voltage panel routes power to the elevator and air conditioning, and takes energy in from the <a href="/learn/solar.html">solar panels</a>. The low-voltage panels handle lights, outlets, fans, and pretty much everything else.</p>
+<p>Electrical usage in the Commons is measured by sensors inside the circuit breakers, or panels. There are three circuit breakers, confusingly numbered 2, 3, and 4. Panels 2 and 3 are "low-voltage," meaning they handle 120 Volt electricity. Panel 4 is "high-voltage," dealing in the 220~240V range. The high-voltage panel routes power to the elevator and air conditioning, and takes energy in from the <a href="/learn/solar.html">solar panels</a>. The low-voltage panels handle lights, outlets, fans, and pretty much everything else.</p>
 
 <p>We collect data about each panel, and about each circuit inside the panel. This is done using sensors by a company called Veris. In the image on the right, you can see wires inside the circuit breaker passing through gray rings. These rings are current transformers, and how they work is a bit of (scientific) magic. As physics students know, electricity and magnetism are two forms of the same stuff. When electrical current passes through the wires, it creates a changing magnetic field (magnetic flux) around the wire that, in turn, produces electrical current in the rings. The Veris sensors measure the current in those rings, and can tell us all sorts of things about what is happening in our circuits <i>without physically touching the circuit!</i></p>
 
-<p>Each panel has two columns of 21 sensors. Three panels with 42 circuit sensors per panel makes 126 independent circuit measurements, plus one big sensor per panel measuring totals. The reason there are 21 circuits on each side is that they come in groups of three (did you notice that there are 3 colors of wire - red, blue, and black?). Each wire is on a different <i>phase</i>:</p>
+<p>Each panel has two columns of 21 sensors. Three panels with 42 circuit sensors per panel makes 126 independent circuit measurements, plus one big sensor per panel measuring totals. The reason there are 21 circuits on each side is that they come in groups of three (did you notice that there are 3 colors of wire - red, blue, and black?). Each wire is on a different <i>phase</i>, which looks something like this:</p>
 
 <figure class="center tall">
 	<img src="{% static 'images/three_phase_sine.jpg' %}" alt="three-phase sinusoids"  style="width:550px"/>
@@ -41,7 +43,7 @@
 	<figcaption></figcaption>
 </figure>
 
-<p>Some devices use <i>three-phase electricity</i>, which means they make use of all three signals. Others are <i>two-phase</i>, but most are <i>single-phase</i>. It doesn't matter which of the three phases a single-phase device uses. Some switches on the circuit breaker connect two or three switches together; these are the two- and three-phase devices. This can make data analysis harder because we need to keep track of which circuits are actually just different phases of the same device!</p>
+<p>Some devices use <i>three-phase electricity</i>, which means they make use of all three signals. Others are <i>two-phase</i>, but most are <i>single-phase</i>. It doesn't matter which of the three phases a single-phase device uses. Some switches on the circuit breaker connect two or three switches together; these are the two- and three-phase devices. This can make data analysis more difficult because sometimes one device is using two or three channels.</p>
 
 <p>The data that the Veris sensors collect are sent to the small black box on the wall next to the panels, and from there they are made available on the local internet, where this website can then pull down new data every 30 seconds.</p>
 

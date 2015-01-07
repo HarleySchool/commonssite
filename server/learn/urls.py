@@ -10,4 +10,5 @@ urlpatterns = patterns('',
 	url(r'^geothermal/?$', TemplateView.as_view(template_name="learn/geothermal.html")),
 	url(r'^solarwater/?$', TemplateView.as_view(template_name="learn/solarwater.html")),
 	url(r'^weather/?$',    TemplateView.as_view(template_name="learn/weather.html")),
+	url(r'^software/?$',   TemplateView.as_view(template_name="learn/software.html")),
 )
