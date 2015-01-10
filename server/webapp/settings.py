@@ -32,6 +32,7 @@ TEMPLATE_DIRS = (
 
 ALLOWED_HOSTS = []
 
+MEDIA_ROOT = 'static/'
 
 # Application definition
 
