@@ -3,3 +3,4 @@ sql_creds.txt
 server/static-collected
 private.py
 server/whoosh_index
+server/static/images/uploads
