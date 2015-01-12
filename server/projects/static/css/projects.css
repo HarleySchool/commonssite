@@ -1,3 +1,29 @@
+.search-box{
+	padding:8px;
+}
+
+.thumbnail{
+	margin-top:10px;
+	max-height: 150px;
+}
+
+.tag{
+	margin-left:-5px;
+	margin-right:15px;
+	padding:3px 5px;
+	border-radius:3px;
+	font-weight: bold;
+	color:#444;
+	text-shadow: 1px 1px 1px #DDD;
+}
+
+.tag a{
+	text-decoration: none;
+	width:100%;
+	height:100%;
+	color:inherit;
+}
+
 .project-entry:hover{
 	cursor:pointer;
 	background-color: #c6dcef;

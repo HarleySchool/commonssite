@@ -4,38 +4,47 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/projects.css' %}" />
-<style>
-.search-box{
-	padding:8px;
-}
-
-.thumbnail{
-	margin-top:10px;
-	max-height: 150px;
-}
-</style>
+<link rel="stylesheet" href="{% static 'css/harley.css' %}" />
 {% endblock styles %}
 
 {% block content %}
 <div class="row">
 	<div class="col-xs-12 search-box">
-		<form method="GET" action="/projects/search">
-			<input type="text" value="{{ search_query|default_if_none:"" }}" name="q"></input>
+		<form method="GET" id="queryform" action="/projects/search">
+			<input type="text" id="query_input" value="{{ search_query|default_if_none:"" }}" name="q" />
+			<input type="text" id="tags_input" value='{{ tags_text|join:","}}' style="display:none" name="t" />
 			<button type="submit">Search</button>
+			{% if tag_objects %}
+			<b>Tags (click to remove)</b>
+			{% for t in tag_objects %}
+			&nbsp;
+			<span class="tag" style="background-color:#{{ t.hex_color }}">
+				<a href="javascript:remove_tag('{{ t.text }}')" data-tagname="{{t.text}}">{{ t.text }}</a>
+			</span>
+			{% endfor %}
+			{% endif %}
 		</form>
 	</div>
 </div>
 
 {% for p in projects %}
 <div class="project-entry row" data-project="{{ p.slug }}">
-	<div class="col-md-4">
-		<h3>{{ p.title }}</h3>
+	<div class="col-md-5">
+		<div><h3>{{ p.title }}</h3></div>
+		<div>
+			{% for t in p.tags.all %}
+			&nbsp;
+			<span class="tag" style="background-color:#{{ t.hex_color }}">
+				<a href="#" data-tagname="{{t.text}}">{{ t.text }}</a>
+			</span>
+			{% endfor %}
+		</div>
 		<div><b>Date: </b>{{ p.date_created|date:"N d Y" }}</div>
 		<div><b>Students: </b>{{ p.students }}</div>
 		<div><b>Class: </b>{{ p.classroom }}</div>
 	</div>
-	<div class="col-md-4">
-		<img src="{{ p.thumbnail }}" class="thumbnail" alt=""></img>
+	<div class="col-md-3">
+		<img src="{{ p.thumbnail.image.url }}" class="thumbnail" alt=""></img>
 	</div>
 </div>
 {% empty %}
@@ -46,6 +55,27 @@
 
 {% block postscript %}
 <script>
+
+function add_tag(t){
+	var v = $("input#tags_input").val().split(",");
+	if(v.indexOf(t) == -1){
+		v.push(t);
+		var i;
+		$("input#tags_input").val(v.join());
+		$("form#queryform").submit();
+	}
+}
+
+function remove_tag(t){
+	var v = $("input#tags_input").val().split(",");
+	var i = v.indexOf(t);
+	if(i != -1){
+		v.splice(i,i);
+		$("input#tags_input").val(v.join());
+		$("form#queryform").submit();
+	}
+}
+
 $(document).ready(function(){
 	var proj_divs = $("div.project-entry");
 	proj_divs.click(function(){
@@ -53,6 +83,11 @@ $(document).ready(function(){
 		console.log(slug_target);
 		if(typeof(slug_target) !== "undefined")
 			window.location = "/projects/" + slug_target;
+	});
+
+	$(".tag a").click(function(e) {
+		add_tag($(this).data("tagname"));
+		e.stopPropagation(); // prevent the proj_divs.click() handler from running also
 	});
 });
 </script>

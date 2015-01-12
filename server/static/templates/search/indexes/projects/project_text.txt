@@ -1,6 +1,8 @@
 {{ object.title }}
-{{ object.title }}
 {{ object.students }}
 {{ object.content }}
 {{ object.classroom }}
 {{ object.date_created }}
+{% for tag in object.tags.all %}
+{{ tag }}
+{% endfor %}
