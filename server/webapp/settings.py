@@ -56,7 +56,9 @@ INSTALLED_APPS = (
     'projects',
     'markdown_deux', # allows templates to filter text through markdown parser
     'haystack', # 3rd party search engine. used to search for projects.
-    'dummy')
+    'dummy', 
+    'colorful' # 3rd party mini-app enabling RGB color-picker field (used in projects.Tag)
+    )
 
 MARKDOWN_DEUX_STYLES = {
     "default": {

@@ -18,7 +18,7 @@
 			<b>Tags (click to remove)</b>
 			{% for t in tag_objects %}
 			&nbsp;
-			<span class="tag" style="background-color:#{{ t.hex_color }}">
+			<span class="tag" style="background-color:{{ t.hex_color }}">
 				<a href="javascript:remove_tag('{{ t.text }}')" data-tagname="{{t.text}}">{{ t.text }}</a>
 			</span>
 			{% endfor %}
@@ -34,7 +34,7 @@
 		<div>
 			{% for t in p.tags.all %}
 			&nbsp;
-			<span class="tag" style="background-color:#{{ t.hex_color }}">
+			<span class="tag" style="background-color:{{ t.hex_color }}">
 				<a href="#" data-tagname="{{t.text}}">{{ t.text }}</a>
 			</span>
 			{% endfor %}

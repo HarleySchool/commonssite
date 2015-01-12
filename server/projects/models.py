@@ -1,8 +1,9 @@
 from django.db import models
+from colorful.fields import RGBColorField
 
 class Tag(models.Model):
 	text = models.CharField(max_length=32)
-	hex_color = models.CharField(max_length=6)
+	hex_color = RGBColorField(verbose_name='color')
 
 	def __unicode__(self):
 		return self.text
@@ -35,7 +36,7 @@ class Project(models.Model):
 	# all other images (for convenience, giving access via project object)
 	images = models.ManyToManyField(Image, related_name='images')
 	# markdown content of this post (may be large)
-	content = models.TextField()
+	content = models.TextField(help_text='Text is formatted with Markdown')
 
 	def __unicode__(self):
 		return self.title
