@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
-from projects.models import Project
+from django.db.models import Q
+from django.template.context import RequestContext
+from projects.models import Project, Tag
 from haystack.forms import SearchForm
+from haystack.query import SearchQuerySet
 
 class ProjectSearch(SearchForm):
 
@@ -12,7 +15,6 @@ class ProjectSearch(SearchForm):
 
 		# in case of malformed search
 		if not self.is_valid():
-			print "DEBUG: Query not valid"
 			return self.no_query_found()
 
 		return search_set
@@ -23,14 +25,29 @@ def search_project(request):
 	
 	if no search terms are specified, it shows the most recent projects
 	"""
+	# PART I: filter by tags
+	queryset = SearchQuerySet().all()
+	tags, tags_text, tags_query = request.GET.get("t"), [], Q(text="")
+	if tags:
+		tags_text = tags.split(",")
+		# get all active tags
+		for t in tags_text:
+			if t == "":
+				continue
+			else:
+				queryset = queryset.filter(tags=t)
+				tags_query |= Q(text = t)
+	tag_objects = Tag.objects.filter(tags_query)
+	# PART II: search content
 	search_query = request.GET.get("q")
 	print "DEBUG: QUERY ", search_query
 	search_results = None
 	if search_query:
-		haystack_search = ProjectSearch({"q" : search_query})
+		haystack_search = ProjectSearch({"q" : search_query}, searchqueryset=queryset)
 		search_results = haystack_search.search()
 	if search_results is None:
-		search_results = Project.objects.order_by("-date_created")
+		search_results = queryset.order_by("-date_created")
+	
 	# request may have a "page" attribute. 10 results per page is default
 	# but there may be a "page_size" also
 	page_size = request.GET.get("page_size")
@@ -49,12 +66,11 @@ def search_project(request):
 	# indices into the query set
 	index_start = (page - 1) * page_size
 	index_end = page * page_size
-	objects = search_results[index_start:index_end]
+	objects = [o.object for o in search_results[index_start:index_end]]
 	# render the list page
-	return render(request, "projects/list_results.html", {"projects" : objects, "search_query" : search_query, "page" : page})
+	return render(request, "projects/list_results.html", context_instance=RequestContext(request, {"projects" : objects, "search_query" : search_query, "tags_text" : tags_text, "tag_objects" : tag_objects, "page" : page}))
 
 def view_project(request, slug=""):
-	print "DEBUG: view"
 	if not slug:
 		return redirect("/projects")
 	else:
@@ -62,4 +78,4 @@ def view_project(request, slug=""):
 			Q = Project.objects.get(slug=slug)
 		except:
 			return redirect("/projects")
-		return render(request, "projects/display_project.html", {"project" : Q})
+		return render(request, "projects/display_project.html", context_instance=RequestContext(request, {"project" : Q}))
