@@ -25,7 +25,7 @@ def search_project(request):
 	if no search terms are specified, it shows the most recent projects
 	"""
 	# PART I: filter by tags
-	queryset = SearchQuerySet().all()
+	queryset = SearchQuerySet().order_by("-date_created")
 	tags, tags_text, tags_query = request.GET.get("t"), [], Q(text="")
 	if tags:
 		tags_text = tags.split(",")
@@ -40,13 +40,11 @@ def search_project(request):
 	# PART II: search content
 	search_query = request.GET.get("q")
 	print "DEBUG: QUERY ", search_query
-	search_results = None
+	search_results = queryset
 	if search_query:
 		haystack_search = ProjectSearch({"q" : search_query}, searchqueryset=queryset)
 		search_results = haystack_search.search()
-	if search_results is None:
-		search_results = queryset.order_by("-date_created")
-	
+
 	# request may have a "page" attribute. 10 results per page is default
 	# but there may be a "page_size" also
 	page_size = request.GET.get("page_size")
@@ -74,7 +72,7 @@ def markdown_image_urls():
 	markdown_references = "\n"
 	for img in Image.objects.all():
 		if img.short_name:
-			markdown_references += "[%s]: %s" % (img.short_name, img.image.url)
+			markdown_references += "[%s]: %s\n" % (img.short_name, img.image.url)
 	return markdown_references
 
 def view_project(request, slug=""):
