@@ -4,6 +4,7 @@ from django.template.context import RequestContext
 from projects.models import Project, Tag, Image
 from haystack.forms import SearchForm
 from haystack.query import SearchQuerySet
+from math import ceil
 
 class ProjectSearch(SearchForm):
 
@@ -63,16 +64,27 @@ def search_project(request):
 	# indices into the query set
 	index_start = (page - 1) * page_size
 	index_end = page * page_size
+	num_results = search_results.count()
+	num_pages = int(ceil(float(num_results) / page_size))
 	objects = [o.object for o in search_results[index_start:index_end]]
 	# render the list page
-	return render(request, "projects/list_results.html", context_instance=RequestContext(request, {"projects" : objects, "search_query" : search_query, "tags_text" : tags_text, "tag_objects" : tag_objects, "page" : page}))
+	return render(request, "projects/list_results.html", context_instance=RequestContext(request,
+		{"projects" : objects,
+		"search_query" : search_query,
+		"tags_text" : tags_text,
+		"tag_objects" : tag_objects,
+		"page" : page,
+		"num_pages" : num_pages,
+		"num_results" : num_results,
+		"page_size" : page_size}))
 
 def markdown_image_urls():
 	# make all uploaded images available to markdown with their short_name as the identifier
 	markdown_references = "\n"
 	for img in Image.objects.all():
 		if img.short_name:
-			markdown_references += "[%s]: %s\n" % (img.short_name, img.image.url)
+			markdown_references += "[%s]: %s\n" % (img.short_name,
+				img.image.url)
 	return markdown_references
 
 def view_project(request, slug=""):

@@ -2,6 +2,9 @@
 {% load static %}
 {% load markdown_deux_tags %}
 
+{% block scripts %}
+{% endblock scripts %}
+
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/projects.css' %}" />
 <link rel="stylesheet" href="{% static 'css/harley.css' %}" />
@@ -13,6 +16,7 @@
 		<form method="GET" id="queryform" action="/projects/search">
 			<input type="text" id="query_input" value="{{ search_query|default_if_none:"" }}" name="q" />
 			<input type="text" id="tags_input" value='{{ tags_text|join:","}}' style="display:none" name="t" />
+			<input type="text" value='{{ page_size }}' name="page_size" style="display:none" />
 			<button type="submit">Search</button>
 			{% if tag_objects %}
 			<b>Tags (click to remove)</b>
@@ -24,6 +28,23 @@
 			{% endfor %}
 			{% endif %}
 		</form>
+		{% if num_results > 0 %}
+		<div>
+			<center>
+				{% if page > 1 %}
+				<button class="btn btn-sm btn-default" id="prev_btn">Previous</button>
+				{% else %}
+				<button class="btn btn-sm btn-default" disabled>Previous</button>
+				{% endif %}
+				Page {{ page }} of {{ num_pages }}
+				{% if page < num_pages %}
+				<button class="btn btn-sm btn-default" id="next_btn">Next</button>
+				{% else %}
+				<button class="btn btn-sm btn-default" disabled>Next</button>
+				{% endif %}
+			</center>
+		</div>
+		{% endif %}
 	</div>
 </div>
 
@@ -76,6 +97,22 @@ function remove_tag(t){
 	}
 }
 
+// courtesy of http://stackoverflow.com/a/6021027
+function updateQueryStringParameter(uri, key, value) {
+	var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+	var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+	if (uri.match(re)) {
+		return uri.replace(re, '$1' + key + "=" + value + '$2');
+	}
+	else {
+		return uri + separator + key + "=" + value;
+	}
+}
+
+function goto_page(n){
+	window.location = updateQueryStringParameter(window.location.href, "page", n);	
+}
+
 $(document).ready(function(){
 	var proj_divs = $("div.project-entry");
 	proj_divs.click(function(){
@@ -89,6 +126,14 @@ $(document).ready(function(){
 		add_tag($(this).data("tagname"));
 		e.stopPropagation(); // prevent the proj_divs.click() handler from running also
 	});
+	
+	$("button#prev_btn").click(function(){
+		goto_page({{ page }} - 1);
+	})
+	
+	$("button#next_btn").click(function(){
+		goto_page({{ page }} + 1);
+	})
 });
 </script>
 {% endblock postscript %}
