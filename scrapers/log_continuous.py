@@ -1,6 +1,6 @@
 from commonssite.server.timeseries.models import ModelRegistry
 from commonssite.server.timeseries.helpers import get_registered_scraper, get_registered_model
-from haystack.management.commands import update_index
+from haystack.management.commands import rebuild_index
 from log import scheduler
 
 if __name__ == '__main__':
@@ -16,6 +16,6 @@ if __name__ == '__main__':
 		cron.register(scraperinst.get_and_save_single, 30, scraperinst.__class__.__name__)
 		# (hack?) periodically update the search index for projects since tags were difficult to deal with
 		# (more specifically, the ManyToMany relation isn't processed by Whoosh immediately)
-		cron.register(update_index.Command().handle, 900, "Whoosh index updater")
+		cron.register(lambda: rebuild_index.Command().handle(interactive=False), 900, "Whoosh index updater")
 	# Run the Scheduler (forever)
 	cron.main()
