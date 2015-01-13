@@ -1,0 +1,39 @@
+{% extends "base-leftnav.html" %}
+{% load static %}
+
+{% block scripts %}
+<script src="{% static "js/highcharts/highcharts.js" %}"></script>
+{% endblock scripts %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/figures.css'%}" />
+{% endblock styles %}
+
+{% block subtitle %}Software Systems{% endblock subtitle %}
+
+{% block content %}
+<h3>Data Collection</h3>
+<hr />
+
+<figure class="right">
+<img src="/media/images/software_diagram.svg" alt="connection diagram"/>
+</figure>
+
+<p>The Commons is outfitted with multiple smart building systems that allow us to view and, in some cases, track data over time. To make informed decisions about how to manage the building, we need to be able to look at and analyze any data in the past (how else will we know if energy usage is improving?). This website is our solution. It consolidates all of our data into a single format, a single interface, and with indefinitely long storage. There are, of course, existing tools for data management, but building our own site is much more "hands-on!"</p>
+
+
+<b>Common Format</b>
+<p>As indicated in the diagram above, the two main problems of dealing with the systems' interfaces directly are that 1) they have no storage or temporary storage, and 2) they all use a different interface. To solve these, we keep our own database, and run "scrapers" that grab-and-store new data from each system about every 30 seconds. After 24 hours, the data are averaged into 20-minute intervals to keep the total volume down.</p>
+
+<p>Each <i>subsystem</i> has its own "table" in the database. Think of a table like a single spreadsheet with categories in the <i>columns</i> and each <i>row</i> contains a single data point. Some subsystems have further divisions to what we call "indexes." For example, the <a href="/learn/hvac">VRF subsystem</a> has an index for the rooms of the building. Every 30 seconds, a new data point is fetched and stored <i>for each room</i>.</p>
+
+<b>Custom sensors</b>
+<p>Initially, the commons was outfitted with smart HVAC, Electrical monitoring, and solar power monitors. But these are not all we are &mdash; or want to &mdash; monitor! Part of the ongoing learning process that is running the building is realizing that we <i>should</i> be monitoring something that we aren't yet. To this end, we have the ability to make and install new sensors anywhere we have an internet connection! The <a href="/learn/greenhouse">Greenhouse DHT</a> subsystem, for example uses an <a href="http://arduino.cc">Arduino</a> to talk to sensors throughout the greenhouse, and makes its data available to the server's scrapers. The code is accessible to about the middle-school level using our <a href="http://github.com/HarleySchool/NetworkSensor">Arudino NetworkSensor Library</a>.</p>
+
+<p>We hope to see new sensors installed to monitor the <a href="/learn/geothermal">geothermal</a> system and water usage.</p>
+
+<h3>About this website</h3>
+<hr />
+<p>This website is what we would call a "data-driven" website. This means that all of the content on the data-related pages is generated on-the-fly by looking things up in the database. The website was made using a web framework called <a href="http://docs.djangoproject.com/en/1.6">Django</a>. Whenever anyone visits a page, it causes a piece of code to be executed on the server, often returning custom content back to the user! The source code for this website is all open-source and available online on <a href="http://www.github.com/HarleySchool/commonssite">Github</a>.</p>
+{# <p>something about 'data-driven' website. django/python. github link.</p> #}
+{% endblock content %}
