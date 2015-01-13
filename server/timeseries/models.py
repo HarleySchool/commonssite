@@ -161,8 +161,7 @@ class Live(models.Model):
 	title = models.CharField(max_length=40)
 	location = models.IntegerField(choices=((0, 'Top Left'),(1, 'Top Right'),(2, 'Bottom Left'),(3, 'Bottom Right')))
 	colspan = models.IntegerField(choices=((1,1),(2,2)))
-	rowspan = models.IntegerField(choices=((1,1),(2,2)))
-
+	
 	def __unicode__(self):
 		return u'%s' % self.title
 

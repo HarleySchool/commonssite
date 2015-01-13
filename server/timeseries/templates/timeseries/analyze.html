@@ -25,6 +25,7 @@
 {% endblock scripts %}
 
 {% block content %}
+<div class="row">
 {# The bootstrap 'modal' is like an HTML popup box. this one is used to display the sharable link#}
 <div class="modal fade" id="link-modal" role="dialog" aria-labelledby="" aria-hidden="true">
 	<div class="modal-dialog bs-example-modal-sm">
@@ -58,7 +59,7 @@
 <button class="btn btn-primary" id="downloadBtn">Download Spreadsheet</button>
 <button class="btn btn-primary" id="shareSeriesBtn" data-toggle="modal" data-target="#link-modal">Share</button>
 <button class="btn btn-primary" id="editSeriesBtn">Edit</button>
-
+</div>
 <!-- this script is placed after daterange and seriespicker so that it can have access to content
 	that is set inside them -->
 <script>

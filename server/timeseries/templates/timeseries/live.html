@@ -8,7 +8,7 @@
 {% block scripts %}
 <script src="{% static "js/highcharts/highcharts.js" %}"></script>
 <script>
-	$(function(){
+	$(document).ready(function(){
 		{% for id, chart in charts_table.iteritems %}
 		var series{{ chart.location }} = {% autoescape off %}{{ chart.series }};{% endautoescape %}
 		Commons.live_chart(series{{ chart.location }}, "{{chart.title}}", "div#chart{{ chart.location }}", 60, "spline");
@@ -18,28 +18,20 @@
 {% endblock scripts %}
 
 {% block content %}
-<table style="width:100%;">
-	<tr>
-		<td colspan="{{ charts_table.00.colspan }}" rowspan="{{ charts_table.00.rowspan }}">
-			<div id="chart0"></div>
-		</td>
-		{% if "01" in charts_table %}
-		<td colspan="{{ charts_table.01.colspan }}" rowspan="{{ charts_table.01.rowspan }}">
-			<div id="chart1"></div>
-		</td>
-		{% endif %}
-	</tr>
-	<tr>
-		{% if "10" in charts_table %}
-		<td colspan="{{ charts_table.10.colspan }}" rowspan="{{ charts_table.10.rowspan }}">
-			<div id="chart2"></div>
-		</td>
-		{% endif %}
-		{% if "11" in charts_table %}
-		<td colspan="{{ charts_table.11.colspan }}" rowspan="{{ charts_table.11.rowspan }}">
-			<div id="chart3"></div>
-		</td>
-		{% endif %}
-	</tr>
-</table>
+<div class="row">
+	<div class="col-lg-{{ charts_table.00.bootstrap_colspan }}">
+		<div id="chart0"></div>
+	</div>
+	<div class="col-lg-{{ charts_table.01.bootstrap_colspan }}">
+		<div id="chart1"></div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-{{ charts_table.10.bootstrap_colspan }}">
+		<div id="chart2"></div>
+	</div>
+	<div class="col-lg-{{ charts_table.11.bootstrap_colspan }}">
+		<div id="chart3"></div>
+	</div>
+</div>
 {% endblock content %}

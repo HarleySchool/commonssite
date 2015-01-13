@@ -9,13 +9,21 @@ from django.shortcuts import render
 def live(request):
 	charts_table = {}
 	for chart in Live.objects.all():
-		col = chart.location % 2
-		row = int(chart.location / 2)
+		row, col = divmod(chart.location, 2)
 		charts_table['%d%d' % (row,col)] = {
 			'location' : chart.location,
-			'rowspan' : chart.rowspan,
-			'colspan' : chart.colspan,
+			'bootstrap_colspan' : chart.colspan * 6,
 			'title' : chart.title,
 			'series' : json.dumps(chart.series.spec)
 		}
+	if '00' in charts_table and charts_table['00']['bootstrap_colspan'] == 12 and '01' in charts_table:
+		del charts_table['01']
+	elif '01' in charts_table and charts_table['01']['bootstrap_colspan'] == 12 and '00' in charts_table:
+		del charts_table['00']
+
+	if '10' in charts_table and charts_table['10']['bootstrap_colspan'] == 12 and '11' in charts_table:
+		del charts_table['11']
+	elif '11' in charts_table and charts_table['11']['bootstrap_colspan'] == 12 and '10' in charts_table:
+		del charts_table['10']
+	
 	return render(request, 'timeseries/live.html', {'charts_table' : charts_table})
