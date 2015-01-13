@@ -9,10 +9,8 @@ class IndexUpdateSignalProcessor(signals.BaseSignalProcessor):
 
 	def setup(self):
 		models.signals.post_save.connect(self.handle_save, sender=Project)
-		models.signals.m2m_changed.connect(self.handle_save, sender=Project.tags.through)
 		models.signals.post_delete.connect(self.handle_delete, sender=Project)
 	
 	def teardown(self):
 		models.signals.post_save.disconnect(self.handle_save, sender=Project)
-		models.signals.m2m_changed.disconnect(self.handle_save, sender=Project.tags.through)
 		models.signals.post_delete.disconnect(self.handle_delete, sender=Project)
