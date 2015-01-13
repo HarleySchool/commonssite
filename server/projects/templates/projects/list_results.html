@@ -72,6 +72,23 @@
 {# this is what is called if there were no objects to loop over #}
 <h4>Sorry, the search &quot;{{ search_query }}&quot; found no results</h4>
 {% endfor %}
+{% if num_results > 0 %}
+<div>
+	<center>
+		{% if page > 1 %}
+		<button class="btn btn-sm btn-default" id="prev_btn">Previous</button>
+		{% else %}
+		<button class="btn btn-sm btn-default" disabled>Previous</button>
+		{% endif %}
+		Page {{ page }} of {{ num_pages }}
+		{% if page < num_pages %}
+		<button class="btn btn-sm btn-default" id="next_btn">Next</button>
+		{% else %}
+		<button class="btn btn-sm btn-default" disabled>Next</button>
+		{% endif %}
+	</center>
+</div>
+{% endif %}
 {% endblock content %}
 
 {% block postscript %}
