@@ -80,11 +80,11 @@
 <script>
 $(document).ready(function(){
 	Commons.live_chart([{
-		"system" : "dummy",
-		"subsystem" : "dummy", 
+		"system" : "Electric",
+		"subsystem" : "Gross and Net", 
 		"indexes" : [],
-		"columns" : ["interestingness", "fudge_factor"]
-	}], "", "#graph-target", 120);
+		"columns" : ["GrossPowerUsed", "GrossPowerProduced", "NetPower"]
+	}], "Net Energy Usage", "#graph-target", 120);
 });
 </script>
 {% endblock postscript%}
