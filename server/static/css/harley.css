@@ -53,6 +53,11 @@ footer .row{
   vertical-align: middle;
 }
 
+ul.multiselect-container{
+	/* make multiselect appear above footer (targeted at analyze page */
+	z-index:1002;
+}
+
 .clear50{
   height:50px;
 }
