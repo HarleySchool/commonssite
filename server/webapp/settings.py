@@ -109,10 +109,8 @@ WSGI_APPLICATION = 'webapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-# Load User and Password from my custom location
-import commonssite.settings as s
-
-with open(s.sql_credentials, 'r') as f:
+creds_file = os.path.join(BASE_DIR, '../sql_creds.txt')
+with open(creds_file, 'r') as f:
     host = f.readline().strip()
     un = f.readline().strip()
     pw = f.readline().strip()
