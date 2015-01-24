@@ -10,6 +10,10 @@ html, body{
   font-size: 1.15em;
 }
 
+#top-nav{
+padding-left:10px;
+}
+
 .clear{
   clear:both;
 }
@@ -28,6 +32,7 @@ html, body{
 /* FOOTER (sticky footer css courtesy of http://getbootstrap.com/2.3.2/examples/sticky-footer.html) */
 
 #stickyfooter-push, footer{
+  margin-top:5px;
   height:60px;
 }
 
@@ -65,6 +70,7 @@ ul.multiselect-container{
 /* clever trick thanks to http://stackoverflow.com/a/18330040/1935085 */
 li.nav-header {
   padding-top: 10px;
+  padding-left:5px;
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
