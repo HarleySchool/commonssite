@@ -22,18 +22,21 @@ sys.path.insert(0,os.path.join(BASE_DIR, 'weather'))
 SECRET_KEY = DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'static/templates/'),
     )
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.harleyschool.org']
 
 MEDIA_ROOT = 'media/'
 MEDIA_URL = '/media/'
+
+# people to be notified by email of 500 errors
+ADMINS = (('Richard', 'rlange@harleyschool.org'),)
 
 # Application definition
 
