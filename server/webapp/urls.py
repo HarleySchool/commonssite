@@ -5,6 +5,8 @@ from django.conf.urls.static import static
 import settings
 admin.autodiscover()
 
+handler500 = 'timeseries.views.error500'
+
 urlpatterns = patterns('',
 	# Examples:
 	url(r'^/?$', TemplateView.as_view(template_name="main.html")),

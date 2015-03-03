@@ -30,7 +30,7 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'static/templates/'),
     )
 
-ALLOWED_HOSTS = ['.harleyschool.org']
+ALLOWED_HOSTS = ['*']
 
 MEDIA_ROOT = 'media/'
 MEDIA_URL = '/media/'

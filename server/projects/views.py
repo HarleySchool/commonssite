@@ -94,7 +94,8 @@ def view_project(request, slug=""):
 		try:
 			Q = Project.objects.get(slug=slug)
 			Q.content += markdown_image_urls()
-			print Q.content
-		except:
+		except Exception as e:
+			import sys
+			print >>sys.stderr, "Failed to find project", e
 			return redirect("/projects")
 		return render(request, "projects/display_project.html", context_instance=RequestContext(request, {"project" : Q}))

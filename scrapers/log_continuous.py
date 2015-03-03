@@ -2,8 +2,10 @@ from commonssite.server.timeseries.models import ModelRegistry
 from commonssite.server.timeseries.helpers import get_registered_scraper, get_registered_model
 from haystack.management.commands import rebuild_index
 from log import scheduler
+import os
 
 if __name__ == '__main__':
+	os.setegid(48) # set effective group id to the 'apache' group to avoid permission conflicts with the apache server
 	cron = scheduler()
 	# Get lists of scrapers/models
 	scrapers_models = [(get_registered_scraper(r.scraper_class), get_registered_model(r.model_class), r) for r in ModelRegistry.objects.all()]

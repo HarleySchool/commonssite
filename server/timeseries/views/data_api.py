@@ -23,11 +23,12 @@ def save_series(request):
 
 @csrf_exempt
 def load_series(request):
-	post = json.loads(request.body)
 	try:
+		post = json.loads(request.body)
 		s = Series.objects.get(string_hash=post.get("series_id"))
 		return HttpResponse(content_type='application/json', content=json.dumps(s.spec))
 	except:
+		print "load_series error: lookup failed for", request.body
 		return HttpResponseNotFound()
 
 @csrf_exempt

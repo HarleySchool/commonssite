@@ -27,3 +27,7 @@ def live(request):
 		del charts_table['10']
 	
 	return render(request, 'timeseries/live.html', {'charts_table' : charts_table})
+
+def error500(request):
+	return render(request, '500.html')
+
