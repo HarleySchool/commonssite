@@ -122,8 +122,6 @@ class ScraperBase(object):
 			for new_data in self.get_data():
 				new_data.temporary = True
 				new_data.save(force_insert=True)
-			print '=================='
-			print '%s done at %s' % (self.__class__.__name__, time.time())
 		except Exception as e:
 			print "Scraper error that wasn't caught by subclass!"
 			print e
