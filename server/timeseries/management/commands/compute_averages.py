@@ -16,7 +16,7 @@ from commonssite.server.timeseries.helpers import get_registered_scraper, get_re
 
 class Command(BaseCommand):
 
-	help = 'Logs a single \'temporary\' data point for all registered systems'
+	help = 'Logs a single \'permanent\' data point for all registered systems calculated as the average of data since the last time this was run'
 
 	def handle(self, *args, **options):
 		# get all registered scrapers from the database (a small query)
@@ -26,7 +26,7 @@ class Command(BaseCommand):
 			# Initialize scraper object
 			scraperinst = scraper_class(model_class, registry)
 			# spawn a thread for each scraper so that any I/O blockage doesn't stall the whole system
-			threads[i] = threading.Thread(target=scraperinst.get_and_save_single)
+			threads[i] = threading.Thread(target=scraperinst.compute_average_of_temporaries)
 			threads[i].start()
 		for th in threads:
 			th.join()

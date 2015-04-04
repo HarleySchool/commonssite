@@ -123,7 +123,7 @@ class ScraperBase(object):
 				new_data.temporary = True
 				new_data.save(force_insert=True)
 		except Exception as e:
-			print "Scraper error that wasn't caught by subclass!"
+			print "Scraper error that wasn't caught by subclass [%s]" % self.__class__.__name__
 			print e
 			self.status_comm_error()
 		finally:

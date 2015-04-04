@@ -1,7 +1,7 @@
 import requests, re, pytz, datetime
 from timeseries.scrapers import ScraperBase
 from commonssite.settings import veris_host, veris_port, veris_uname, veris_password
-from commonssite.scrapers.xml_import import etree
+from commonssite.server.xml_import import etree
 from commonssite.server.electric.models import CircuitEntry, DeviceSummary, Panel, Circuit, CalculatedStats
 
 class ElectricServerInterface(object):

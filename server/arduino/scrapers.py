@@ -31,7 +31,7 @@ class GreenhouseScraper(ScraperBase):
 	def get_data(self):
 		models = []
 		try:
-			js = requests.get('http://%s/%d' % (GreenhouseScraper.__greenhouse_ip, time.time()))
+			js = requests.get('http://%s/%d' % (GreenhouseScraper.__greenhouse_ip, time.time()), timeout=1.0)
 			latest_time = None
 			model_kwargs = {}
 			for pointname, info in js.json().iteritems():

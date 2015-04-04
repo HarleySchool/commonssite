@@ -1,7 +1,7 @@
 import datetime, string, requests, pytz
 from timeseries.scrapers import ScraperBase
 from commonssite.settings import hvac_host, hvac_port
-from commonssite.scrapers.xml_import import etree
+from commonssite.server.xml_import import etree
 from commonssite.server.hvac.models import ErvEntry, VrfEntry, Rooms, FanDirections, FanSpeeds, Modes
 from itertools import izip
 
