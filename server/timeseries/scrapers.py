@@ -79,6 +79,7 @@ class ScraperBase(object):
 							total_time += span_seconds
 							# weight this point based on time elapsed since last point
 							if num:
+								if total_time == 0: continue
 								# count trapezoidal area
 								mean_in_span = (val + last_valid_point[nm]) / 2.0
 								running_avg += (mean_in_span - running_avg) * span_seconds / total_time
@@ -119,7 +120,10 @@ class ScraperBase(object):
 
 	def get_and_save_single(self):
 		try:
-			for new_data in self.get_data():
+			tstart = time.time()
+			data = self.get_data()
+			print "[%s] got new data in %0.3f seconds" % (self.__class__.__name__, time.time() - tstart)
+			for new_data in data:
 				new_data.temporary = True
 				new_data.save(force_insert=True)
 		except Exception as e:

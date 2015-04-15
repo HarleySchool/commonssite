@@ -21,6 +21,7 @@ while True:
 	elif time_to_target < -5:
 		print "WARNING: running behind by %d seconds!" % time_to_target
 		interval = interval + 1
+		print "new interval:", interval
 	# run logging command
 	try:
 		start_time = time.time()

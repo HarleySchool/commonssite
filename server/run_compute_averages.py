@@ -33,8 +33,8 @@ while True:
 			break
 	except Exception as e:
 		print "Logging Error: '%s'" % e
-		target_run = start_time + 10
+		target_run = start_time + 30
 		sequential_errors = sequential_errors + 1
 		if sequential_errors > 10:
-			print "Too many errors. exiting!"
-			exit(1)
+			print "Too many errors. pausing for 10 min."
+			target_run = time.time() + 60*10
