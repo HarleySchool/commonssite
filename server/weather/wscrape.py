@@ -40,7 +40,7 @@ class Weather(ScraperBase):
 			'yearET': 'yearet',
 			'yearRain' : 'yearrain'
 		}
-		self.v = Vantage(type='ethernet', host=weather_host, max_retries=4, wait_before_retry=2.4)
+		self.v = None
 
 	def doParse(self, data):
 		parsed = {}
@@ -48,8 +48,13 @@ class Weather(ScraperBase):
 			parsed[val] = data[key]
 		return parsed
 
+	def connect(self):
+		if self.v is None:
+			self.v = Vantage(type='ethernet', host=weather_host, max_retries=2, wait_before_retry=2.4)
+
 	def get_data(self):
 		try:
+			self.connect()
 			data = next(self.v.genDavisLoopPackets())
 			parsed = self.doParse(data)
 			now = pytz.UTC.localize(datetime.datetime.utcnow())
