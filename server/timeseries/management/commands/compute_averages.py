@@ -14,6 +14,14 @@ from django.core.management.base import BaseCommand, CommandError
 from commonssite.server.timeseries.models import ModelRegistry
 from commonssite.server.timeseries.helpers import get_registered_scraper, get_registered_model
 
+def safe_compute_wrapper(scraperinst):
+	def run():
+		try:
+			scraperinst.compute_average_of_temporaries()
+		except Exception as e:
+			print "error in [%s]: %s" % (scraperinst.__class__.__name__, e)
+	return run
+
 class Command(BaseCommand):
 
 	help = 'Logs a single \'permanent\' data point for all registered systems calculated as the average of data since the last time this was run'
@@ -26,7 +34,7 @@ class Command(BaseCommand):
 			# Initialize scraper object
 			scraperinst = scraper_class(model_class, registry)
 			# spawn a thread for each scraper so that any I/O blockage doesn't stall the whole system
-			threads[i] = threading.Thread(target=scraperinst.compute_average_of_temporaries)
+			threads[i] = threading.Thread(target=safe_compute_wrapper(scraperinst))
 			threads[i].start()
 		for th in threads:
 			th.join()

@@ -22,7 +22,7 @@ class TimeseriesBase(models.Model):
 		"""
 		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		earliest = now - timespan
-		latest_permanent = cls.objects.filter(temporary=False).latest()
+		latest_permanent = cls.objects.filter(temporary=False).latest('Time')
 		latest_permanent_time = latest_permanent.Time if latest_permanent else now
 		if earliest < latest_permanent_time:
 			query = cls.objects.filter(Time__lt=earliest, temporary=True)
