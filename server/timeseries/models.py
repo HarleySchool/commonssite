@@ -22,8 +22,11 @@ class TimeseriesBase(models.Model):
 		"""
 		now = pytz.UTC.localize(datetime.datetime.utcnow())
 		earliest = now - timespan
-		query = cls.objects.filter(Time__lt=earliest, temporary=True)
-		query.delete() # this call immediately hits the database and removes all the entries in the queryset
+		latest_permanent = cls.objects.filter(temporary=False).latest()
+		latest_permanent_time = latest_permanent.Time if latest_permanent else now
+		if earliest < latest_permanent_time:
+			query = cls.objects.filter(Time__lt=earliest, temporary=True)
+			query.delete() # this call immediately hits the database and removes all the entries in the queryset
 
 	@classmethod
 	def get_field_names(cls):
