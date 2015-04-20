@@ -21,7 +21,7 @@ class ScraperBase(object):
 
 		If interval is given (default 1200sec) then averages are computed over intervals of that length
 		"""
-		last_permanent = self._model.objects.filter(temporary=False).last()
+		last_permanent = max(self._model.objects.filter(temporary=False).last(), self._model.objects.filter(temporary=True).order_by('Time')[0])
 		# if this has never been run, last_permanent will be None
 		last_permanent_time = last_permanent.Time if last_permanent else pytz.UTC.localize(datetime.datetime(1970,1,1))
 
@@ -35,11 +35,12 @@ class ScraperBase(object):
 		interval_end = last_permanent_time + interval
 		i = 1
 		while interval_end <= UTC_now:
-			if i > 1: print "getting more intervals since", last_permanent_time
+			if i > 1: print "[%s] getting more intervals since" % (self.__class__.__name__), last_permanent_time
+			i += 1
 			# make a queryset for all the objects that will go into our computation
 			data_points = self._model.objects.filter(
 				temporary=True,
-				Time__gt =last_permanent_time,
+				Time__gte =last_permanent_time,
 				Time__lte=interval_end).order_by('Time')
 			# first, separate the big queryset of points into multiple smaller lists based on their index
 			indexed_objects = h.split_on_indexes(data_points)
