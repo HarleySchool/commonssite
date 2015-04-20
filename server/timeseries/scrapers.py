@@ -29,8 +29,10 @@ class ScraperBase(object):
 
 		if not interval:
 			interval = UTC_now - last_permanent_time
+		elif type(interval) is int:
+			interval = datetime.timedelta(seconds=interval)
 
-		interval_end = last_permanent_time + datetime.timedelta(seconds=interval)
+		interval_end = last_permanent_time + interval
 		i = 1
 		while interval_end <= UTC_now:
 			if i > 1: print "getting more intervals since", last_permanent_time
