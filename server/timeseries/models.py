@@ -57,6 +57,19 @@ class TimeseriesBase(models.Model):
 		return None
 
 	@classmethod
+	def get_index_foreign_model(cls):
+		"""return the model class for the foreign-key object used for an index
+		"""
+		fieldname = cls.get_index_column()
+		foreign_model = None
+		if fieldname:
+			try:
+				foreign_model = cls._meta.get_field(fieldname).rel.to
+			except:
+				pass
+		return foreign_model
+
+	@classmethod
 	def latest(cls, temporary=None):
 		"""return a datetime object that is the timestamp of the most recent entries in this table
 		"""

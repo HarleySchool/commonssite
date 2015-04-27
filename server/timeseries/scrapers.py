@@ -53,8 +53,11 @@ class ScraperBase(object):
 				# we will construct the object from a kwarg dict
 				kwargs = {'temporary' : False, 'Time' : tend}
 				# set the index value for this group of objects
-				index_col = self._model.get_index_column()
-				if index_col: kwargs[index_col+'_id'] = index_tuple[0]
+				index_field = self._model.get_index_column()
+				if index_field:
+					index_model = self._model.get_index_foreign_model()
+					index_obj = index_model.objects.get(id=index_tuple[0])
+					kwargs[index_field] = index_obj
 				perm_obj, created = self._model.objects.get_or_create(**kwargs)
 				# numeric types are averaged (see note below); all others are plurality vote
 				# note that the interval is NOT assumed to be regular; votes and averages are weighted by the span of
