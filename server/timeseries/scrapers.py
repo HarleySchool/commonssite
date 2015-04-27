@@ -55,6 +55,7 @@ class ScraperBase(object):
 				# set the index value for this group of objects
 				index_col = self._model.get_index_column()
 				if index_col: kwargs[index_col+'_id'] = index_tuple[0]
+				perm_obj, created = self._model.objects.get_or_create(**kwargs)
 				# numeric types are averaged (see note below); all others are plurality vote
 				# note that the interval is NOT assumed to be regular; votes and averages are weighted by the span of
 				# time between any two measurements
@@ -122,9 +123,14 @@ class ScraperBase(object):
 						kwargs[nm] = max(model_average[nm].iteritems(), key=operator.itemgetter(1))[0]
 					else:
 						kwargs[nm] = None
-				# create and save the new object
-				new_object = self._model(**kwargs)
-				new_object.save()
+				# update and save the object (creating or overwriting)
+				try:
+					for k,v in kwargs.iteritems():
+						setattr(perm_obj, k, v)
+					perm_obj.save()
+				except Exception as e:
+					print "Error getting average for [%s] over" % self.__class__.__name__, last_permanent_time, interval_end
+					print "\t", e
 			last_permanent_time = interval_end
 			interval_end = last_permanent_time + interval
 		self._model.remove_expired()
